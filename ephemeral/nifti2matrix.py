@@ -66,8 +66,7 @@ def to_dipha_format(image, filename):
     - The values of the array in scan-line order
     '''
 
-    # TODO: replace with proper image data
-    data = np.random.normal(size=(4,4))
+    data = image.get_fdata()
 
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)
@@ -102,6 +101,11 @@ if __name__ == '__main__':
         image = mask_image(args.image, args.mask)
     else:
         image = nl.image.load_img(args.image)
+
+    to_dipha_format(image, '/tmp/nifti2matrix.out')
+
+    # TODO: only relevant for debugging; remove this later if we are
+    # sure that the conversion worked.
 
     from nilearn import plotting
 

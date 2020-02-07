@@ -33,8 +33,8 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
     Returns
     -------
 
-        `numpy` array containing the image data along with the masked
-        values. The dimensions of the input data will not be changed.
+        Image data along with the masked values. The dimensions of the
+        input data will not be changed.
     '''
 
     image = nl.image.load_img(image_filename)
@@ -46,6 +46,9 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
     masked = masker.fit_transform(image)
     masked = masker.inverse_transform(masked)
 
+    # We use the *original* mask to update the values in all voxels in
+    # order to ensure that we do not touch *existing* data.
+    masked.get_fdata()[np.where(mask.get_fdata() == 0)] = mask_value
     return masked
 
 

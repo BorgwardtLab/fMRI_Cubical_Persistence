@@ -74,6 +74,8 @@ def to_dipha_format(image, filename):
         n_values = np.int64(len(data.ravel()))
         dimension = np.int64(len(data.shape))
 
+        print(n_values, dimension)
+
         header = [magic_number, file_id, n_values, dimension]
 
         for h in header:
@@ -98,7 +100,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.mask:
-        image = mask_image(args.image, args.mask)
+        image = mask_image(args.image, args.mask, mask_value=-999)
     else:
         image = nl.image.load_img(args.image)
 

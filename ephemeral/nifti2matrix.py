@@ -61,7 +61,7 @@ def to_dipha_format(image, filename):
     - The 'magic number' 8067171840 (64-bit int)
     - 1 (64-bit int)
     - Total number of values (64-bit int)
-    - Dimension, i.e. how many axes there (64-bit int)
+    - Dimension, i.e. how many axes there are (64-bit int)
     - Set of resolutions or 'shape' values (64-bit int each)
     - The values of the array in scan-line order
     '''
@@ -73,8 +73,9 @@ def to_dipha_format(image, filename):
         magic_number = np.int64(8067171840)
         file_id = np.int64(1)
         n_values = np.int64(len(data.ravel()))
+        dimension = np.int64(len(data.shape))
 
-        header = [magic_number, file_id, n_values]
+        header = [magic_number, file_id, n_values, dimension]
 
         for h in header:
             f.write(h)

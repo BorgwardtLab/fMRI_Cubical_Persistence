@@ -52,16 +52,57 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
     return masked
 
 
+def to_dipha_format(image, filename):
+    '''
+    Converts a NIfTI image to the DIPHA file format. The file is useful
+    for describing a d-dimensional grey-scale image data. It requires a
+    set of header values:
+
+    - The 'magic number' 8067171840 (64-bit int)
+    - 1 (64-bit int)
+    - Total number of values (64-bit int)
+    - Dimension, i.e. how many axes there (64-bit int)
+    - Set of resolutions or 'shape' values (64-bit int each)
+    - The values of the array in scan-line order
+    '''
+
+    # TODO: replace with proper image data
+    data = np.random.normal(size=(4,4))
+
+    with open(filename, 'wb') as f:
+        magic_number = np.int64(8067171840)
+        file_id = np.int64(1)
+        n_values = np.int64(len(data.ravel()))
+
+        header = [magic_number, file_id, n_values]
+
+        for h in header:
+            f.write(h)
+
+        for resolution in data.shape:
+            f.write(np.int64(resolution))
+
+        # The output stream of values has to written out as
+        # double-precision floating point values. These are
+        # following the pre-defined scan-line order.
+        for x in data.ravel():
+            f.write(np.double(x))
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('IMAGE')
-    parser.add_argument('MASK')
+    parser.add_argument('-i', '--image', type=str)
+    parser.add_argument('-m', '--mask', type=str)
 
     args = parser.parse_args()
-    data = mask_image(args.IMAGE, args.MASK)
+
+    if args.mask:
+        image = mask_image(args.image, args.mask)
+    else:
+        image = nl.image.load_img(args.image)
 
     from nilearn import plotting
 
-    plotting.plot_stat_map(nl.image.index_img(data, 0))
+    plotting.plot_stat_map(nl.image.index_img(image, 0))
     plotting.show()

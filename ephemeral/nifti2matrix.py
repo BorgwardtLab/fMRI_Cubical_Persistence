@@ -102,7 +102,9 @@ if __name__ == '__main__':
     else:
         image = nl.image.load_img(args.image)
 
-    to_dipha_format(image, '/tmp/nifti2matrix.out')
+    # FIXME: update output format
+    for index, i in enumerate(nl.image.iter_img(image)):
+        to_dipha_format(i, f'/tmp/nifti2matrix_{index}.out')
 
     # TODO: only relevant for debugging; remove this later if we are
     # sure that the conversion worked.

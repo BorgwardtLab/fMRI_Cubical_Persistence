@@ -26,5 +26,5 @@ OUTPUT=$ROOT/data/persistence_diagrams
 DIRECTORY=$1
 
 for FILE in $1/*.bin; do
-  $DIPHA_BIN $FILE $OUTPUT/${FILE:t:r}
+  $DIPHA_BIN $FILE $OUTPUT/${FILE:t}
 done

@@ -5,6 +5,7 @@
 # array.
 
 import argparse
+import math
 import os
 
 import nilearn as nl
@@ -113,19 +114,62 @@ def basename(filename):
     def _split_extension(filename):
         return os.path.splitext(filename)
 
-    filename, extension = _split_extension(filename) 
+    filename, extension = _split_extension(filename)
 
     while extension:
-        filename, extension = _split_extension(filename) 
+        filename, extension = _split_extension(filename)
 
     return filename
+
+
+def format_time(time, n_time_steps):
+    '''
+    Formats a time index according to a maximum number of time steps in
+    in the data. This is useful in order to ensure consistent filenames
+    of the *same* length.
+
+    Parameters
+    ----------
+
+        time:
+            Current time step that should be formatted
+
+        n_time_steps:
+            Maximum number of time steps
+
+    Returns
+    -------
+
+        Formatted string with added zeroes for padding. For example, if
+        there are 23 time steps in total, time step 5 will be formatted
+        as  '05', thereby ensuring that a lexicographical ordering will
+        be sufficient to sort the resulting files.
+    '''
+
+    n_digits = int(math.log10(n_time_steps) + 1)
+    return f'{time:0{n_digits}d}'
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--image', type=str)
-    parser.add_argument('-m', '--mask', type=str)
+
+    parser.add_argument('-i', '--image',
+        type=str,
+        help='NIfTI image file'
+    )
+
+    parser.add_argument('-m', '--mask',
+        type=str,
+        help='Optional image mask to load'
+    )
+
+    parser.add_argument('-o', '--output',
+        type=str,
+        help='Output directory. If not set, will default to the current '
+             'directory.',
+        default='.'
+    )
 
     args = parser.parse_args()
 
@@ -134,14 +178,18 @@ if __name__ == '__main__':
     else:
         image = nl.image.load_img(args.image)
 
-    # FIXME: update output format
+    # The last dimension is always used as the time series dimension.
+    # Technically, one could do additional checks here.
+    n_time_steps = image.shape[-1]
+
+    os.makedirs(args.output, exist_ok=True)
+
     for index, i in enumerate(nl.image.iter_img(image)):
-        to_dipha_format(i, f'/tmp/nifti2matrix_{index}.out')
 
-    # TODO: only relevant for debugging; remove this later if we are
-    # sure that the conversion worked.
+        # Build a nice filename such that all output files are stored
+        # correctly.
+        time = format_time(index, n_time_steps)
+        filename = f'{basename(args.image)}_{time}.bin'
+        filename = os.path.join(args.output, filename)
 
-    from nilearn import plotting
-
-    plotting.plot_stat_map(nl.image.index_img(image, 0))
-    plotting.show()
+        to_dipha_format(i, f'{filename}')

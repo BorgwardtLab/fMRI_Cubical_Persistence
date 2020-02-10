@@ -13,6 +13,9 @@ import nilearn as nl
 import numpy as np
 
 
+from tqdm import tqdm
+
+
 def mask_image(image_filename, mask_filename, mask_value=np.nan):
     '''
     Given an image filename and a mask filename, performs the masking
@@ -172,17 +175,20 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-i', '--image',
+    parser.add_argument(
+        '-i', '--image',
         type=str,
         help='NIfTI image file'
     )
 
-    parser.add_argument('-m', '--mask',
+    parser.add_argument(
+        '-m', '--mask',
         type=str,
         help='Optional image mask to load'
     )
 
-    parser.add_argument('--mask-value',
+    parser.add_argument(
+        '--mask-value',
         type=str,
         help='Value to write to the volume whenever the optional mask '
              'would apply. Can be either a number or a string. If you '
@@ -191,7 +197,8 @@ if __name__ == '__main__':
         default='min'
     )
 
-    parser.add_argument('-o', '--output',
+    parser.add_argument(
+        '-o', '--output',
         type=str,
         help='Output directory. If not set, will default to the current '
              'directory.',
@@ -211,7 +218,8 @@ if __name__ == '__main__':
 
     os.makedirs(args.output, exist_ok=True)
 
-    for index, i in enumerate(nl.image.iter_img(image)):
+    for index, i in enumerate(tqdm(nl.image.iter_img(image),
+                                   desc='Converting', total=n_time_steps)):
 
         # Build a nice filename such that all output files are stored
         # correctly.

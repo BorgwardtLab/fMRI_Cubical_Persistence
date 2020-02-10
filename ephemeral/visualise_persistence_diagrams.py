@@ -45,10 +45,17 @@ if __name__ == '__main__':
 
         assert len(creation) == len(destruction)
 
-        min_creation = min(min_creation, np.min(creation))
-        max_creation = max(max_creation, np.max(creation))
+        min_creation = min(min_creation, np.min(creation), np.min(destruction))
+        max_creation = max(max_creation, np.max(creation), np.max(destruction))
 
         persistence_diagrams.append((creation, destruction))
+
+    n = len(persistence_diagrams)
+
+    plt.xlim((min_creation * 1.25, max_creation * 1.25))
+    plt.ylim((min_creation * 1.25, max_creation * 1.25))
+
+    plt.gca().set_aspect('equal')
 
     for index, (creation, destruction) in enumerate(persistence_diagrams):
 
@@ -58,8 +65,9 @@ if __name__ == '__main__':
             y=destruction,
             c=colours,
             vmin=0,
-            vmax=len(persistence_diagrams) - 1,
+            vmax=n - 1,
             cmap='Spectral',
+            alpha=1.0 - index / (n - 1) + 0.01,
         )
 
     plt.show()

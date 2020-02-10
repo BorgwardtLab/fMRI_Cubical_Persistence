@@ -6,6 +6,7 @@
 
 import argparse
 import math
+import numbers
 import os
 
 import nilearn as nl
@@ -30,7 +31,10 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
 
         mask_value:
             Optional value that will be used to indicate the regions in
-            the image at which the mask was applied.
+            the image at which the mask was applied. This can be either
+            a number, in which case everything is set accordingly, or a
+            string (either `min` or `max`), in which case the *minimum*
+            or *maximum* value of the volume is used.
 
     Returns
     -------
@@ -48,9 +52,25 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
     masked = masker.fit_transform(image)
     masked = masker.inverse_transform(masked)
 
+    # No global mask value has been supplied, so we check whether it is
+    # a string and proceed from there.
+    if not isinstance(mask_value, numbers.Number):
+
+        assert mask_value in ['min', 'max']
+
+        if mask_value == 'min':
+            mask_value_ = np.min(masked.get_fdata())
+        else:
+            mask_value_ = np.max(masked.get_fdata())
+
+    # Set local mask value to assign. This is for convenience reasons
+    # such that we do not have to duplicate the actual assignment.
+    else:
+        mask_value_ = mask_value
+
     # We use the *original* mask to update the values in all voxels in
     # order to ensure that we do not touch *existing* data.
-    masked.get_fdata()[np.where(mask.get_fdata() == 0)] = mask_value
+    masked.get_fdata()[np.where(mask.get_fdata() == 0)] = mask_value_
     return masked
 
 
@@ -84,8 +104,6 @@ def to_dipha_format(image, filename):
         file_id = np.int64(1)
         n_values = np.int64(len(data.ravel()))
         dimension = np.int64(len(data.shape))
-
-        print(n_values, dimension)
 
         header = [magic_number, file_id, n_values, dimension]
 
@@ -164,6 +182,15 @@ if __name__ == '__main__':
         help='Optional image mask to load'
     )
 
+    parser.add_argument('--mask-value',
+        type=str,
+        help='Value to write to the volume whenever the optional mask '
+             'would apply. Can be either a number or a string. If you '
+             'supply a string, it should be either `min` or `max`, to '
+             'denote the minimum or maximum image value, respectively.',
+        default='min'
+    )
+
     parser.add_argument('-o', '--output',
         type=str,
         help='Output directory. If not set, will default to the current '
@@ -174,7 +201,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.mask:
-        image = mask_image(args.image, args.mask, mask_value=-999)
+        image = mask_image(args.image, args.mask, mask_value=args.mask_value)
     else:
         image = nl.image.load_img(args.image)
 

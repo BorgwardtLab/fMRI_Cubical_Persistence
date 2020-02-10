@@ -8,6 +8,7 @@ import argparse
 import math
 import numbers
 import os
+import warnings
 
 import nilearn as nl
 import numpy as np
@@ -49,9 +50,13 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
     image = nl.image.load_img(image_filename)
     mask = nl.image.load_img(mask_filename)
 
+    # Ensures that the mask only consists of two values. This enables the
+    # conversion of malformed masks.
+    mask.get_data()[np.where(mask.get_data() != 0)] = 1
+
     from nilearn.input_data import NiftiMasker
 
-    masker = NiftiMasker(mask)
+    masker = NiftiMasker(mask_img=mask)
     masked = masker.fit_transform(image)
     masked = masker.inverse_transform(masked)
 
@@ -62,9 +67,9 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
         assert mask_value in ['min', 'max']
 
         if mask_value == 'min':
-            mask_value_ = np.min(masked.get_fdata())
+            mask_value_ = np.min(masked.get_data())
         else:
-            mask_value_ = np.max(masked.get_fdata())
+            mask_value_ = np.max(masked.get_data())
 
     # Set local mask value to assign. This is for convenience reasons
     # such that we do not have to duplicate the actual assignment.
@@ -73,7 +78,7 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
 
     # We use the *original* mask to update the values in all voxels in
     # order to ensure that we do not touch *existing* data.
-    masked.get_fdata()[np.where(mask.get_fdata() == 0)] = mask_value_
+    masked.get_data()[np.where(mask.get_data() == 0)] = mask_value_
     return masked
 
 
@@ -100,7 +105,7 @@ def to_dipha_format(image, filename):
             Output filename
     '''
 
-    data = image.get_fdata()
+    data = image.get_data()
 
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)
@@ -172,6 +177,11 @@ def format_time(time, n_time_steps):
 
 
 if __name__ == '__main__':
+
+    # `nilearn` and `nibabel` have a compatability issue concerning the
+    # `get_data()` function. Until this bug has been rectified, we will
+    # use the old behaviour and ignore all warnings.
+    warnings.filterwarnings('ignore', category=DeprecationWarning)
 
     parser = argparse.ArgumentParser()
 

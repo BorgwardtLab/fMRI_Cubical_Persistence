@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('FILE', nargs='+', type=str)
+    parser.add_argument('--title', type=str)
 
     args = parser.parse_args()
 
@@ -70,4 +71,11 @@ if __name__ == '__main__':
             alpha=1.0 - index / (n - 1) + 0.01,
         )
 
-    plt.show()
+    if args.title:
+        plt.title(args.title)
+
+        # TODO: make configurable
+        output = '/tmp/' + args.title.replace(' ', '_') + '.png'
+        plt.savefig(output, bbox_inches = 'tight')
+    else:
+        plt.show()

@@ -5,6 +5,7 @@
 # array.
 
 import argparse
+import os
 
 import nilearn as nl
 import numpy as np
@@ -64,6 +65,15 @@ def to_dipha_format(image, filename):
     - Dimension, i.e. how many axes there are (64-bit int)
     - Set of resolutions or 'shape' values (64-bit int each)
     - The values of the array in scan-line order
+
+    Parameters
+    ----------
+
+        image:
+            NIfTI image of arbitrary dimensions.
+
+        filename:
+            Output filename
     '''
 
     data = image.get_fdata()
@@ -89,6 +99,26 @@ def to_dipha_format(image, filename):
         # following the pre-defined scan-line order.
         for x in data.ravel():
             f.write(np.double(x))
+
+
+def basename(filename):
+    '''
+    Removes all extensions from a filename and returns the basename of
+    the file. This function is required to handle filenames with *two*
+    or more extensions.
+    '''
+
+    filename = os.path.basename(filename)
+
+    def _split_extension(filename):
+        return os.path.splitext(filename)
+
+    filename, extension = _split_extension(filename) 
+
+    while extension:
+        filename, extension = _split_extension(filename) 
+
+    return filename
 
 
 if __name__ == '__main__':

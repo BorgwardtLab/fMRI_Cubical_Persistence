@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+#
+# Main script for performing persistent homology calculations using
+# DIPHA.
+
+# Main directory for the `dipha` executable. This is required in order
+# to calculate persistent homology of each input file. The result will
+# be a binary file containing all persistence diagrams.
+#
+# TODO:
+#   - make configurable
+#   - add to path?
+DIPHA_BIN=$HOME/Projects/dipha/build/dipha
+
+# The root of this script. Will be used to access the other scripts and
+# call them accordingly. Everything is defined relative to this path.
+ROOT=${0:h:h}
+
+# Output directory. If multiple data sets should be supported, this
+# needs to be adjusted accordingly.
+OUTPUT=$ROOT/data/persistence_diagrams
+
+# Main data directory. Will take all '*.bin' files and store them in
+# another output folder. The filenames will not be adjusted. This is
+# on purpose because it makes it easier to map them back and forth.
+DIRECTORY=$1
+
+for FILE in $1/*.bin; do
+  $DIPHA_BIN $FILE $OUTPUT/${FILE:t:r}
+done

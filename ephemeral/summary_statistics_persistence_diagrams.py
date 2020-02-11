@@ -11,11 +11,14 @@
 
 import argparse
 import collections
+import os
 import sys
 
 import numpy as np
 
 from topology import load_persistence_diagram_dipha
+from topology import load_persistence_diagram_json
+from topology import load_persistence_diagram_txt
 from topology import PersistenceDiagram
 
 from utilities import parse_filename
@@ -62,8 +65,16 @@ if __name__ == '__main__':
     for filename in tqdm(args.FILE, desc='File'):
 
         subject, _, time = parse_filename(filename)
+        extension = os.path.splitext(filename)[1]
 
-        persistence_diagrams = load_persistence_diagram_dipha(
+        if extension == '.bin':
+            load_persistence_diagram_fn = load_persistence_diagram_dipha
+        elif extension == '.json':
+            load_persistence_diagram_fn = load_persistence_diagram_json
+        else:
+            load_persistence_diagram_fn = load_persistence_diagram_txt
+
+        persistence_diagrams = load_persistence_diagram_fn(
             filename,
             return_raw=False
         )

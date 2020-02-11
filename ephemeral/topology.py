@@ -478,9 +478,11 @@ def load_persistence_diagram_json(filename, return_raw=True):
     assert 'creation_values' in data.keys()
     assert 'destruction_values' in data.keys()
 
-    dimensions = data['dimensions']
-    creation_values = data['creation_values']
-    destruction_values = data['destruction_values']
+    # The conversion into `numpy.array` is required in order to permit
+    # subset/indexing operations later on.
+    dimensions = np.asarray(data['dimensions'], dtype=np.int64)
+    creation_values = np.asarray(data['creation_values'])
+    destruction_values = np.asarray(data['destruction_values'])
 
     if return_raw:
         return dimensions, creation_values, destruction_values

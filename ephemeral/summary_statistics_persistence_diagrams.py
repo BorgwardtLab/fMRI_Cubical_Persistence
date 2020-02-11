@@ -11,6 +11,7 @@
 
 import argparse
 import collections
+import glob
 import json
 import os
 import sys
@@ -30,7 +31,14 @@ from tqdm import tqdm
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('FILE', nargs='+', type=str)
+    parser.add_argument(
+        '-i',
+        '--input',
+        required=True,
+        type=str,
+        help='Input directory'  # FIXME: this is terse!
+    )
+
     parser.add_argument(
         '-d', '--dimension',
         type=int,
@@ -78,7 +86,8 @@ if __name__ == '__main__':
     # of the diagrams follows the time step information.
     diagrams_per_subject = collections.defaultdict(list)
 
-    for filename in tqdm(args.FILE, desc='File'):
+    filenames = sorted(glob.glob(os.path.join(args.input, '*.json')))
+    for filename in tqdm(filenames, desc='File'):
 
         subject, _, time = parse_filename(filename)
         extension = os.path.splitext(filename)[1]

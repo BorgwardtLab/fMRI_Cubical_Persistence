@@ -11,6 +11,7 @@
 
 import argparse
 import collections
+import json
 import os
 import sys
 
@@ -40,10 +41,11 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '-s', '--statistic',
+        nargs='+',
         type=str,
         default='total_persistence',
         help='Selects summary statistic to calculate for each diagram. Can '
-             'be either one of: [total_persistence, infinity_norm]'
+             'be one or more of: [total_persistence, infinity_norm]'
     )
 
     parser.add_argument(
@@ -54,7 +56,21 @@ if __name__ == '__main__':
              'value might not be used for all of them.'
     )
 
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        default='Summary_statistics.json',
+        help='Output file for creating summary statistics'
+    )
+
     args = parser.parse_args()
+
+    # Ensures that we always loop over a set of statistics, even if only
+    # a single one has been specified by the client.
+    if type(args.statistic) is list:
+        statistics = args.statistic
+    else:
+        statistics = [args.statistic]
 
     # Will store all persistence diagrams, ordered by subject. The keys
     # are the subject identifiers, extracted from the filename, whereas
@@ -96,11 +112,24 @@ if __name__ == '__main__':
         'p': args.power
     }
 
+    # Output for each subject, grouped according to the different
+    # methods that have been selected by the user.
+    data = {}
+
     # Calculate summary statistics for the time series of each subject
     # and print them.
     for subject in sorted(diagrams_per_subject.keys()):
         diagrams = diagrams_per_subject[subject]
 
-        for diagram in diagrams:
-            print(statistic_fn[args.statistic](diagram, **kwargs))
+        # Create a new nested hierarchy that will contain the individual
+        # measurements of each summary statistic.
+        data[subject] = collections.defaultdict(list)
 
+        for diagram in diagrams:
+            for statistic in statistics:
+                value = statistic_fn[statistic](diagram, **kwargs)
+
+                data[subject][statistic].append(value)
+
+    with open(args.output, 'w') as f:
+        json.dump(data, f, indent=4)

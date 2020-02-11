@@ -30,7 +30,7 @@ def parse_filename(filename):
     potential_time = tokens[-1]
 
     if re.match('\d+', potential_time):
-        time = potential_time
+        time = potential_time[:-4]
     else:
         time = None
 

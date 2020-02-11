@@ -76,7 +76,5 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dimensions', nargs='+', default=[0,1,2], help="Which dimensions to plot.")
     
     args = parser.parse_args()
-    print(args.dimensions)
-    print(args.raw)
-    plot_pds(data_path="/Volumes/borgwardt/Projects/Ephemeral/Partly Cloudy/tda/raw/persistence_diagrams", dimensions=args.dimensions, masked=args.raw)
+    plot_pds(data_path="/links/groups/borgwardt/Projects/Ephemeral/Partly Cloudy/tda/raw/persistence_diagrams", dimensions=args.dimensions, masked=args.raw)
 

@@ -2,6 +2,7 @@
 Module containing utility functions.
 '''
 
+import os
 import re
 
 
@@ -19,6 +20,7 @@ def parse_filename(filename):
     is not available, `None` will be returned.
     '''
 
+    filename = os.path.splitext(filename)[0]
     tokens = filename.split('_')
 
     for token in tokens:
@@ -30,7 +32,7 @@ def parse_filename(filename):
     potential_time = tokens[-1]
 
     if re.match('\d+', potential_time):
-        time = potential_time[:-4]
+        time = potential_time
     else:
         time = None
 

@@ -26,5 +26,5 @@ OUTPUT=$ROOT/data/persistence_diagrams
 DIRECTORY=$1
 
 for FILE in $1/*.bin; do
-  $DIPHA_BIN $FILE $OUTPUT/${FILE:t}
+  mpiexec -n 4 $DIPHA_BIN $FILE $OUTPUT/${FILE:t}
 done

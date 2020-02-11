@@ -288,12 +288,39 @@ def load_persistence_diagram_txt(filename, comment='#'):
     return pd
 
 
-def load_persistence_diagram_dipha(filename):
+def load_persistence_diagram_dipha(filename, return_raw=True):
     '''
     Loads a persistence diagram from a file. The file is assumed to be
     in DIPHA format.
 
-    TODO: extend this!
+    Parameters
+    ----------
+
+        filename:
+            Filename to load the persistence diagram from. The file
+            needs to be in DIPHA format, i.e. a binary format. This
+            function checks whether the format is correct.
+
+        return_raw:
+            Flag indicating whether the *raw* persistence values shall
+            be returned. If set, will return triples:
+
+                - dimension
+                - creation values
+                - destruction values
+
+            Each of these will be an array indicating the corresponding
+            value. The persistence diagram could then be constructed by
+            extracting a subset of the values.
+
+            If `return_raw` is False, a sequence of `PersistenceDiagram`
+            instances will be returned instead.
+
+    Returns
+    -------
+
+    Raw triples (dimension, creation, destruction) or a sequence of
+    persistence diagrams, depending on the `return_raw` parameter.
     '''
 
     def _read_int64(f):
@@ -351,7 +378,26 @@ def load_persistence_diagram_dipha(filename):
             skip=16
         )
 
-    return dimensions, creation_values, destruction_values
+    if return_raw:
+        return dimensions, creation_values, destruction_values
+    else:
+
+        # Create a persistence diagram for each unique dimension in the
+        # data.
+        unique_dimensions = np.unique(dimensions)
+        persistence_diagrams = []
+
+        for dimension in unique_dimensions:
+            C = creation_values[dimensions == dimension]
+            D = destruction_values[dimensions == dimension]
+
+            persistence_diagrams.append(
+                PersistenceDiagram(dimension=dimension,
+                                   creation_values=C,
+                                   destruction_values=D)
+            )
+
+        return persistence_diagrams
 
 
 def make_betti_curve(diagram, ignore_errors=False):

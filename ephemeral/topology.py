@@ -5,6 +5,7 @@ working with them.
 
 
 import collections
+import json
 import math
 import numbers
 
@@ -287,6 +288,48 @@ def load_persistence_diagram_txt(filename, comment='#'):
 
     return pd
 
+def _create_persistence_diagrams(dimensions, creation, destruction):
+    '''
+    Internal utility function for creating a set of persistence diagrams
+    from same-size lists. This is useful when reading diagrams in either
+    DIPHA or in JSON format.
+
+    Parameters
+    ----------
+
+        dimensions:
+            List of dimensions for each (creation, destruction) tuple
+
+        creation:
+            List of creation values for persistence pairs
+
+        destruction:
+            List of destruction values for persistence pairs
+
+    Returns
+    -------
+
+    Sequence of persistence diagrams, one for each unique dimension in
+    the `dimensions` list.
+    '''
+
+    # Create a persistence diagram for each unique dimension in the
+    # data.
+    unique_dimensions = np.unique(dimensions)
+    persistence_diagrams = []
+
+    for dimension in unique_dimensions:
+        C = creation[dimensions == dimension]
+        D = destruction[dimensions == dimension]
+
+        persistence_diagrams.append(
+            PersistenceDiagram(dimension=dimension,
+                               creation_values=C,
+                               destruction_values=D)
+        )
+
+    return persistence_diagrams
+
 
 def load_persistence_diagram_dipha(filename, return_raw=True):
     '''
@@ -381,23 +424,70 @@ def load_persistence_diagram_dipha(filename, return_raw=True):
     if return_raw:
         return dimensions, creation_values, destruction_values
     else:
+        return _create_persistence_diagrams(dimensions,
+                                            creation_values,
+                                            destruction_values)
 
-        # Create a persistence diagram for each unique dimension in the
-        # data.
-        unique_dimensions = np.unique(dimensions)
-        persistence_diagrams = []
 
-        for dimension in unique_dimensions:
-            C = creation_values[dimensions == dimension]
-            D = destruction_values[dimensions == dimension]
+def load_persistence_diagram_json(filename, return_raw=True):
+    '''
+    Loads a persistence diagram from a file. The file is assumed to be
+    in JSON format. Like `load_persistence_diagram_dipha`, this method
+    permits loading 'raw' values or persistence diagrams.
 
-            persistence_diagrams.append(
-                PersistenceDiagram(dimension=dimension,
-                                   creation_values=C,
-                                   destruction_values=D)
-            )
+    Parameters
+    ----------
 
-        return persistence_diagrams
+        filename:
+            Filename to load the persistence diagram from. The file
+            needs to be in JSON format, with at least three keys in
+            the file:
+
+                - `dimensions`
+                - `creation_values`
+                - `destruction_values`
+
+            The function checks whether the file format is correct.
+
+        return_raw:
+            Flag indicating whether the *raw* persistence values shall
+            be returned. If set, will return triples:
+
+                - dimension
+                - creation values
+                - destruction values
+
+            Each of these will be an array indicating the corresponding
+            value. The persistence diagram could then be constructed by
+            extracting a subset of the values.
+
+            If `return_raw` is False, a sequence of `PersistenceDiagram`
+            instances will be returned instead.
+
+    Returns
+    -------
+
+    Raw triples (dimension, creation, destruction) or a sequence of
+    persistence diagrams, depending on the `return_raw` parameter.
+    '''
+
+    with open(filename, 'r') as f:
+       data = json.load(f)
+
+    assert 'dimensions' in data.keys()
+    assert 'creation_values' in data.keys()
+    assert 'destruction_values' in data.keys()
+
+    dimensions = data['dimensions']
+    creation_values = data['creation_values']
+    destruction_values = data['destruction_values']
+
+    if return_raw:
+        return dimensions, creation_values, destruction_values
+    else:
+        return _create_persistence_diagrams(dimensions,
+                                            creation_values,
+                                            destruction_values)
 
 
 def make_betti_curve(diagram, ignore_errors=False):

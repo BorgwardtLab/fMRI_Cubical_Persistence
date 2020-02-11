@@ -22,8 +22,53 @@ class PersistenceDiagram(collections.Sequence):
     interface for storing and accessing this pairing.
     '''
 
-    def __init__(self):
+    def __init__(self,
+                 dimension=None,
+                 creation_values=None,
+                 destruction_values=None):
+        '''
+        Creates a new persistence diagram. Depending on the parameters
+        supplied, the diagram is either created empty or with a set of
+        pairs. If pairs are supplied, consistency will be checked.
+
+        Parameters
+        ----------
+
+            dimension:
+                The dimension of the persistence diagram (optional)
+
+            creation_values:
+                An optional set of creation values (creation times) for
+                the tuples in the persistence diagram. If this is given
+                the `destruction_values` argument must also be present.
+                Moreover, the two vectors need to have the same length.
+
+            destruction_values:
+                An optional set of destruction values (destruction times)
+                for the tuples in the persistence diagram. The same rules
+                as for the `creation_values` apply.
+        '''
+
         self._pairs = []
+        self._dimension = dimension
+
+        if creation_values is not None or destruction_values is not None:
+            assert creation_values is not None
+            assert destruction_values is not None
+
+            assert len(creation_values) == len(destruction_values)
+
+            for c, d in zip(creation_values, destruction_values):
+                self.append(c, d)
+
+    @property
+    def dimension(self):
+        '''
+        Returns the dimension of the persistence diagram. This is
+        permitted to be `None`, indicating that *no* dimension is
+        specified.
+        '''
+        return self._dimension
 
     def __len__(self):
         '''
@@ -49,6 +94,13 @@ class PersistenceDiagram(collections.Sequence):
         '''
 
         self._pairs.append((x, y))
+
+    def append(self, x, y):
+        '''
+        Alias for `add()`. Adds a new persistence pair to the diagram.
+        '''
+
+        self.add(x, y)
 
     def union(self, other):
         '''
@@ -190,8 +242,7 @@ class PersistenceDiagram(collections.Sequence):
         # one deals with entropy calculations.
         log_prob = np.log(probabilities,
                           out=np.zeros_like(probabilities),
-                          where=(probabilities > 0)
-                   )
+                          where=(probabilities > 0))
 
         return np.sum(-probabilities * log_prob)
 

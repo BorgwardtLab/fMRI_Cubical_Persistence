@@ -72,9 +72,10 @@ def plot_pds(data_path: str, output_path: str='../figures/', dimensions: list=[0
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('INPUT', help="Path to .json files.")
     parser.add_argument('--raw', action='store_false', help="Whether to plot the raw data.")
     parser.add_argument('-d', '--dimensions', nargs='+', default=[0,1,2], help="Which dimensions to plot.")
     
     args = parser.parse_args()
-    plot_pds(data_path="/links/groups/borgwardt/Projects/Ephemeral/Partly Cloudy/tda/raw/persistence_diagrams", dimensions=args.dimensions, masked=args.raw)
+    plot_pds(data_path=args.INPUT, dimensions=args.dimensions, masked=args.raw)
 

@@ -23,6 +23,7 @@ from topology import load_persistence_diagram_json
 from topology import load_persistence_diagram_txt
 from topology import PersistenceDiagram
 
+from utilities import dict_to_str
 from utilities import parse_filename
 
 from tqdm import tqdm
@@ -51,15 +52,16 @@ if __name__ == '__main__':
         '-s', '--statistic',
         nargs='+',
         type=str,
-        default='total_persistence',
+        default=['total_persistence'],
         help='Selects summary statistic to calculate for each diagram. Can '
              'be one or more of: [total_persistence, infinity_norm]'
     )
 
     parser.add_argument(
         '-p', '--power',
-        type=float,
-        default=1.0,
+        type=int,
+        nargs='+',
+        default=[1.0],
         help='Chooses the exponent for several summary statistics. This '
              'value might not be used for all of them.'
     )
@@ -72,13 +74,6 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
-
-    # Ensures that we always loop over a set of statistics, even if only
-    # a single one has been specified by the client.
-    if type(args.statistic) is list:
-        statistics = args.statistic
-    else:
-        statistics = [args.statistic]
 
     # Will store all persistence diagrams, ordered by subject. The keys
     # are the subject identifiers, extracted from the filename, whereas
@@ -115,12 +110,6 @@ if __name__ == '__main__':
         'infinity_norm': PersistenceDiagram.infinity_norm
     }
 
-    # Prepare keyword arguments for the summary statistics. Some of
-    # these keywords might be ignored later on.
-    kwargs = {
-        'p': args.power
-    }
-
     # Output for each subject, grouped according to the different
     # methods that have been selected by the user.
     data = {}
@@ -135,10 +124,22 @@ if __name__ == '__main__':
         data[subject] = collections.defaultdict(list)
 
         for diagram in diagrams:
-            for statistic in statistics:
-                value = statistic_fn[statistic](diagram, **kwargs)
+            for statistic in args.statistic:
+                for power in args.power:
+                    # Prepare keyword arguments for the summary statistics. Some of
+                    # these keywords might be ignored later on.
+                    kwargs = {
+                        'p': power
+                    }
 
-                data[subject][statistic].append(value)
+                    value = statistic_fn[statistic](diagram, **kwargs)
+
+                    # Calculates a proper key value based on the parameters
+                    # of the summary statistic. This ensures that different
+                    # parameters are assigned a different key.
+                    key = statistic + '_' + dict_to_str(kwargs)
+
+                    data[subject][key].append(value)
 
     with open(args.output, 'w') as f:
         json.dump(data, f, indent=4)

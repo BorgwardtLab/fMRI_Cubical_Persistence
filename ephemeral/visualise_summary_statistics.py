@@ -12,10 +12,9 @@ import json
 import os
 import sys
 
-import numpy as np
+import matplotlib.pyplot as plt
 
-from utilities import parse_filename
-from utilities import get_patient_ids_and_times
+import numpy as np
 
 from tqdm import tqdm
 
@@ -47,7 +46,9 @@ if __name__ == '__main__':
 
     subjects = sorted(data.keys())
 
-    for subject in subjects:
+    fig = plt.figure(figsize=(80, 40))
+
+    for index, subject in enumerate(subjects):
 
         # All the single values for the given statistic. We should make
         # sure that the numbers do not vary between subjects, but it is
@@ -58,4 +59,10 @@ if __name__ == '__main__':
             values -= np.mean(values)
             values /= np.std(values)
 
-        print(values)
+        ax = fig.add_subplot(6, 5, index + 1, sharex=True)
+        ax.set_title(f'Subject: {subject}')
+
+        ax.plot(values)
+
+    plt.tight_layout()
+    plt.show()

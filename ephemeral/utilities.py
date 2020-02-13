@@ -8,6 +8,43 @@ from collections import defaultdict
 from glob import glob
 
 
+def dict_to_str(d):
+    '''
+    Represents a dictionary as a string. This is useful when
+    a representation for a filename is desired. The function
+    will unroll all keys and join their parameters with '_',
+    yielding a single string for the dictionary.
+
+    Parameters
+    ----------
+
+        d:
+            Input dictionary
+
+    Returns
+    -------
+
+    String-based representation. As an example, suppose the input
+    consists of:
+
+    ```
+    {
+        'p': 2,
+        'd': 3
+    }
+    ```
+
+    The function will then return the string `p2_d3`.
+    '''
+
+    tokens = []
+
+    for key in sorted(d.keys()):
+        tokens.append(key + str(d[key]))
+
+    return '_'.join(tokens)
+
+
 def parse_filename(filename):
     '''
     Parses a filename and composes it into different components.

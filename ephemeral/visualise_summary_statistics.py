@@ -39,6 +39,12 @@ if __name__ == '__main__':
              'be a key that occurs in all subjects of the input file.'
     )
 
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        help='Output file'
+    )
+
     args = parser.parse_args()
 
     with open(args.FILE) as f:
@@ -46,7 +52,12 @@ if __name__ == '__main__':
 
     subjects = sorted(data.keys())
 
-    fig = plt.figure(figsize=(80, 40))
+    title = args.statistic
+    if args.standardise:
+        title += ' (standardise)'
+
+    fig = plt.figure(figsize=(120, 40))
+    fig.suptitle(title)
 
     for index, subject in enumerate(subjects):
 
@@ -59,10 +70,10 @@ if __name__ == '__main__':
             values -= np.mean(values)
             values /= np.std(values)
 
-        ax = fig.add_subplot(6, 5, index + 1, sharex=True)
+        ax = fig.add_subplot(6, 5, index + 1)
         ax.set_title(f'Subject: {subject}')
 
         ax.plot(values)
 
-    plt.tight_layout()
-    plt.show()
+    plt.tight_layout(h_pad=5)
+    plt.savefig(args.output)

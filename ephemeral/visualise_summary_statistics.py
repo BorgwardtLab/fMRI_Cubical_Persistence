@@ -28,7 +28,14 @@ if __name__ == '__main__':
         '-S-', '--standardise',
         action='store_true',
         help='If set, standardises measurements per subject before reporting '
-             'them in the output'
+             'them in the output.'
+    )
+
+    parser.add_argument(
+        '-n', '--normalise',
+        action='store_true',
+        help='If set, normalises measurements to the same scale globally, '
+             'thus ignoring any shifts in intensity of the data.'
     )
 
     parser.add_argument(
@@ -73,16 +80,18 @@ if __name__ == '__main__':
             values -= np.mean(values)
             values /= np.std(values)
 
-        min_value = np.min(values)
-        max_value = np.max(values)
+        if args.normalise:
+            min_value = min(min_value, np.min(values))
+            max_value = max(max_value, np.max(values))
 
         ax = fig.add_subplot(6, 5, index + 1)
         ax.set_title(f'Subject: {subject}')
 
         ax.plot(values)
 
-    for ax in fig.get_axes():
-        ax.set_ylim(min_value, max_value)
+    if args.normalise:
+        for ax in fig.get_axes():
+            ax.set_ylim(min_value, max_value)
 
     plt.tight_layout(h_pad=5)
     plt.savefig(args.output)

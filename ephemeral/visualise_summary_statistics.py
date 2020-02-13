@@ -59,6 +59,9 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(120, 40))
     fig.suptitle(title)
 
+    min_value = sys.float_info.max
+    max_value = -min_value
+
     for index, subject in enumerate(subjects):
 
         # All the single values for the given statistic. We should make
@@ -70,10 +73,16 @@ if __name__ == '__main__':
             values -= np.mean(values)
             values /= np.std(values)
 
+        min_value = np.min(values)
+        max_value = np.max(values)
+
         ax = fig.add_subplot(6, 5, index + 1)
         ax.set_title(f'Subject: {subject}')
 
         ax.plot(values)
+
+    for ax in fig.get_axes():
+        ax.set_ylim(min_value, max_value)
 
     plt.tight_layout(h_pad=5)
     plt.savefig(args.output)

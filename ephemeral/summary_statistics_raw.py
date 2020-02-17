@@ -10,7 +10,7 @@ import nilearn as nl
 import numpy as np
 
 
-def print_summary_statistics(image):
+def print_summary_statistics(image, iterate_over_time=False):
     '''
     Prints various summary statistics about a given NIfTI image to
     `stdout`. Currently, these statistics include:
@@ -24,6 +24,10 @@ def print_summary_statistics(image):
 
         image:
             Input image
+
+        iterate_over_time:
+            If set, will iterate over time steps and print information
+            about each one of them.
     '''
 
     shape = image.get_fdata().shape
@@ -42,39 +46,38 @@ def print_summary_statistics(image):
     print(f'Global average: {global_avg}')
     print(f'Global maximum: {global_max}')
 
-    print('Summary statistics per time step')
+    if iterate_over_time:
+        print('Summary statistics per time step')
 
-    for t in range(n_time_steps):
+        for t in range(n_time_steps):
 
-        print(f'{t}')
+            print(f'{t}')
 
-        min_value = np.min(data[..., t])
-        avg_value = np.mean(data[..., t])
-        max_value = np.max(data[..., t])
+            min_value = np.min(data[..., t])
+            avg_value = np.mean(data[..., t])
+            max_value = np.max(data[..., t])
 
-        print(f'  Minimum: {min_value}')
-        print(f'  Average: {avg_value}')
-        print(f'  Maximum: {max_value}')
-
-
+            print(f'  Minimum: {min_value}')
+            print(f'  Average: {avg_value}')
+            print(f'  Maximum: {max_value}')
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    # TODO: support multiple arguments here; essentially, we could
-    # process everything iteratively...
     parser.add_argument(
         '-i', '--image',
         type=str,
+        nargs='+',
         help='NIfTI image file'
     )
 
     args = parser.parse_args()
 
-    image = nl.image.load_img(args.image)
-    basename = os.path.basename(args.image)
+    for filename in args.image:
+        image = nl.image.load_img(filename)
+        basename = os.path.basename(filename)
 
-    print(f'Filename: {basename}')
-    print_summary_statistics(image)
+        print(f'Filename: {basename}')
+        print_summary_statistics(image)

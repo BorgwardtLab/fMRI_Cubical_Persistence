@@ -32,6 +32,32 @@ def print_summary_statistics(image):
     print(f'Raw shape: {shape}')
     print(f'No. time steps: {n_time_steps}')
 
+    data = image.get_fdata()
+
+    global_min = np.min(data)
+    global_avg = np.mean(data)
+    global_max = np.max(data)
+
+    print(f'Global minimum: {global_min}')
+    print(f'Global average: {global_avg}')
+    print(f'Global maximum: {global_max}')
+
+    print('Summary statistics per time step')
+
+    for t in range(n_time_steps):
+
+        print(f'{t}')
+
+        min_value = np.min(data[..., t])
+        avg_value = np.mean(data[..., t])
+        max_value = np.max(data[..., t])
+
+        print(f'  Minimum: {min_value}')
+        print(f'  Average: {avg_value}')
+        print(f'  Maximum: {max_value}')
+
+
+
 
 if __name__ == '__main__':
 

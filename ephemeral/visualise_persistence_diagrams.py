@@ -51,7 +51,9 @@ if __name__ == '__main__':
 
         persistence_diagrams.append((creation, destruction))
 
-    n = len(persistence_diagrams)
+    # This ensures that no division by zero error occurs; this is
+    # achieved with the trade-off of changing the colour map.
+    n = max(len(persistence_diagrams), 2)
 
     plt.xlim((min_creation * 1.25, max_creation * 1.25))
     plt.ylim((min_creation * 1.25, max_creation * 1.25))

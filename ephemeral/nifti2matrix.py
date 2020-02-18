@@ -82,7 +82,7 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
     return masked
 
 
-def to_dipha_format(image, filename):
+def to_dipha_format(image, filename, superlevel=False):
     '''
     Converts a NIfTI image to the DIPHA file format. The file is useful
     for describing a d-dimensional grey-scale image data. It requires a
@@ -103,9 +103,16 @@ def to_dipha_format(image, filename):
 
         filename:
             Output filename
+
+        superlevel:
+            Optional flag. If set, scales all values by negative one to
+            create a superlevel set filtration.
     '''
 
     data = image.get_data()
+
+    if superlevel:
+        data *= -1.0
 
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)
@@ -215,6 +222,13 @@ if __name__ == '__main__':
         default='.'
     )
 
+    parser.add_argument(
+        '-S', '--superlevel',
+        action='store_true',
+        help='If set, calculates a superlevel set filtration. This will '
+             'involve scaling all values by `-1`.'
+    )
+
     args = parser.parse_args()
 
     if args.mask:
@@ -237,4 +251,4 @@ if __name__ == '__main__':
         filename = f'{basename(args.image)}_{time}.bin'
         filename = os.path.join(args.output, filename)
 
-        to_dipha_format(i, f'{filename}')
+        to_dipha_format(i, f'{filename}', args.superlevel)

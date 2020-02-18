@@ -25,6 +25,13 @@ OUTPUT=$ROOT/output/persistence_diagrams
 # on purpose because it makes it easier to map them back and forth.
 DIRECTORY=$1
 
+# Number of jobs to run in parallel. This is a poor-man's version of
+# a proper scheduler.
+N=16
+I=0
+(
 for FILE in $1/*.bin; do
-  mpiexec -n 4 $DIPHA_BIN $FILE $OUTPUT/${FILE:t}
+  ((I=I%N)); ((I++ == 0)) && wait
+  mpiexec -n 4 $DIPHA_BIN $FILE $OUTPUT/${FILE:t} &
 done
+)

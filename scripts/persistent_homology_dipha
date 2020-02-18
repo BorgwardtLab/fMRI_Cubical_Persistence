@@ -18,7 +18,7 @@ ROOT=${0:h:h}
 
 # Output directory. If multiple data sets should be supported, this
 # needs to be adjusted accordingly.
-OUTPUT=$ROOT/data/persistence_diagrams
+OUTPUT=$ROOT/output/persistence_diagrams
 
 # Main data directory. Will take all '*.bin' files and store them in
 # another output folder. The filenames will not be adjusted. This is

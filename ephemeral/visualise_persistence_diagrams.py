@@ -39,7 +39,7 @@ if __name__ == '__main__':
         )
 
         # TODO: make configurable
-        selected_dimension = 1
+        selected_dimension = 2
 
         creation = creation[dimensions == selected_dimension]
         destruction = destruction[dimensions == selected_dimension]

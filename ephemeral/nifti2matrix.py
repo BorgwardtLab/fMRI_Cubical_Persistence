@@ -82,7 +82,7 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
     return masked
 
 
-def to_dipha_format(image, filename, superlevel=False):
+def to_dipha_format(image, filename, superlevel=False, normalise=False):
     '''
     Converts a NIfTI image to the DIPHA file format. The file is useful
     for describing a d-dimensional grey-scale image data. It requires a
@@ -107,12 +107,26 @@ def to_dipha_format(image, filename, superlevel=False):
         superlevel:
             Optional flag. If set, scales all values by negative one to
             create a superlevel set filtration.
+
+        normalise:
+            Optional flag. If set, normalises the activation values of
+            every voxel such that the mean activation over time, which
+            is taken to be the last axis of the image, is zero.
     '''
 
     data = image.get_data()
 
     if superlevel:
         data *= -1.0
+
+    # This assumes that the last axis is the one containing all time
+    # information. Should this be made configurable?
+    if normalise:
+        mean = np.mean(data, axis=-1)
+
+        # Automated broadcasting will not work because the mean has
+        # a different shape.
+        data -= mean[..., np.newaxis]
 
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)
@@ -229,6 +243,13 @@ if __name__ == '__main__':
              'involve scaling all values by `-1`.'
     )
 
+    parser.add_argument(
+        '-n', '--normalise',
+        action='store_true',
+        help='If set, normalises the intensity for each voxel such that '
+             'its mean activation is zero.'
+    )
+
     args = parser.parse_args()
 
     if args.mask:
@@ -251,4 +272,4 @@ if __name__ == '__main__':
         filename = f'{basename(args.image)}_{time}.bin'
         filename = os.path.join(args.output, filename)
 
-        to_dipha_format(i, f'{filename}', args.superlevel)
+        to_dipha_format(i, f'{filename}', args.superlevel, args.normalise)

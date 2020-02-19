@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+#
+# Converts a set of NIfTI data sets in some directory structure to a set
+# of binary matrices/volumes for subsequent topology-based processing. A
+# single run of this script should be sufficient.
+
+# The root of this script. Will be used to access the other scripts and
+# call them accordingly. Everything is defined relative to this path.
+ROOT=${0:h:h}
+
+# Output directory. If multiple data sets should be supported, this
+# needs to be adjusted accordingly.
+OUTPUT=$ROOT/output/
+
+# Input files; this assumes that all experiments follow the same
+# expansion strategy.
+DIRECTORY=$1
+NIFTI_FILES=($DIRECTORY/preproc/*.nii.gz)
+
+for NIFTI_FILE in $NIFTI_FILES; do
+  # Remove both extensions; this is easier to do in two lines than in
+  # a single command :)
+  STEM=${NIFTI_FILE:t}
+  STEM=${STEM:r}
+  STEM=${STEM:r}
+
+  BRAINMASK="${STEM//preproc/brainmask}.nii.gz"
+  BRAINMASK=$DIRECTORY/brainmask/$BRAINMASK
+
+  echo "Processing $STEM..."
+
+  poetry run python ephemeral/nifti2matrix.py --image $NIFTI_FILE \
+                                              --mask $BRAINMASK   \
+                                              --mask-value min    \
+                                              --normalise         \
+                                              --output $OUTPUT
+done

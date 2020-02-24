@@ -38,14 +38,18 @@ def plot_pds(data_path: str, output_path: str='../figures/', dimensions: list=[0
 
                 dim, creation, desctruction = load_persistence_diagram_json(f)
 
-                c = creation[np.argwhere(dim == dimension)].ravel()
-                d = desctruction[np.argwhere(dim == dimension)].ravel()
+                c = creation[dim == dimension].ravel()
+                d = desctruction[dim == dimension].ravel()
+
+                # Skip empty dimensions
+                if len(c) == 0 and len(d) == 0:
+                    continue
 
                 patient['c'] += c.tolist()
                 patient['d'] += d.tolist()
                 patient['t'] += [float(time)] * len(c)
                 patient['l'] += [len(c)]
-                
+
                 min_c = np.min([min_c, np.min(c)])
                 min_d = np.min([min_d, np.min(d)])
                 max_c = np.max([max_c, np.max(c)])
@@ -74,7 +78,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('INPUT', help="Path to .json files.")
     parser.add_argument('--raw', action='store_false', help="Whether to plot the raw data.")
-    parser.add_argument('-d', '--dimensions', nargs='+', default=[0,1,2], help="Which dimensions to plot.")
+    parser.add_argument('-d', '--dimensions', nargs='+', type=int, default=[0,1,2], help="Which dimensions to plot.")
     
     args = parser.parse_args()
     plot_pds(data_path=args.INPUT, dimensions=args.dimensions, masked=args.raw)

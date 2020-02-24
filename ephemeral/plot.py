@@ -12,10 +12,16 @@ from collections import defaultdict
 
 import argparse
 
-def plot_pds(data_path: str, output_path: str='../figures/', dimensions: list=[0,1,2], task: str='pixar', masked: bool=True):
+def plot_pds(
+    data_path: str,
+    output_path: str = '../figures/',
+    dimensions: list = [0,1,2],
+    task: str = 'pixar',
+    prefix: str = '',
+):
     '''
     Plots the persistence diagrams of all available patients
-    in one plot. 
+    in one plot.
     '''
 
     all_patients = get_patient_ids_and_times(data_path, task)
@@ -54,7 +60,7 @@ def plot_pds(data_path: str, output_path: str='../figures/', dimensions: list=[0
                 min_d = np.min([min_d, np.min(d)])
                 max_c = np.max([max_c, np.max(c)])
                 max_d = np.max([max_d, np.max(d)])
-        
+
             # Generate color palette based on the number of time steps.
             palette = sns.color_palette('Spectral_r', len(np.unique(patient['t'])))
             colors = []
@@ -66,20 +72,40 @@ def plot_pds(data_path: str, output_path: str='../figures/', dimensions: list=[0
             ax.set_xlabel('Birth')
             ax.set_ylabel('Time')
             ax.set_zlabel('Death')
-            
+
         for ax in fig.get_axes():
             ax.set_xlim(min_c, max_c)
             ax.set_zlim(min_d, max_d)
         plt.tight_layout()
-        plt.savefig(join(output_path, f'{"masked" if masked else "raw"}_dimension_{dimension}.png'))
+
+        # Makes output marginally more readable in case no prefix has
+        # been provided.
+        if len(prefix) == 0:
+            prefix = 'Persistence_diagram'
+
+        output_name = join(output_path, f'{prefix}_dimension_{dimension}.png')
+        plt.savefig(output_name)
+
     fig = plt.figure(figsize=(40, 35))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('INPUT', help="Path to .json files.")
     parser.add_argument('--raw', action='store_false', help="Whether to plot the raw data.")
     parser.add_argument('-d', '--dimensions', nargs='+', type=int, default=[0,1,2], help="Which dimensions to plot.")
-    
-    args = parser.parse_args()
-    plot_pds(data_path=args.INPUT, dimensions=args.dimensions, masked=args.raw)
 
+    parser.add_argument(
+        '-p', '--prefix',
+        default='',
+        type=str,
+        help='Prefix for output filenames'
+    )
+
+    args = parser.parse_args()
+
+    plot_pds(
+        data_path=args.INPUT,
+        dimensions=args.dimensions,
+        prefix=args.prefix,
+    )

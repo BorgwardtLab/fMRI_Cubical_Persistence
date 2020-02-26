@@ -44,7 +44,7 @@ def plot_persistence_diagram_sequence(
         Determines which persistence diagrams to load. Should not be
         necessary to change for now.
     """
-    fig = plt.figure(figsize=(20, 10))
+    fig = plt.figure(figsize=(20, 8))
 
     # Minima/maxima for the respective sequence of patients
     min_c = float('inf')

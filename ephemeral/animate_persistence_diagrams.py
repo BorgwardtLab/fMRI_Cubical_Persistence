@@ -90,17 +90,20 @@ def animate_persistence_diagram_sequence(
 
         fig.suptitle(f'Subject: {subject}, d = {dimension}, t = {frame}')
 
-
     time_steps = sorted(coords_per_timestep.keys())
 
     ani = animation.FuncAnimation(
         fig,
         _update_fn,
         frames=time_steps,
-        init_func=_init_fn
+        init_func=_init_fn,
+        interval=300
     )
 
-    plt.show()
+    if output is not None:
+        ani.save(output, dpi=300, writer='imagemagick')
+    else:
+        plt.show()
 
 
 if __name__ == '__main__':
@@ -114,9 +117,17 @@ if __name__ == '__main__':
         help='Indicates which dimension to plot'
     )
 
+    parser.add_argument(
+        '-o',
+        '--output',
+        default=None,
+        help='Output file'
+    )
+
     args = parser.parse_args()
 
     animate_persistence_diagram_sequence(
         args.FILES,
-        dimension=args.dimension
+        dimension=args.dimension,
+        output=args.output
     )

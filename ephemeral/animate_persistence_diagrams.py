@@ -101,7 +101,7 @@ def animate_persistence_diagram_sequence(
     )
 
     if output is not None:
-        ani.save(output, dpi=300, writer='imagemagick')
+        ani.save(output, dpi=72, writer='imagemagick')
     else:
         plt.show()
 

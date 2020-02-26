@@ -4,14 +4,12 @@ import argparse
 import collections
 
 import numpy as np
-import seaborn as sns
 
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 from topology import load_persistence_diagram_json
 from utilities import parse_filename
-
-from mpl_toolkits.mplot3d import Axes3D
 
 from tqdm import tqdm
 
@@ -29,7 +27,6 @@ def animate_persistence_diagram_sequence(
 
     Parameters
     ----------
-
     filenames:
         List of input filenames
 
@@ -40,8 +37,6 @@ def animate_persistence_diagram_sequence(
     dimension:
         Dimension to plot
     """
-    fig = plt.figure(figsize=(10, 10))
-
     min_c = float('inf')
     min_d = float('inf')
     max_c = -float('inf')
@@ -75,9 +70,36 @@ def animate_persistence_diagram_sequence(
         min_d = min(min_d, np.min(d))
         max_d = max(max_d, np.max(d))
 
-    plt.suptitle(f'Subject: {subject}')
+    # Prepare figure and empty scatterplot to prevent flickering in the
+    # animation.
+    fig, ax = plt.subplots(figsize=(5, 5))
+    scatter = ax.scatter([], [])
 
-    plt.tight_layout()
+    def _init_fn():
+        ax.set_xlim(min_c, max_c)
+        ax.set_ylim(min_d, max_d)
+
+    def _update_fn(frame):
+        x = coords_per_timestep[frame]['x']
+        y = coords_per_timestep[frame]['y']
+
+        # Despite the name, this updates the *positions* of the points
+        # in the scatter plot.
+        data = np.column_stack((x, y))
+        scatter.set_offsets(data)
+
+        fig.suptitle(f'Subject: {subject}, d = {dimension}, t = {frame}')
+
+
+    time_steps = sorted(coords_per_timestep.keys())
+
+    ani = animation.FuncAnimation(
+        fig,
+        _update_fn,
+        frames=time_steps,
+        init_func=_init_fn
+    )
+
     plt.show()
 
 
@@ -86,16 +108,15 @@ if __name__ == '__main__':
     parser.add_argument('FILES', nargs='+', help='Input file(s)')
     parser.add_argument(
         '-d',
-        '--dimensions',
-        nargs='+',
+        '--dimension',
         type=int,
-        default=[0, 1, 2],
-        help='List indicating which dimensions to plot'
+        default=2,
+        help='Indicates which dimension to plot'
     )
 
     args = parser.parse_args()
 
     animate_persistence_diagram_sequence(
         args.FILES,
-        dimensions=args.dimensions
+        dimension=args.dimension
     )

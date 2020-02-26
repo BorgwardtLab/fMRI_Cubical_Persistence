@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import collections
 
 import numpy as np
 import seaborn as sns
@@ -53,9 +54,9 @@ def plot_persistence_diagram_sequence(
 
     # Stores coordinates for the 3D scatterplots; else, everything
     # else will be overwritten.
-    X = []
-    Y = []
-    Z = []
+    coords_per_dimension = {
+        dim: collections.defaultdict(list) for dim in dimensions
+    }
 
     for filename in tqdm(filenames, desc='Filename'):
         dims, creation, destruction = load_persistence_diagram_json(
@@ -64,35 +65,41 @@ def plot_persistence_diagram_sequence(
 
         subject, _, time = parse_filename(filename)
 
-
-        for index, dimension in enumerate(dimensions):
-            ax = fig.add_subplot(
-                    1,
-                    len(dimensions),
-                    index + 1,
-                    projection='3d'
-                )
-
-            ax.set_title(f'Dimension: {dimension}')
+        for dimension in dimensions:
 
             c = creation[dims == dimension].ravel()
             d = destruction[dims == dimension].ravel()
             t = [float(time)] * len(c)
 
-            X.extend(c.tolist())
-            Y.extend(t)
-            Z.extend(d.tolist())
+            coords_per_dimension[dimension]['x'] += c.tolist()
+            coords_per_dimension[dimension]['y'] += t
+            coords_per_dimension[dimension]['z'] += d.tolist()
 
             min_c = min(min_c, np.min(c))
             max_c = max(max_c, np.max(c))
             min_d = min(min_d, np.min(d))
             max_d = max(max_d, np.max(d))
 
-    ax.scatter(X, Y, Z)
+    for index, dimension in enumerate(dimensions):
 
-    ax.set_xlabel('Creation')
-    ax.set_ylabel('$t$')
-    ax.set_zlabel('Destruction')
+        ax = fig.add_subplot(
+                1,
+                len(dimensions),
+                index + 1,
+                projection='3d'
+            )
+
+        ax.set_title(f'Dimension: {dimension}')
+
+        ax.set_xlabel('Creation')
+        ax.set_ylabel('$t$')
+        ax.set_zlabel('Destruction')
+
+        ax.scatter(
+            coords_per_dimension[dimension]['x'],
+            coords_per_dimension[dimension]['y'],
+            coords_per_dimension[dimension]['z']
+        )
 
     plt.tight_layout()
     plt.show()

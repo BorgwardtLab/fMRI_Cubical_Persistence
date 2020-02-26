@@ -80,6 +80,8 @@ def plot_persistence_diagram_sequence(
             min_d = min(min_d, np.min(d))
             max_d = max(max_d, np.max(d))
 
+    plt.set_cmap('Spectral_r')
+
     for index, dimension in enumerate(dimensions):
 
         ax = fig.add_subplot(
@@ -95,11 +97,18 @@ def plot_persistence_diagram_sequence(
         ax.set_ylabel('$t$')
         ax.set_zlabel('Destruction')
 
+        ax.view_init(17, -60)
         ax.scatter(
-            coords_per_dimension[dimension]['x'],
-            coords_per_dimension[dimension]['y'],
-            coords_per_dimension[dimension]['z']
+            coords_per_dimension[dimension]['x'][::-1],
+            coords_per_dimension[dimension]['y'][::-1],
+            coords_per_dimension[dimension]['z'][::-1],
+            c=coords_per_dimension[dimension]['y'],
+            alpha=0.8,
+            s=8,
         )
+
+        ax.set_xlim(min_c, max_c)
+        ax.set_zlim(min_d, max_d)
 
     plt.tight_layout()
     plt.show()

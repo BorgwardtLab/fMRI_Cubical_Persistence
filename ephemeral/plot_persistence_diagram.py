@@ -58,12 +58,17 @@ def plot_persistence_diagram_sequence(
         dim: collections.defaultdict(list) for dim in dimensions
     }
 
+    title = ''
+
     for filename in tqdm(filenames, desc='Filename'):
         dims, creation, destruction = load_persistence_diagram_json(
                                         filename
         )
 
         subject, _, time = parse_filename(filename)
+
+        if not title:
+            title = subject
 
         for dimension in dimensions:
 
@@ -81,6 +86,7 @@ def plot_persistence_diagram_sequence(
             max_d = max(max_d, np.max(d))
 
     plt.set_cmap('Spectral_r')
+    plt.suptitle(f'Subject: {subject}')
 
     for index, dimension in enumerate(dimensions):
 

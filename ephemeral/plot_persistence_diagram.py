@@ -43,23 +43,29 @@ def plot_persistence_diagram_sequence(
         Determines which persistence diagrams to load. Should not be
         necessary to change for now.
     """
-    fig = plt.figure(figsize=(40, 80))
+    fig = plt.figure(figsize=(20, 10))
 
-    for index, dimension in enumerate(dimensions):
+    # Minima/maxima for the respective sequence of patients
+    min_c = float('inf')
+    min_d = float('inf')
+    max_c = -float('inf')
+    max_d = -float('inf')
 
-        # Minima/maxima for the respective sequence of patients
-        min_c = float('inf')
-        min_d = float('inf')
-        max_c = -float('inf')
-        max_d = -float('inf')
+    # Stores coordinates for the 3D scatterplots; else, everything
+    # else will be overwritten.
+    X = []
+    Y = []
+    Z = []
 
-        for filename in tqdm(filenames, desc='Filename'):
-            dims, creation, destruction = load_persistence_diagram_json(
-                                            filename
-            )
+    for filename in tqdm(filenames, desc='Filename'):
+        dims, creation, destruction = load_persistence_diagram_json(
+                                        filename
+        )
 
-            subject, _, time = parse_filename(filename)
+        subject, _, time = parse_filename(filename)
 
+
+        for index, dimension in enumerate(dimensions):
             ax = fig.add_subplot(
                     1,
                     len(dimensions),
@@ -73,16 +79,20 @@ def plot_persistence_diagram_sequence(
             d = destruction[dims == dimension].ravel()
             t = [float(time)] * len(c)
 
+            X.extend(c.tolist())
+            Y.extend(t)
+            Z.extend(d.tolist())
+
             min_c = min(min_c, np.min(c))
             max_c = max(max_c, np.max(c))
             min_d = min(min_d, np.min(d))
             max_d = max(max_d, np.max(d))
 
-            ax.scatter(c, t, d)
+    ax.scatter(X, Y, Z)
 
-            ax.set_xlabel('Creation')
-            ax.set_ylabel('$t$')
-            ax.set_zlabel('Destruction')
+    ax.set_xlabel('Creation')
+    ax.set_ylabel('$t$')
+    ax.set_zlabel('Destruction')
 
     plt.tight_layout()
     plt.show()

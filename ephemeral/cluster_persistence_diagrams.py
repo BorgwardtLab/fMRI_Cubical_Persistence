@@ -155,3 +155,4 @@ if __name__ == '__main__':
     out_filename = f'Linkage_matrix_{args.method}_d_{dimensions_str}.txt'
 
     np.savetxt(out_filename, M)
+    np.savetxt('Labels.txt', y, fmt='%s')

@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
     filenames = sorted(
         glob.glob(
-            os.path.join(args.DIRECTORY, 'sub-pixar*_task*_1[6]*.json')
+            os.path.join(args.DIRECTORY, '*.json')
         )
     )
 

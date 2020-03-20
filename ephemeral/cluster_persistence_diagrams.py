@@ -8,6 +8,7 @@ import os
 
 import numpy as np
 
+from features import featurise_distances
 from topology import load_persistence_diagram_json
 from utilities import parse_filename
 
@@ -27,7 +28,7 @@ def vectorise_diagram(diagram, method):
 
     method : str
         Method for vectorisation. Can be either one of 'summary_statistics'
-        or 'betti_curves'. This determines *how* features are stored.
+        or 'top_persistence'. This determines *how* features are stored.
 
     Returns
     -------
@@ -37,6 +38,8 @@ def vectorise_diagram(diagram, method):
 
     if method == 'summary_statistics':
         return _vectorise_summary_statistics(diagram)
+    elif method == 'top_persistence':
+        return _vectorise_top_persistence(diagram)
 
 
 def _vectorise_summary_statistics(diagram):
@@ -48,6 +51,12 @@ def _vectorise_summary_statistics(diagram):
     # functions and *then* exhaust the parameters.
     X = [fn(p) for fn, p in itertools.product(statistic_fn, params)]
     return X
+
+
+def _vectorise_top_persistence(diagram):
+    # TODO: make configurable
+    n_features = 5
+    return featurise_distances(diagram)[:n_features]
 
 
 if __name__ == '__main__':

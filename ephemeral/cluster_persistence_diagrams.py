@@ -12,6 +12,8 @@ from features import featurise_distances
 from topology import load_persistence_diagram_json
 from utilities import parse_filename
 
+from sklearn.cluster import AgglomerativeClustering
+
 from tqdm import tqdm
 
 
@@ -106,7 +108,7 @@ if __name__ == '__main__':
 
     filenames = sorted(
         glob.glob(
-            os.path.join(args.DIRECTORY, 'sub-pixar*_task*_1[5,6]*.json')
+            os.path.join(args.DIRECTORY, 'sub-pixar*_task*_1[6]*.json')
         )
     )
 
@@ -142,4 +144,14 @@ if __name__ == '__main__':
     y = list(X.keys())                  # subject labels
     X = np.asarray(list(X.values()))    # feature vectors
 
-    print(X)
+    clf = AgglomerativeClustering(
+        distance_threshold=0,  # compute full dendrogram
+        n_clusters=None        # do not limit number of clusters
+    )
+    model = clf.fit(X)
+    M = get_linkage_matrix(model)
+
+    dimensions_str = '_'.join([str(d) for d in args.dimensions])
+    out_filename = f'Linkage_matrix_{args.method}_d_{dimensions_str}.txt'
+
+    np.savetxt(out_filename, M)

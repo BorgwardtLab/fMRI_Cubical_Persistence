@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
+import collections
 import glob
 import itertools
 import os
+
+import numpy as np
 
 from topology import load_persistence_diagram_json
 from utilities import parse_filename
@@ -69,12 +72,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # This will later become the large feature matrix (or distance
-    # matrix) for clustering subjects.
-    X = [] 
+    # matrix) for clustering subjects. At the outset, it will only
+    # contain features per subject (as a large vector), which will
+    # subsequently be unravelled, though.
+    X = collections.defaultdict(list)
 
     filenames = sorted(
         glob.glob(
-            os.path.join(args.DIRECTORY, 'sub-pixar0[0,1]?_task*.json')
+            os.path.join(args.DIRECTORY, 'sub-pixar*_task*_1[5,6]*.json')
         )
     )
 
@@ -105,4 +110,7 @@ if __name__ == '__main__':
             if diagram.dimension in args.dimensions:
                 x.extend(vectorise_diagram(diagram, args.method))
 
-        X.append(x)
+        X[subject].extend(x)
+
+    y = list(X.keys())                  # subject labels
+    X = np.asarray(list(X.values()))    # feature vectors

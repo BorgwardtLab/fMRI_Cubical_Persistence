@@ -68,7 +68,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    filenames = sorted(glob.glob(os.path.join(args.DIRECTORY, '*.json')))
+    # This will later become the large feature matrix (or distance
+    # matrix) for clustering subjects.
+    X = [] 
+
+    filenames = sorted(
+        glob.glob(
+            os.path.join(args.DIRECTORY, 'sub-pixar0[0,1]?_task*.json')
+        )
+    )
+
     for filename in tqdm(filenames, desc='File'):
         subject, _, time = parse_filename(filename)
 
@@ -79,7 +88,21 @@ if __name__ == '__main__':
             filename, return_raw=False
         )
 
+        # Remove diagrams that are unnecessary
+        persistence_diagrams = [
+            D for D in persistence_diagrams if D.dimension in args.dimensions
+        ]
+
+        # Will contain the feature vector for each subject; the
+        # underlying assumption is that all subjects have equal
+        # time series lengths.
+        #
+        # The ordering of time points is ensured because of the
+        # sorting procedure.
+        x = []
+
         for diagram in persistence_diagrams:
-            x = []
             if diagram.dimension in args.dimensions:
-                x.append(vectorise_diagram(diagram, args.method))
+                x.extend(vectorise_diagram(diagram, args.method))
+
+        X.append(x)

@@ -123,3 +123,5 @@ if __name__ == '__main__':
 
     y = list(X.keys())                  # subject labels
     X = np.asarray(list(X.values()))    # feature vectors
+
+    print(X)

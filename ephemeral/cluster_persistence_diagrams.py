@@ -3,6 +3,7 @@
 import argparse
 import collections
 import glob
+import json
 import itertools
 import os
 
@@ -156,3 +157,15 @@ if __name__ == '__main__':
 
     np.savetxt(out_filename, M)
     np.savetxt('Labels.txt', y, fmt='%s')
+
+    # Get cluster assignments for simple binary clustering; this is the
+    # easiest clustering we can do here.
+    clf = AgglomerativeClustering()
+    y_pred = clf.fit_predict(X).tolist()
+
+    assignments = {
+        subject: label for (subject, label) in zip(y, y_pred)
+    }
+
+    with open(f'Assignments_{args.method}_d_{dimensions_str}.json', 'w') as f:
+        json.dump(assignments, f, indent=4)

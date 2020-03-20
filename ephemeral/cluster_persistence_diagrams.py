@@ -15,6 +15,25 @@ from utilities import parse_filename
 from tqdm import tqdm
 
 
+def get_linkage_matrix(model, **kwargs):
+    """Calculate linkage matrix and return it."""
+    counts = np.zeros(model.children_.shape[0])
+    n_samples = len(model.labels_)
+    for i, merge in enumerate(model.children_):
+        current_count = 0
+        for child_idx in merge:
+            if child_idx < n_samples:
+                current_count += 1  # leaf node
+            else:
+                current_count += counts[child_idx - n_samples]
+        counts[i] = current_count
+
+    linkage_matrix = np.column_stack([model.children_, model.distances_,
+                                      counts]).astype(float)
+
+    return linkage_matrix
+
+
 def vectorise_diagram(diagram, method):
     """Vectorise persistence diagram.
 
@@ -35,7 +54,6 @@ def vectorise_diagram(diagram, method):
     Feature vector corresponding to the current diagram. Can be appended
     to form large-scale feature vectors, if desired.
     """
-
     if method == 'summary_statistics':
         return _vectorise_summary_statistics(diagram)
     elif method == 'top_persistence':

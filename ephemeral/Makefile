@@ -1,3 +1,14 @@
 clustering:
 	python cluster_persistence_diagrams.py /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams/
 	python cluster_persistence_diagrams.py -m top_persistence /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams/
+
+clustering_distances:
+	# Infinity norm
+	python cluster_persistence_diagrams_distance.py -m infinity_norm -p 1 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
+	python cluster_persistence_diagrams_distance.py -m infinity_norm -p 2 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
+	# Total persistence
+	python cluster_persistence_diagrams_distance.py -p 1 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
+	python cluster_persistence_diagrams_distance.py -p 2 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
+	# Betti curves
+	python cluster_persistence_diagrams_distance.py -m betti_curves -p 1 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
+	python cluster_persistence_diagrams_distance.py -m betti_curves -p 2 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams

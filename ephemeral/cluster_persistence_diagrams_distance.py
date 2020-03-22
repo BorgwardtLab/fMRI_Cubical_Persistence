@@ -8,10 +8,12 @@ import itertools
 import os
 
 import numpy as np
+import pandas as pd
 
 from features import featurise_distances
 
 from topology import load_persistence_diagram_json
+from topology import make_betti_curve
 from topology import PersistenceDiagram
 
 from utilities import parse_filename
@@ -61,6 +63,26 @@ def make_summary_statistics_curve(diagrams, statistic_fn, p):
     Curve of summary statistics.
     """
     return np.array([statistic_fn(diagram, p) for diagram in diagrams])
+
+
+def make_betti_surface(diagrams):
+    """Calculate Betti surface."""
+    curves = [make_betti_curve(D)._data for D in diagrams]
+
+    index = pd.Index([])
+    for curve in curves:
+        index = index.union(curve._data.index)
+
+    _, bin_edges = np.histogram(index, 200)
+    index = pd.Index(bin_edges)
+
+    curves = [curve.reindex(index, method='ffill') for curve in curves]
+    columns = {
+        time: curve for time, curve in enumerate(curves)
+    }
+
+    data = pd.DataFrame(data=columns, index=index)
+    return data.to_numpy()
 
 
 if __name__ == '__main__':
@@ -137,6 +159,15 @@ if __name__ == '__main__':
         # TODO: make configurable and use maybe something like DTW in
         # order to capture differences between clusterings better?
         D = pairwise_distances(curves)
+
+    elif args.method == 'betti_curves':
+        betti_curves = [
+            make_betti_surface(
+                diagrams_per_subject[s],
+            ).ravel() for s in sorted(diagrams_per_subject.keys())
+        ]
+
+        D = pairwise_distances(betti_curves)
 
     # Use subject labels as 'true' labels (even though we have no way of
     # telling in a clustering setup)

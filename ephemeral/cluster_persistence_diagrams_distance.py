@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
     filenames = sorted(
         glob.glob(
-            os.path.join(args.DIRECTORY, '*pixar00?*_00?.json')
+            os.path.join(args.DIRECTORY, '*.json')
         )
     )
 

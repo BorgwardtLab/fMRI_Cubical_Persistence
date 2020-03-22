@@ -41,7 +41,7 @@ def get_linkage_matrix(model, **kwargs):
     return linkage_matrix
 
 
-def make_summary_statistics_curve(diagrams, statistic_fn):
+def make_summary_statistics_curve(diagrams, statistic_fn, p):
     """Create summary statistics curve.
 
     Parameters
@@ -53,11 +53,14 @@ def make_summary_statistics_curve(diagrams, statistic_fn):
         Statistic to evaluate for the conversion of the list of
         persistence diagrams into a curve.
 
+    p : float
+        Exponent to use for statistics calculations
+
     Returns
     -------
     Curve of summary statistics.
     """
-    return np.array([statistic_fn(diagram) for diagram in diagrams])
+    return np.array([statistic_fn(diagram, p) for diagram in diagrams])
 
 
 if __name__ == '__main__':
@@ -126,7 +129,8 @@ if __name__ == '__main__':
         curves = [
             make_summary_statistics_curve(
                 diagrams_per_subject[s],
-                statistic_functions[args.method]
+                statistic_functions[args.method],
+                args.power
             ) for s in sorted(diagrams_per_subject.keys())
         ]
 

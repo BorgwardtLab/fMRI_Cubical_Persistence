@@ -9,6 +9,5 @@ clustering_distances:
 	# Total persistence
 	python cluster_persistence_diagrams_distance.py -p 1 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
 	python cluster_persistence_diagrams_distance.py -p 2 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
-	# Betti curves
-	python cluster_persistence_diagrams_distance.py -m betti_curves -p 1 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
-	python cluster_persistence_diagrams_distance.py -m betti_curves -p 2 /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams
+	# Betti curves (no power parameter necessary)
+	python cluster_persistence_diagrams_distance.py -m betti_curves /links/groups/borgwardt/Projects/Ephemeral/Partly\ Cloudy/tda/masked/persistence_diagrams

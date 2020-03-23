@@ -4,13 +4,10 @@
 # curve, for a test subject.
 
 import argparse
-import collections
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-from utilities import load_graphs
 
 from topology import load_persistence_diagram_json
 from topology import make_betti_curve
@@ -90,9 +87,8 @@ if __name__ == '__main__':
 
     betti_surface = make_betti_surface(betti_curves)
 
-    print(betti_surface)
 
     fig, ax = plt.subplots()
     sns.heatmap(betti_surface, yticklabels=False, ax=ax)
 
-    plt.show()
+    plt.savefig('Betti_curve.png')

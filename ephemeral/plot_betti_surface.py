@@ -87,8 +87,7 @@ if __name__ == '__main__':
 
     betti_surface = make_betti_surface(betti_curves)
 
+    fig, ax = plt.subplots(figsize=(12, 4))
+    ax.matshow(betti_surface.to_numpy(), aspect='auto')
 
-    fig, ax = plt.subplots()
-    sns.heatmap(betti_surface, yticklabels=False, ax=ax)
-
-    plt.savefig('Betti_curve.png')
+    plt.savefig('Betti_surface.png')

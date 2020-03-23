@@ -49,9 +49,9 @@ if __name__ == '__main__':
 
         clusterings[basename] = data
 
-    for F, G in itertools.product(args.FILES, args.FILES[1:]):
+    for F, G in itertools.combinations(args.FILES, 2):
         A = clusterings[os.path.splitext(os.path.basename(F))[0]]
         B = clusterings[os.path.splitext(os.path.basename(G))[0]]
 
-        if F != G:
-            compare_clusterings(A, B)
+        agreement = compare_clusterings(A, B)
+        print(agreement)

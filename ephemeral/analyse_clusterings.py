@@ -5,28 +5,20 @@ import itertools
 import json
 import os
 
+from sklearn.metrics import adjusted_rand_score
+
 
 def compare_clusterings(A, B):
     """Compare two clusterings."""
-
     y_A = sorted(A.keys())
     y_B = sorted(B.keys())
 
     assert y_A == y_B
 
-    y = y_A
-
-    n_pairs = len(y) ** 2
-    n_same_cluster = 0
-
-    for y1, y2 in itertools.product(y, y):
-        a1, a2 = A[y1], A[y2]
-        b1, b2 = B[y1], B[y2]
-
-        if a1 == a2 and b1 == b2:
-            n_same_cluster += 1
-
-    return n_same_cluster / n_pairs
+    return adjusted_rand_score(
+        list(A.values()),
+        list(B.values())
+    )
 
 
 if __name__ == '__main__':
@@ -54,4 +46,3 @@ if __name__ == '__main__':
         B = clusterings[os.path.splitext(os.path.basename(G))[0]]
 
         agreement = compare_clusterings(A, B)
-        print(agreement)

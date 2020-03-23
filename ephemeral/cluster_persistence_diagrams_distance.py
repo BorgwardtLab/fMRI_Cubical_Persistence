@@ -4,13 +4,10 @@ import argparse
 import collections
 import glob
 import json
-import itertools
 import os
 
 import numpy as np
 import pandas as pd
-
-from features import featurise_distances
 
 from topology import load_persistence_diagram_json
 from topology import make_betti_curve

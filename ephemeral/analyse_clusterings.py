@@ -42,7 +42,17 @@ if __name__ == '__main__':
         clusterings[basename] = data
 
     for F, G in itertools.combinations(args.FILES, 2):
-        A = clusterings[os.path.splitext(os.path.basename(F))[0]]
-        B = clusterings[os.path.splitext(os.path.basename(G))[0]]
+
+        f = os.path.splitext(os.path.basename(F))[0]
+        g = os.path.splitext(os.path.basename(G))[0]
+
+        A = clusterings[f]
+        B = clusterings[g]
+
+        f = f.replace('Assignments_representation_', '')
+        f = f.replace('Assignments_', '')
+        g = g.replace('Assignments_representation_', '')
+        g = g.replace('Assignments_', '')
 
         agreement = compare_clusterings(A, B)
+        print(f'{f} vs. {g}: {agreement:.2f}')

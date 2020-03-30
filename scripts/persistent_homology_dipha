@@ -27,11 +27,20 @@ DIRECTORY=$1
 
 # Number of jobs to run in parallel. This is a poor-man's version of
 # a proper scheduler.
-N=16
+N=24
 I=0
 (
 for FILE in $1/*.bin; do
   ((I=I%N)); ((I++ == 0)) && wait
-  mpiexec -n 4 $DIPHA_BIN $FILE $OUTPUT/${FILE:t} &
+
+  OUTPUT_FILE=$OUTPUT/${FILE:t}
+
+  # Do not overwrite any files; this is just waiting for problems to
+  # happen.
+  if [ ! -f ${OUTPUT_FILE} ]; then
+    mpiexec -n 4 $DIPHA_BIN $FILE $OUTPUT/${FILE:t} &
+  else
+    echo "Refusing to overwrite ${OUTPUT_FILE}. Continuing..."
+  fi
 done
 )

@@ -18,7 +18,8 @@ from tqdm import tqdm
 
 
 def mask_image(image_filename, mask_filename, mask_value=np.nan):
-    '''
+    """Mask image and return it.
+
     Given an image filename and a mask filename, performs the masking
     operation with a pre-defined value and returns the resulting data
     array. The function is fully agnostic with respect to dimensions;
@@ -26,27 +27,24 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
 
     Parameters
     ----------
+    image_filename:
+        Filename for image data
 
-        image_filename:
-            Filename for image data
+    mask_filename:
+        Filename for mask data
 
-        mask_filename:
-            Filename for mask data
-
-        mask_value:
-            Optional value that will be used to indicate the regions in
-            the image at which the mask was applied. This can be either
-            a number, in which case everything is set accordingly, or a
-            string (either `min` or `max`), in which case the *minimum*
-            or *maximum* value of the volume is used.
+    mask_value:
+        Optional value that will be used to indicate the regions in
+        the image at which the mask was applied. This can be either
+        a number, in which case everything is set accordingly, or a
+        string (either `min` or `max`), in which case the *minimum*
+        or *maximum* value of the volume is used.
 
     Returns
     -------
-
-        Image data along with the masked values. The dimensions of the
-        input data will not be changed.
-    '''
-
+    Image data along with the masked values. The dimensions of the
+    input data will not be changed.
+    """
     image = nl.image.load_img(image_filename)
     mask = nl.image.load_img(mask_filename)
 
@@ -83,7 +81,8 @@ def mask_image(image_filename, mask_filename, mask_value=np.nan):
 
 
 def to_dipha_format(image, filename, superlevel=False, normalise=False):
-    '''
+    """Convert NifTI image to DIPHA file format.
+
     Converts a NIfTI image to the DIPHA file format. The file is useful
     for describing a d-dimensional grey-scale image data. It requires a
     set of header values:
@@ -97,24 +96,22 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
 
     Parameters
     ----------
+    image:
+        NIfTI image of arbitrary dimensions.
 
-        image:
-            NIfTI image of arbitrary dimensions.
+    filename:
+        Output filename
 
-        filename:
-            Output filename
+    superlevel:
+        Optional flag. If set, scales all values by negative one to
+        create a superlevel set filtration.
 
-        superlevel:
-            Optional flag. If set, scales all values by negative one to
-            create a superlevel set filtration.
-
-        normalise:
-            Optional flag. If set, normalises the activation values of
-            every voxel such that the mean activation over time, which
-            is taken to be the last axis of the image, is zero and the
-            variance is one.
-    '''
-
+    normalise:
+        Optional flag. If set, normalises the activation values of
+        every voxel such that the mean activation over time, which
+        is taken to be the last axis of the image, is zero and the
+        variance is one.
+    """
     data = image.get_data()
 
     if superlevel:
@@ -168,12 +165,12 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
 
 
 def basename(filename):
-    '''
+    """Calculate basename of a file.
+
     Removes all extensions from a filename and returns the basename of
     the file. This function is required to handle filenames with *two*
     or more extensions.
-    '''
-
+    """
     filename = os.path.basename(filename)
 
     def _split_extension(filename):
@@ -188,29 +185,27 @@ def basename(filename):
 
 
 def format_time(time, n_time_steps):
-    '''
+    """Format time index based on data availability.
+
     Formats a time index according to a maximum number of time steps in
     in the data. This is useful in order to ensure consistent filenames
     of the *same* length.
 
     Parameters
     ----------
+    time:
+        Current time step that should be formatted
 
-        time:
-            Current time step that should be formatted
-
-        n_time_steps:
-            Maximum number of time steps
+    n_time_steps:
+        Maximum number of time steps
 
     Returns
     -------
-
-        Formatted string with added zeroes for padding. For example, if
-        there are 23 time steps in total, time step 5 will be formatted
-        as  '05', thereby ensuring that a lexicographical ordering will
-        be sufficient to sort the resulting files.
-    '''
-
+    Formatted string with added zeroes for padding. For example, if
+    there are 23 time steps in total, time step 5 will be formatted
+    as  '05', thereby ensuring that a lexicographical ordering will
+    be sufficient to sort the resulting files.
+    """
     n_digits = int(math.log10(n_time_steps) + 1)
     return f'{time:0{n_digits}d}'
 

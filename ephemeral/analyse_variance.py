@@ -43,7 +43,7 @@ if __name__ == '__main__':
         '-s', '--statistic',
         nargs='+',
         type=str,
-        default=['total_persistence'],
+        default=['total_persistence', 'infinity_norm'],
         help='Selects summary statistic to calculate for each diagram. Can '
              'be one or more of: [total_persistence, infinity_norm]'
     )
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         '-p', '--power',
         type=int,
         nargs='+',
-        default=[1.0],
+        default=[1.0, 2.0],
         help='Chooses the exponent for several summary statistics. This '
              'value might not be used for all of them.'
     )
@@ -60,8 +60,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '-o', '--output',
         type=str,
-        default='Summary_statistics.json',
-        help='Output file for creating summary statistics'
+        help='Output file for creating summary statistics',
+        required=True,
     )
 
     args = parser.parse_args()
@@ -145,7 +145,6 @@ if __name__ == '__main__':
     # statistic. We just assume that the length of all time series
     # is the same.
     for row_index, subject in enumerate(sorted(data.keys())):
-        print(subject)
         data_per_subject = data[subject]
 
         for statistic in sorted(data_per_subject.keys()):
@@ -163,6 +162,17 @@ if __name__ == '__main__':
 
             matrices[statistic][row_index] = time_series
 
-    matrices = {
-        k: np.var(m, axis=0) for k, m in matrices.items()
+    # Prepare the output file. It will not only contain information
+    # about the individual matrices but also the *input* parameters
+    # in order to make everything reproducible.
+    data = {
+        k: np.var(m, axis=0).tolist() for k, m in matrices.items()
     }
+
+    data['input'] = args.input
+    data['dimension'] = args.dimension
+    data['statistic'] = args.statistic
+    data['power'] = args.power
+
+    with open(args.output, 'w') as f:
+        json.dump(data, f, indent=4)

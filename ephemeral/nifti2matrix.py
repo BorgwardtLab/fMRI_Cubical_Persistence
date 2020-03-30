@@ -143,6 +143,8 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
             warnings.warn(f'File contains {n_invalid} NaN value(s) '
                           f'*after* normalisation.')
 
+            np.nan_to_num(data, copy=False)
+
     # Nothing should be overwritten. Else, the script might be used
     # incorrectly, so we refuse to do anything.
     if os.path.exists(filename):

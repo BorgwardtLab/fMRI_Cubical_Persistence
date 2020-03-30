@@ -143,6 +143,14 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
             warnings.warn(f'File contains {n_invalid} NaN value(s) '
                           f'*after* normalisation.')
 
+    # Nothing should be overwritten. Else, the script might be used
+    # incorrectly, so we refuse to do anything.
+    if os.path.exists(filename):
+        warnings.warn(f'File {filename} already exists. Refusing to overwrite '
+                      f'it and moving on.')
+
+        return
+
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)
         file_id = np.int64(1)

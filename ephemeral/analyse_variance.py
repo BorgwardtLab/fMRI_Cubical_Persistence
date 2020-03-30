@@ -163,4 +163,6 @@ if __name__ == '__main__':
 
             matrices[statistic][row_index] = time_series
 
-    print(matrices)
+    matrices = {
+        k: np.var(m, axis=0) for k, m in matrices.items()
+    }

@@ -111,7 +111,8 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
         normalise:
             Optional flag. If set, normalises the activation values of
             every voxel such that the mean activation over time, which
-            is taken to be the last axis of the image, is zero.
+            is taken to be the last axis of the image, is zero and the
+            variance is one.
     '''
 
     data = image.get_data()
@@ -123,10 +124,27 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
     # information. Should this be made configurable?
     if normalise:
         mean = np.mean(data, axis=-1)
+        variance = np.var(data, axis=-1)
+
+        # Just to be on the safe side here...
+        assert mean.shape == variance.shape
+
+        n_invalid = np.sum(np.isnan(data))
+
+        if n_invalid != 0:
+            warnings.warn(f'File contains {n_invalid} NaN value(s) '
+                          f'*prior* to normalisation.')
 
         # Automated broadcasting will not work because the mean has
-        # a different shape.
+        # a different shape. Ditto for variance.
         data -= mean[..., np.newaxis]
+        data /= variance[..., np.newaxis]
+
+        n_invalid = np.sum(np.isnan(data))
+
+        if n_invalid != 0:
+            warnings.warn(f'File contains {n_invalid} NaN value(s) '
+                          f'*after* normalisation.')
 
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)

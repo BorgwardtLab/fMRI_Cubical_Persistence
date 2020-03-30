@@ -72,7 +72,7 @@ if __name__ == '__main__':
     # of the diagrams follows the time step information.
     diagrams_per_subject = collections.defaultdict(list)
 
-    filenames = sorted(glob.glob(os.path.join(args.input, 'sub-pixar00?*00?.json')))
+    filenames = sorted(glob.glob(os.path.join(args.input, '*.json')))
     for filename in tqdm(filenames, desc='File'):
 
         subject, _, time = parse_filename(filename)

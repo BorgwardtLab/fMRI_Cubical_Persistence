@@ -1,6 +1,8 @@
 import argparse
 import json
 
+import numpy as np
+
 import matplotlib.pyplot as plt
 
 
@@ -26,7 +28,17 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(n_statistics, 1)
 
     for index, statistic in enumerate(statistics):
-        ax[index].plot(data[statistic], label=statistic)
+
+        curve = np.asarray(data[statistic])
+
+        # Simple outlier detection: clip everything that is larger than
+        # q3 + 1.5 * IQR.
+        iqr = np.subtract(*np.percentile(curve, [75, 25]))
+        q3 = np.percentile(curve, 75)
+
+        curve[curve > q3 + 1.5 * iqr] = q3 + 1.5 * iqr
+
+        ax[index].plot(curve, label=statistic)
         ax[index].legend()
 
     plt.show()

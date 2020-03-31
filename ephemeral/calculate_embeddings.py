@@ -97,6 +97,8 @@ if __name__ == '__main__':
                 )
 
     data = create_feature_vectors(diagrams_per_subject)
+    data['input'] = args.input
+    data['dimension'] = args.dimension
 
     with open(args.output, 'w') as f:
         json.dump(data, f, indent=4)

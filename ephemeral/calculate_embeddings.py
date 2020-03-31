@@ -33,7 +33,7 @@ def create_feature_vectors(diagrams_per_subject):
     for subject, diagrams in diagrams_per_subject.items():
 
         X = vectoriser.fit_transform(diagrams)
-        features_per_subject[subject] = X
+        features_per_subject[subject] = X.tolist()
 
     return features_per_subject
 

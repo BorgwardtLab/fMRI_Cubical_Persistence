@@ -15,6 +15,7 @@
 import argparse
 import json
 import os
+import warnings
 
 from topology import load_persistence_diagram_dipha
 
@@ -38,6 +39,15 @@ if __name__ == '__main__':
         dimensions = dimensions.astype('int64')
 
         output_filename = os.path.splitext(filename)[0] + '.json'
+
+        # Make sure that we are not overwriting anything.
+        if os.path.exists(output_filename):
+            warnings.warn(f'{output_filename} already exists. Will '
+                          f'ignore it and continue.')
+
+            continue
+
+
         with open(output_filename, 'w') as f:
             json.dump({
                     'dimensions': dimensions.tolist(),

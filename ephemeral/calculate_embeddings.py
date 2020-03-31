@@ -8,7 +8,7 @@ import collections
 import glob
 import json
 import os
-import pervect
+import persim
 
 from topology import load_persistence_diagram_dipha
 from topology import load_persistence_diagram_json
@@ -20,20 +20,23 @@ from tqdm import tqdm
 
 def create_feature_vectors(diagrams_per_subject):
     """Create feature vectors of sequence of diagrams."""
-    vectoriser = pervect.PersistenceVectorizer(
-            n_components=20,  # default settings, but just to be sure
-            random_state=42
+    vectoriser = persim.PersImage(
+        spread=1.0,
+        pixels=(10, 10)
     )
 
     # Follows the same indexing as the diagrams; each key is a subject,
-    # while each value is a matrix containing features in its columns
-    # and time steps in its rows.
-    features_per_subject = {}
+    # while each value is a lis of feature vectors.
+    features_per_subject = collections.defaultdict(list)
 
     for subject, diagrams in diagrams_per_subject.items():
 
-        X = vectoriser.fit_transform(diagrams)
-        features_per_subject[subject] = X.tolist()
+        # While `persim` supports multiple diagrams at once, I need to
+        # save them as a list here, because I do not want to serialise
+        # arrays.
+        for diagram in diagrams:
+            X = vectoriser.transform(diagram)
+            features_per_subject[subject].append(X.ravel().tolist())
 
     return features_per_subject
 

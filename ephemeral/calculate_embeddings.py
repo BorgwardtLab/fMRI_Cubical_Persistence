@@ -8,6 +8,7 @@ import collections
 import glob
 import json
 import os
+import pervect
 
 from topology import load_persistence_diagram_dipha
 from topology import load_persistence_diagram_json
@@ -17,9 +18,24 @@ from utilities import parse_filename
 from tqdm import tqdm
 
 
-def create_feature_vectors(diagrams):
+def create_feature_vectors(diagrams_per_subject):
     """Create feature vectors of sequence of diagrams."""
-    pass
+    vectoriser = pervect.PersistenceVectorizer(
+            n_components=20,  # default settings, but just to be sure
+            random_state=42
+    )
+
+    # Follows the same indexing as the diagrams; each key is a subject,
+    # while each value is a matrix containing features in its columns
+    # and time steps in its rows.
+    features_per_subject = {}
+
+    for subject, diagrams in diagrams_per_subject.items():
+
+        X = vectoriser.fit_transform(diagrams)
+        features_per_subject[subject] = X
+
+    return features_per_subject
 
 
 if __name__ == '__main__':
@@ -74,7 +90,11 @@ if __name__ == '__main__':
 
         for diagram in persistence_diagrams:
             if diagram.dimension == args.dimension:
-                diagrams_per_subject[subject].append(diagram)
+                # TODO: the vectoriser could suport different
+                # dimensions, but I pick a single one.
+                diagrams_per_subject[subject].append(
+                    diagram.toarray()
+                )
 
     data = create_feature_vectors(diagrams_per_subject)
 

@@ -73,7 +73,7 @@ if __name__ == '__main__':
     diagrams_per_subject = collections.defaultdict(list)
 
     filenames = sorted(glob.glob(os.path.join(args.input, '*.json')))
-    for filename in tqdm(filenames[:10], desc='File'):
+    for filename in tqdm(filenames, desc='File'):
 
         subject, _, time = parse_filename(filename)
         extension = os.path.splitext(filename)[1]

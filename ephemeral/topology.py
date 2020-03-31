@@ -254,6 +254,10 @@ class PersistenceDiagram(collections.Sequence):
 
         return '\n'.join([f'{x} {y}' for x, y in self._pairs])
 
+    def toarray(self):
+        """Convert persistence diagram to `np.ndarray`."""
+        return np.asarray(self._pairs)
+
 
 def load_persistence_diagram_txt(filename, comment='#'):
     '''

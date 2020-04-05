@@ -42,24 +42,32 @@ def embed(subject, data, d, suffix):
     pca = PCA(n_components=d, random_state=42)
     X = pca.fit_transform(X)
 
-    #colours = np.linspace(0, 1, len(X))
-    #points = X.reshape(-1, 1, 2)
-    #segments = np.concatenate([points[:-1], points[1:]], axis=1)
-    #lc = matplotlib.collections.LineCollection(segments, cmap='Spectral')
-    #lc.set_array(colours)
+    colours = np.linspace(0, 1, len(X))
+    points = X.reshape(-1, 1, 2)
+    segments = np.concatenate([points[:-1], points[1:]], axis=1)
+    lc = matplotlib.collections.LineCollection(segments, cmap='Spectral')
+    lc.set_array(colours)
 
-    #plt.gca().add_collection(lc)
-    #plt.gca().set_xlim(X[:, 0].min(), X[:, 0].max())
-    #plt.gca().set_ylim(X[:, 1].min(), X[:, 1].max())
-    #plt.gca().set_aspect('equal')
+    plt.clf()
+
+    min_x = X[:, 0].min()
+    max_x = X[:, 0].max()
+    min_y = X[:, 1].min()
+    max_y = X[:, 1].max()
+
+    min_ = min(min_x, min_y)
+    max_ = max(max_x, max_y)
+
+    plt.gca().add_collection(lc)
+    plt.gca().set_xlim(min_, max_)
+    plt.gca().set_ylim(min_, max_)
+    plt.gca().set_aspect('equal')
 
     path = f'../figures/persim_embeddings/{suffix}'
 
     # Create output directories for storing *all* subjects in. This
     # depends on the input file.
     os.makedirs(path, exist_ok=True)
-    plt.clf()
-    plt.plot(X[:, 0], X[:, 1])
     plt.savefig(os.path.join(path, f'{subject}.png'))
 
 

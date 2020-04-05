@@ -26,7 +26,7 @@ def create_feature_vectors(diagrams_per_subject):
     )
 
     # Follows the same indexing as the diagrams; each key is a subject,
-    # while each value is a lis of feature vectors.
+    # while each value is a list of feature vectors.
     features_per_subject = collections.defaultdict(list)
 
     for subject, diagrams in diagrams_per_subject.items():

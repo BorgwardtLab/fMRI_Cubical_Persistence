@@ -13,7 +13,6 @@ import warnings
 import nilearn as nl
 import numpy as np
 
-
 from tqdm import tqdm
 
 

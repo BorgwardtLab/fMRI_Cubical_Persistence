@@ -58,7 +58,9 @@ def parse_filename(filename):
     These items will be returned as tuples. If time information
     is not available, `None` will be returned.
     '''
-
+    # Ensure that we are *not* dealing with another path component here,
+    # such as the directory in which data have been stored.
+    filename = os.path.basename(filename)
     filename = os.path.splitext(filename)[0]
     tokens = filename.split('_')
 

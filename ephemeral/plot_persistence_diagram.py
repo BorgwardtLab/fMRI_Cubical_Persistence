@@ -113,8 +113,8 @@ def plot_persistence_diagram_sequence(
             s=8,
         )
 
-        ax.set_xlim(min_c, max_c)
-        ax.set_zlim(min_d, max_d)
+        ax.set_xlim((min_c, max_c))
+        ax.set_zlim((min_d, max_d))
 
     plt.tight_layout()
     plt.show()

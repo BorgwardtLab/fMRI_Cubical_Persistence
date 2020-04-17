@@ -99,9 +99,9 @@ def plot_persistence_diagram_sequence(
 
         ax.set_title(f'Dimension: {dimension}')
 
-        ax.set_xlabel('Creation')
-        ax.set_ylabel('$t$')
-        ax.set_zlabel('Destruction')
+        ax.set_xlabel('Creation', labelpad=10)
+        ax.set_ylabel('$t$', labelpad=10)
+        ax.set_zlabel('Destruction', labelpad=10)
 
         ax.view_init(17, -60)
         ax.scatter(

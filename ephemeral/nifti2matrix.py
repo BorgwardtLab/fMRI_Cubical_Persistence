@@ -222,7 +222,7 @@ def format_time(time, n_time_steps):
 
 if __name__ == '__main__':
 
-    # `nilearn` and `nibabel` have a compatability issue concerning the
+    # `nilearn` and `nibabel` have a compatibility issue concerning the
     # `get_data()` function. Until this bug has been rectified, we will
     # use the old behaviour and ignore all warnings.
     warnings.filterwarnings('ignore', category=DeprecationWarning)

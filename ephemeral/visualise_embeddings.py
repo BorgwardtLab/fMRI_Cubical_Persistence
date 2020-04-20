@@ -49,18 +49,16 @@ def embed(subject, data, d, suffix):
     lc.set_array(colours)
 
     plt.clf()
+    plt.gcf().set_size_inches(5, 5)
 
     min_x = X[:, 0].min()
     max_x = X[:, 0].max()
     min_y = X[:, 1].min()
     max_y = X[:, 1].max()
 
-    min_ = min(min_x, min_y)
-    max_ = max(max_x, max_y)
-
     plt.gca().add_collection(lc)
-    plt.gca().set_xlim(min_, max_)
-    plt.gca().set_ylim(min_, max_)
+    plt.gca().set_xlim(min_x, max_x)
+    plt.gca().set_ylim(min_y, max_y)
     plt.gca().set_aspect('equal')
 
     path = f'../figures/persim_embeddings/{suffix}'
@@ -68,7 +66,11 @@ def embed(subject, data, d, suffix):
     # Create output directories for storing *all* subjects in. This
     # depends on the input file.
     os.makedirs(path, exist_ok=True)
-    plt.savefig(os.path.join(path, f'{subject}.png'))
+    plt.tight_layout()
+    plt.savefig(
+        os.path.join(path, f'{subject}.png'),
+        bbox_inches='tight'
+    )
 
 
 if __name__ == '__main__':

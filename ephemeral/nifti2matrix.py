@@ -232,7 +232,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '-i', '--image',
         type=str,
-        help='NIfTI image file'
+        help='NIfTI image file',
+        required=True
     )
 
     parser.add_argument(

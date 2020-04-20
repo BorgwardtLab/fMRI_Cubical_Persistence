@@ -81,16 +81,20 @@ def embed(encoder, subject, data, d, suffix, prefix=None, metric=None):
     os.makedirs(path, exist_ok=True)
     plt.tight_layout()
 
-    if prefix is None:
-        plt.savefig(
-            os.path.join(path, f'{subject}.png'),
-            bbox_inches='tight'
-        )
-    else:
-        plt.savefig(
-            os.path.join(path, f'{prefix}_{subject}.png'),
-            bbox_inches='tight'
-        )
+    name = ''
+
+    if prefix is not None:
+        name += f'{prefix}'
+
+    # TODO: this cannot handle callable arguments yet, but at least some
+    # simple defaults.
+    if type(metric) is str:
+        name += f'_{metric}'
+
+    plt.savefig(
+        os.path.join(path, f'{metric}_{subject}.png'),
+        bbox_inches='tight'
+    )
 
 
 if __name__ == '__main__':

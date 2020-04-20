@@ -14,9 +14,6 @@ import collections
 import glob
 import json
 import os
-import sys
-
-import numpy as np
 
 from topology import load_persistence_diagram_dipha
 from topology import load_persistence_diagram_json
@@ -126,8 +123,9 @@ if __name__ == '__main__':
         for diagram in diagrams:
             for statistic in args.statistic:
                 for power in args.power:
-                    # Prepare keyword arguments for the summary statistics. Some of
-                    # these keywords might be ignored later on.
+                    # Prepare keyword arguments for the summary
+                    # statistics. Some of these keywords may be
+                    # ignored later on.
                     kwargs = {
                         'p': power
                     }

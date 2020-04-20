@@ -128,8 +128,11 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
         n_invalid = np.sum(np.isnan(data))
 
         if n_invalid != 0:
-            warnings.warn(f'File contains {n_invalid} NaN value(s) '
-                          f'*prior* to normalisation.')
+            raise RuntimeError(f'File contains {n_invalid} NaN value(s) '
+                               f'*prior* to normalisation.')
+
+        # This ensures that we do not create any NaN values.
+        variance[variance == 0.0] = 1.0
 
         # Automated broadcasting will not work because the mean has
         # a different shape. Ditto for variance.
@@ -139,10 +142,8 @@ def to_dipha_format(image, filename, superlevel=False, normalise=False):
         n_invalid = np.sum(np.isnan(data))
 
         if n_invalid != 0:
-            warnings.warn(f'File contains {n_invalid} NaN value(s) '
-                          f'*after* normalisation.')
-
-            np.nan_to_num(data, copy=False)
+            raise RuntimeError(f'File contains {n_invalid} NaN value(s) '
+                               f'*after* normalisation.')
 
     # Nothing should be overwritten. Else, the script might be used
     # incorrectly, so we refuse to do anything.

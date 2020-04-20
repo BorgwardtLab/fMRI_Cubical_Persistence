@@ -91,8 +91,10 @@ def embed(encoder, subject, data, suffix, prefix=None, metric=None):
     if type(metric) is str:
         name += f'_{metric}'
 
+    name += f'_{subject}'
+
     plt.savefig(
-        os.path.join(path, f'{metric}_{subject}.png'),
+        os.path.join(path, f'{name}.png'),
         bbox_inches='tight'
     )
 

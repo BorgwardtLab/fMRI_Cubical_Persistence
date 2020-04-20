@@ -17,7 +17,7 @@ from sklearn.metrics import pairwise_distances
 from tqdm import tqdm
 
 
-def embed(encoder, subject, data, d, suffix, prefix=None, metric=None):
+def embed(encoder, subject, data, suffix, prefix=None, metric=None):
     """Embed data of a given subject.
 
     Performs the embedding for a given subject and stores the resulting

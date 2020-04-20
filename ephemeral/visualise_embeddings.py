@@ -12,11 +12,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from sklearn.decomposition import PCA
+from sklearn.metrics import pairwise_distances
 
 from tqdm import tqdm
 
 
-def embed(subject, data, d, suffix):
+def embed(encoder, subject, data, d, suffix, prefix=None, metric=None):
     """Embed data of a given subject.
 
     Performs the embedding for a given subject and stores the resulting
@@ -24,6 +25,10 @@ def embed(subject, data, d, suffix):
 
     Parameters
     ----------
+    encoder : `TransformerMixin`
+        Transformer class for performing the embedding or encoding of
+        the data.
+
     subject : str
         Name of the subject to embed
 
@@ -31,16 +36,24 @@ def embed(subject, data, d, suffix):
         List of high-dimensional vectors corresponding to the feature
         vectors at a given time step.
 
-    d : int
-        Embedding dimension
-
     suffix : str
         Suffix to use for storing embeddings
+
+    prefix : str, or `None` (optional)
+        Prefix to use for naming each individual embedding. Can be used
+        to distinguish between different sorts of outputs.
+
+    metric : str, callable, or `None` (optional)
+        If set, specifies the distance metric to use for the embedding
+        process. Needs to be a metric recognised by `scikit-learn`, or
+        a callable function.
     """
     X = np.array([row for row in data])
 
-    pca = PCA(n_components=d, random_state=42)
-    X = pca.fit_transform(X)
+    if metric is not None:
+        X = pairwise_distances(X, metric=metric)
+
+    X = encoder.fit_transform(X)
 
     colours = np.linspace(0, 1, len(X))
     points = X.reshape(-1, 1, 2)
@@ -67,10 +80,17 @@ def embed(subject, data, d, suffix):
     # depends on the input file.
     os.makedirs(path, exist_ok=True)
     plt.tight_layout()
-    plt.savefig(
-        os.path.join(path, f'{subject}.png'),
-        bbox_inches='tight'
-    )
+
+    if prefix is None:
+        plt.savefig(
+            os.path.join(path, f'{subject}.png'),
+            bbox_inches='tight'
+        )
+    else:
+        plt.savefig(
+            os.path.join(path, f'{prefix}_{subject}.png'),
+            bbox_inches='tight'
+        )
 
 
 if __name__ == '__main__':
@@ -87,6 +107,19 @@ if __name__ == '__main__':
         default=2,
     )
 
+    parser.add_argument(
+        '-e', '--encoder',
+        help='Specifies encoding/embedding method',
+        type=str,
+        default='pca'
+    )
+
+    parser.add_argument(
+        '-m', '--metric',
+        help='Specifies metric for calculating embedding',
+        type=str,
+    )
+
     args = parser.parse_args()
 
     with open(args.INPUT) as f:
@@ -95,6 +128,16 @@ if __name__ == '__main__':
     basename = os.path.basename(args.INPUT)
     basename = os.path.splitext(basename)[0]
 
+    if args.encoder == 'pca':
+        encoder = PCA(n_components=args.dimension, random_state=42)
+
     subjects = data.keys()
     for subject in tqdm(subjects, desc='Subject'):
-        embed(subject, data[subject], args.dimension, basename)
+        embed(
+            encoder,
+            subject,
+            data[subject],
+            basename,
+            prefix=args.encoder,
+            metric=args.metric
+        )

@@ -18,18 +18,20 @@ DIPHA_BIN=$HOME/Projects/dipha/build/dipha
 function calculate_persistent_homology {
   # Number of jobs to run in parallel. This is a poor-man's version of
   # a proper scheduler.
-  N=24
+  N=8
   I=0
   (
   for FILE in $1/*.bin; do
     ((I=I%N)); ((I++ == 0)) && wait
+
+    mkdir -p $1/persistence_diagrams/
 
     OUTPUT_FILE=$1/persistence_diagrams/${FILE:t}
 
     ## Do not overwrite any files; this is just waiting for problems to
     ## happen.
     if [ ! -f ${OUTPUT_FILE} ]; then
-      mpiexec -n 4 $DIPHA_BIN $FILE $OUTPUT/${FILE:t} &
+      mpiexec -n 4 $DIPHA_BIN $FILE $OUTPUT_FILE &
     else
       echo "Refusing to overwrite ${OUTPUT_FILE}. Continuing..."
     fi

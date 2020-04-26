@@ -47,7 +47,6 @@ if __name__ == '__main__':
 
             continue
 
-
         with open(output_filename, 'w') as f:
             json.dump({
                     'dimensions': dimensions.tolist(),

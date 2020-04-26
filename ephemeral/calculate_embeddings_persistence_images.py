@@ -100,6 +100,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if os.path.exists(args.output):
+        raise RuntimeError(f'{args.output} exists; refusing to overwrite')
+
     # Will store all persistence diagrams, ordered by subject. The keys
     # are the subject identifiers, extracted from the filename, whereas
     # the values are the persistence diagrams stored for them. Ordering

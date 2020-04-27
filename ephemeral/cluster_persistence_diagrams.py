@@ -97,6 +97,14 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
+        '-e',
+        '--experiment',
+        type=str,
+        required=True,
+        help='Experiment name'
+    )
+
+    parser.add_argument(
         '-m',
         '--method',
         type=str,
@@ -182,10 +190,12 @@ if __name__ == '__main__':
     model = clf.fit(D)
     M = get_linkage_matrix(model)
 
-    os.chdir('../results/clusterings')
+    # FIXME: needs to be made configurable; this presumes that we are
+    # being called from another folder.
+    os.chdir('../../results/clusterings')
 
     dimensions_str = '_'.join([str(d) for d in args.dimensions])
-    out_filename = f'Linkage_matrix_representation_'\
+    out_filename = f'Linkage_matrix_{args.experiment}_'\
                    f'{args.method}_p{args.power}_d_{dimensions_str}.txt'
 
     np.savetxt(out_filename, M)
@@ -200,7 +210,7 @@ if __name__ == '__main__':
         subject: label for (subject, label) in zip(y, y_pred)
     }
 
-    output_filename = f'Assignments_representation_'\
+    output_filename = f'Assignments_{args.experiment}_'\
                       f'{args.method}_p{args.power}_d_{dimensions_str}.json'
 
     with open(output_filename, 'w') as f:

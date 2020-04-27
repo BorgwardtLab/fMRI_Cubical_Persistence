@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+#
+# Cluster persistence diagrams based on summary statistics or other,
+# more involved, representations.
 
 import argparse
 import collections
@@ -178,6 +181,8 @@ if __name__ == '__main__':
     )
     model = clf.fit(D)
     M = get_linkage_matrix(model)
+
+    os.chdir('../results/clusterings')
 
     dimensions_str = '_'.join([str(d) for d in args.dimensions])
     out_filename = f'Linkage_matrix_representation_'\

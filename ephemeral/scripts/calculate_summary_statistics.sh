@@ -14,7 +14,7 @@ function calculate_summary_statistics {
 
 ROOT="/links/groups/borgwardt/Projects/Ephemeral/Partly Cloudy/tda"
 
-for EXPERIMENT in "brainmask" "occipitalmask" "brainmasked_normalised" "occipitalmask_normalised"; do
+for EXPERIMENT in "brainmask" "occipitalmask" "brainmask_normalised" "occipitalmask_normalised"; do
   DIRECTORY="$ROOT/$EXPERIMENT/persistence_diagrams"
    calculate_summary_statistics $DIRECTORY $EXPERIMENT
 done

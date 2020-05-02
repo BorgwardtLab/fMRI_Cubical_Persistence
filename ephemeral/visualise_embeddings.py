@@ -78,7 +78,7 @@ def embed(encoder, subject, data, suffix, prefix=None, metric=None):
     plt.gca().set_ylim(min_y, max_y)
     plt.gca().set_aspect('equal')
 
-    path = f'../figures/persim_embeddings/{suffix}'
+    path = f'../figures/persistence_images_embeddings/{suffix}'
 
     # Create output directories for storing *all* subjects in. This
     # depends on the input file.

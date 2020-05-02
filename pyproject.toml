@@ -14,6 +14,7 @@ pandas = "^1.0.1"
 seaborn = "^0.10.0"
 scikit-learn = "^0.22.2"
 persim = {git = "ssh://git@github.com/BorgwardtLab/persim.git"}
+m-phate = "^0.1.6"
 
 [tool.poetry.dev-dependencies]
 

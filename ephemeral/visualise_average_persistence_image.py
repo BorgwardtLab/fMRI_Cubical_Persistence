@@ -25,7 +25,7 @@ def embed(subject, diagrams, suffix):
     clf = PersImage()
     img = clf.transform(pairs)
 
-    path = f'../figures/persim_mean/{suffix}'
+    path = f'../results/persistence_images_mean/{suffix}'
 
     plt.imshow(img, cmap='Spectral')
 

@@ -21,7 +21,7 @@ function cluster_persistence_diagrams {
 
 ROOT="/links/groups/borgwardt/Projects/Ephemeral/Partly Cloudy/tda"
 
-for EXPERIMENT in "brainmask" "occipitalmask" "brainmasked_normalised" "occipitalmask_normalised"; do
+for EXPERIMENT in "brainmask" "occipitalmask" "brainmask_normalised" "occipitalmask_normalised"; do
   DIRECTORY="$ROOT/$EXPERIMENT/persistence_diagrams"
   cluster_persistence_diagrams $DIRECTORY $EXPERIMENT
 done

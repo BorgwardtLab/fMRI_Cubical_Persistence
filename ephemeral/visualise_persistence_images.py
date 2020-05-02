@@ -44,4 +44,6 @@ if __name__ == '__main__':
         os.makedirs(output, exist_ok=True)
 
         plt.imshow(X)
-        plt.savefig(f'{output}/{subject}.png')
+        plt.title(subject)
+        plt.tight_layout()
+        plt.savefig(f'{output}/{subject}.png', bbox_inches='tight')

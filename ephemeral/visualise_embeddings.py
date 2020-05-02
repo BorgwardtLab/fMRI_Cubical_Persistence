@@ -18,6 +18,9 @@ from sklearn.manifold import MDS
 from sklearn.manifold import TSNE
 from sklearn.metrics import pairwise_distances
 
+from phate import PHATE
+from m_phate import M_PHATE
+
 from tqdm import tqdm
 
 
@@ -139,7 +142,10 @@ if __name__ == '__main__':
     basename = os.path.splitext(basename)[0]
 
     if args.encoder == 'pca':
-        encoder = PCA(n_components=args.dimension, random_state=42)
+        encoder = PCA(
+            n_components=args.dimension,
+            random_state=42
+        )
     elif args.encoder == 'mds':
         encoder = MDS(
             n_components=args.dimension,
@@ -154,6 +160,16 @@ if __name__ == '__main__':
         encoder = LocallyLinearEmbedding(
             n_components=args.dimension,
             random_state=42,
+        )
+    elif args.encoder == 'phate':
+        encoder = PHATE(
+            n_components=args.dimension,
+            random_state=42
+        )
+    elif args.encoder == 'm-phate':
+        encoder = M_PHATE(
+            n_components=args.dimension,
+            random_state=42
         )
 
     subjects = data.keys()

@@ -12,6 +12,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from sklearn.decomposition import PCA
+
+from sklearn.manifold import LocallyLinearEmbedding
+from sklearn.manifold import MDS
+from sklearn.manifold import TSNE
 from sklearn.metrics import pairwise_distances
 
 from tqdm import tqdm
@@ -136,6 +140,21 @@ if __name__ == '__main__':
 
     if args.encoder == 'pca':
         encoder = PCA(n_components=args.dimension, random_state=42)
+    elif args.encoder == 'mds':
+        encoder = MDS(
+            n_components=args.dimension,
+            random_state=42,
+        )
+    elif args.encoder == 'tsne':
+        encoder = TSNE(
+            n_components=args.dimension,
+            random_state=42,
+        )
+    elif args.encoder == 'lle':
+        encoder = LocallyLinearEmbedding(
+            n_components=args.dimension,
+            random_state=42,
+        )
 
     subjects = data.keys()
     for subject in tqdm(subjects, desc='Subject'):

@@ -40,5 +40,8 @@ if __name__ == '__main__':
         r = int(np.sqrt(X.shape[0]))
         X = X.reshape(r, r)
 
+        output = f'../results/average_persistence_images/{basename}'
+        os.makedirs(output, exist_ok=True)
+
         plt.imshow(X)
-        plt.show()
+        plt.savefig(f'{output}/{subject}.png')

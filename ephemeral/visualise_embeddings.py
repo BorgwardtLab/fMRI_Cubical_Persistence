@@ -18,6 +18,8 @@ from sklearn.manifold import MDS
 from sklearn.manifold import TSNE
 from sklearn.metrics import pairwise_distances
 
+from sklearn.preprocessing import StandardScaler
+
 from phate import PHATE
 from m_phate import M_PHATE
 
@@ -68,6 +70,9 @@ def embed(
         encoder is used as-is.
     """
     X = np.array([row for row in data])
+
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
 
     # TODO: decide whether this will be useful or not
     # X -= np.mean(X, axis=0)

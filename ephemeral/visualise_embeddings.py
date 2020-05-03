@@ -24,7 +24,15 @@ from m_phate import M_PHATE
 from tqdm import tqdm
 
 
-def embed(encoder, subject, data, suffix, prefix=None, metric=None):
+def embed(
+    encoder,
+    subject,
+    data,
+    suffix,
+    prefix=None,
+    metric=None,
+    refit=True
+):
     """Embed data of a given subject.
 
     Performs the embedding for a given subject and stores the resulting
@@ -54,6 +62,10 @@ def embed(encoder, subject, data, suffix, prefix=None, metric=None):
         If set, specifies the distance metric to use for the embedding
         process. Needs to be a metric recognised by `scikit-learn`, or
         a callable function.
+
+    refit : bool
+        If set, refits the encoder to the current data set. Else, the
+        encoder is used as-is.
     """
     X = np.array([row for row in data])
 
@@ -66,7 +78,10 @@ def embed(encoder, subject, data, suffix, prefix=None, metric=None):
         # TODO: check whether the classifier supports this
         encoder.set_params(dissimilarity='precomputed')
 
-    X = encoder.fit_transform(X)
+    if refit:
+        X = encoder.fit_transform(X)
+    else:
+        X = encoder.transform(X)
 
     colours = np.linspace(0, 1, len(X))
     points = X.reshape(-1, 1, 2)
@@ -139,6 +154,12 @@ if __name__ == '__main__':
         type=str,
     )
 
+    parser.add_argument(
+        '-g', '--global-embedding',
+        action='store_true',
+        help='If set, calculates *global* embeddings'
+    )
+
     args = parser.parse_args()
 
     with open(args.INPUT) as f:
@@ -178,7 +199,23 @@ if __name__ == '__main__':
             random_state=42
         )
 
+    # Filter subjects; this could be solved smarter...
     subjects = data.keys()
+    subjects = [subject for subject in subjects if len(subject) == 3]
+
+    if args.global_embedding:
+        # Fit the estimator on *all* subjects first, then attempt to
+        # embed them individually.
+        X = np.concatenate(
+            [np.array(data[subject]) for subject in subjects]
+        )
+
+        encoder.fit(X)
+
+        refit = False
+    else:
+        refit = True
+
     for subject in tqdm(subjects, desc='Subject'):
         embed(
             encoder,
@@ -186,5 +223,6 @@ if __name__ == '__main__':
             data[subject],
             basename,
             prefix=args.encoder,
-            metric=args.metric
+            metric=args.metric,
+            refit=refit,
         )

@@ -57,8 +57,14 @@ def embed(encoder, subject, data, suffix, prefix=None, metric=None):
     """
     X = np.array([row for row in data])
 
+    # TODO: decide whether this will be useful or not
+    # X -= np.mean(X, axis=0)
+
     if metric is not None:
         X = pairwise_distances(X, metric=metric)
+
+        # TODO: check whether the classifier supports this
+        encoder.set_params(dissimilarity='precomputed')
 
     X = encoder.fit_transform(X)
 

@@ -196,7 +196,9 @@ if __name__ == '__main__':
     elif args.encoder == 'phate':
         encoder = PHATE(
             n_components=args.dimension,
-            random_state=42
+            random_state=42,
+            knn=8,
+            mds_solver='smacof',
         )
     elif args.encoder == 'm-phate':
         encoder = M_PHATE(
@@ -246,10 +248,9 @@ if __name__ == '__main__':
             X[:, 0], X[:, 1], c=indices, cmap='Spectral',
             zorder=10,
             s=10.0,
-            alpha=0.5,
         )
 
-        plt.colorbar()
+        #plt.colorbar()
         plt.show()
 
         raise 'heck'

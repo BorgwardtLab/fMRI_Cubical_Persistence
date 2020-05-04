@@ -235,7 +235,7 @@ if __name__ == '__main__':
         encoder = M_PHATE(
             n_components=args.dimension,
             random_state=42,
-            n_landmark=100,
+            n_landmark=1000,
             mds_solver='sgd',
             n_jobs=-1,
         )
@@ -273,6 +273,8 @@ if __name__ == '__main__':
                 [np.array(data[subject]) for subject in subjects]
             )
 
+        X = encoder.fit_transform(X)
+
         # Create array full of subject indices. We can use this to
         # colour-code subjects afterwards.
         indices = np.concatenate([
@@ -281,62 +283,55 @@ if __name__ == '__main__':
             for subject in subjects
         ])
 
-        X = encoder.fit_transform(X)
-
-        # TODO: handle trajectory visualisation for M-PHATE as well.
-        # Currently, it is easier to solve this in a different fashion.
-        if args.encoder != 'm-phate':
-            for subject in subjects:
-
-                indices_per_subject = np.argwhere(indices == int(subject))
-                X_per_subject = X[indices_per_subject[:, 0]]
-
-                if args.dimension == 2:
-                    X_per_subject = X_per_subject.reshape(-1, 1, 2)
-                elif args.dimension == 3:
-                    X_per_subject = X_per_subject.reshape(-1, 1, 3)
-
-                segments = np.concatenate(
-                    [X_per_subject[:-1], X_per_subject[1:]], axis=1
-                )
-
-                if args.dimension == 2:
-                    instance = matplotlib.collections.LineCollection
-                elif args.dimension == 3:
-                    instance = Line3DCollection
-
-                lc = instance(
-                    segments,
-                    color='k',
-                    zorder=0,
-                    linewidths=1.0,
-                )
-
-                if args.dimension == 2:
-                    ax.add_collection(lc)
-                elif args.dimension == 3:
-                    ax.add_collection3d(lc)
+        for subject in subjects:
+            indices_per_subject = np.argwhere(indices == int(subject))
+            X_per_subject = X[indices_per_subject[:, 0]]
 
             if args.dimension == 2:
-                scatter = ax.scatter(
-                    X[:, 0], X[:, 1], c=indices, cmap='Spectral',
-                    zorder=10,
-                    s=10.0,
-                )
+                X_per_subject = X_per_subject.reshape(-1, 1, 2)
             elif args.dimension == 3:
-                scatter = ax.scatter(
-                    X[:, 0], X[:, 1], X[:, 2], c=indices, cmap='Spectral',
-                    zorder=10,
-                    s=10.0,
-                )
+                X_per_subject = X_per_subject.reshape(-1, 1, 3)
 
-            plt.colorbar(scatter)
+            segments = np.concatenate(
+                [X_per_subject[:-1], X_per_subject[1:]], axis=1
+            )
 
-        # Handle M-PHATE embedding manually
-        else:
             if args.dimension == 2:
-                time = np.repeat(np.arange(n_time_steps), n_samples)
-                scatter = scprep.plot.scatter2d(X, ax=ax, c=time)
+                instance = matplotlib.collections.LineCollection
+            elif args.dimension == 3:
+                instance = Line3DCollection
+
+            lc = instance(
+                segments,
+                color='k',
+                zorder=0,
+                linewidths=1.0,
+            )
+
+            if args.dimension == 2:
+                ax.add_collection(lc)
+            elif args.dimension == 3:
+                # TODO: until the issue with the line collection have
+                # been fixed, do *not* show them for 3D plots.
+                pass
+
+        if encoder == 'm-phate':
+            indices = np.repeat(np.arange(n_time_steps), n_samples)
+
+        if args.dimension == 2:
+            scatter = ax.scatter(
+                X[:, 0], X[:, 1], c=indices, cmap='Spectral',
+                zorder=10,
+                s=10.0,
+            )
+        elif args.dimension == 3:
+            scatter = ax.scatter(
+                X[:, 0], X[:, 1], X[:, 2], c=indices, cmap='Spectral',
+                zorder=10,
+                s=10.0,
+            )
+
+        plt.colorbar(scatter)
 
         path = f'../figures/persistence_images_embeddings/{basename}'
 

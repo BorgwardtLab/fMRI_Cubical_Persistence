@@ -112,6 +112,7 @@ def embed(
         fig, ax = plt.subplots()
 
     fig.set_size_inches(5, 5)
+    ax.set_title(subject)
 
     min_x = X[:, 0].min()
     max_x = X[:, 0].max()
@@ -151,10 +152,28 @@ def embed(
 
     name += f'_{subject}'
 
+    if args.global_embedding:
+        name += '_global'
+
     plt.savefig(
         os.path.join(path, f'{name}.png'),
         bbox_inches='tight'
     )
+
+    if args.dimension == 2:
+        ax.clear()
+        ax.set_title(subject)
+
+        ax.set_xlim(min_x, max_x)
+        ax.set_ylim(min_y, max_y)
+
+        ax.hist2d(X[:, 0], X[:, 1], bins=20, cmap='viridis')
+
+        plt.tight_layout()
+        plt.savefig(
+            os.path.join(path, f'{name}_density.png'),
+            bbox_inches='tight'
+        )
 
     plt.close(fig)
 
@@ -359,6 +378,8 @@ if __name__ == '__main__':
                 os.path.join(path, f'{args.encoder}_density.png'),
                 bbox_inches='tight'
             )
+
+            plt.close(fig)
 
         refit = False
     else:

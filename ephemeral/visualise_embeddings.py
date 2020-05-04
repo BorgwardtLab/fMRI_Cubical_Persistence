@@ -76,8 +76,8 @@ def embed(
     """
     X = np.array([row for row in data])
 
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
+    # scaler = StandardScaler()
+    # X = scaler.fit_transform(X)
 
     # TODO: decide whether this will be useful or not
     # X -= np.mean(X, axis=0)

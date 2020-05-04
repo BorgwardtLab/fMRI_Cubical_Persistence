@@ -133,7 +133,8 @@ def embed(
     ax.set_xlim(min_x, max_x)
     ax.set_ylim(min_y, max_y)
 
-    path = f'../figures/persistence_images_embeddings/{suffix}'
+    # TOOD: adjust this path correctly
+    path = f'../../figures/persistence_images_embeddings/{suffix}'
 
     # Create output directories for storing *all* subjects in. This
     # depends on the input file.

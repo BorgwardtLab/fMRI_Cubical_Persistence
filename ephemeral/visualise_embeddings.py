@@ -145,6 +145,8 @@ def embed(
     if prefix is not None:
         name += f'{prefix}'
 
+    name += f'_{args.dimension}D'
+
     # TODO: this cannot handle callable arguments yet, but at least some
     # simple defaults.
     if type(metric) is str:

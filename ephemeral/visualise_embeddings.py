@@ -92,23 +92,43 @@ def embed(
         X = encoder.transform(X)
 
     colours = np.linspace(0, 1, len(X))
-    points = X.reshape(-1, 1, 2)
+    points = X.reshape(-1, 1, args.dimension)
     segments = np.concatenate([points[:-1], points[1:]], axis=1)
-    lc = matplotlib.collections.LineCollection(segments, cmap='Spectral')
+
+    if args.dimension == 2:
+        instance = matplotlib.collections.LineCollection
+    elif args.dimension == 3:
+        instance = Line3DCollection
+
+    lc = instance(segments, cmap='Spectral')
     lc.set_array(colours)
 
-    plt.clf()
-    plt.gcf().set_size_inches(5, 5)
+    if args.dimension == 3:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        fig, ax = plt.subplots()
+
+    fig.set_size_inches(5, 5)
 
     min_x = X[:, 0].min()
     max_x = X[:, 0].max()
     min_y = X[:, 1].min()
     max_y = X[:, 1].max()
 
-    plt.gca().add_collection(lc)
-    plt.gca().set_xlim(min_x, max_x)
-    plt.gca().set_ylim(min_y, max_y)
-    plt.gca().set_aspect('equal')
+    if args.dimension == 3:
+        ax.add_collection3d(lc)
+
+        min_z = X[:, 2].min()
+        max_z = X[:, 2].max()
+
+        ax.set_zlim(min_z, max_z)
+
+    elif args.dimension == 2:
+        ax.add_collection(lc)
+
+    ax.set_xlim(min_x, max_x)
+    ax.set_ylim(min_y, max_y)
 
     path = f'../figures/persistence_images_embeddings/{suffix}'
 
@@ -133,6 +153,8 @@ def embed(
         os.path.join(path, f'{name}.png'),
         bbox_inches='tight'
     )
+
+    plt.close(fig)
 
 
 if __name__ == '__main__':
@@ -206,8 +228,6 @@ if __name__ == '__main__':
         encoder = PHATE(
             n_components=args.dimension,
             random_state=42,
-            knn=8,
-            mds_solver='smacof',
         )
     elif args.encoder == 'm-phate':
         encoder = M_PHATE(
@@ -219,13 +239,14 @@ if __name__ == '__main__':
     subjects = data.keys()
     subjects = [subject for subject in subjects if len(subject) == 3]
 
-    if args.dimension == 3:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-    else:
-        fig, ax = plt.subplots()
-
     if args.global_embedding:
+
+        if args.dimension == 3:
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+        else:
+            fig, ax = plt.subplots()
+
         # Fit the estimator on *all* subjects first, then attempt to
         # embed them individually.
         X = np.concatenate(
@@ -269,7 +290,7 @@ if __name__ == '__main__':
 
             if args.dimension == 2:
                 ax.add_collection(lc)
-            else:
+            elif args.dimension == 3:
                 ax.add_collection3d(lc)
 
         if args.dimension == 2:
@@ -285,10 +306,13 @@ if __name__ == '__main__':
                 s=10.0,
             )
 
-        plt.colorbar(scatter)
-        plt.show()
+        path = f'../figures/persistence_images_embeddings/{basename}'
 
-        raise 'heck'
+        plt.colorbar(scatter)
+        plt.tight_layout()
+        plt.savefig(os.path.join(path, f'{args.encoder}_global.png'))
+
+        plt.close(fig)
 
         refit = False
     else:

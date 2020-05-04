@@ -215,7 +215,44 @@ if __name__ == '__main__':
             [np.array(data[subject]) for subject in subjects]
         )
 
-        encoder.fit(X)
+        # Create array full of subject indices. We can use this to
+        # colour-code subjects afterwards.
+        indices = np.concatenate([
+            np.full(fill_value=int(subject),
+                    shape=np.array(data[subject]).shape[0])
+            for subject in subjects
+        ])
+
+        X = encoder.fit_transform(X)
+
+        for subject in subjects:
+            indices_per_subject = np.argwhere(indices == int(subject))
+            X_per_subject = X[indices_per_subject[:, 0]]
+            X_per_subject = X_per_subject.reshape(-1, 1, 2)
+
+            segments = np.concatenate(
+                [X_per_subject[:-1], X_per_subject[1:]], axis=1
+            )
+
+            lc = matplotlib.collections.LineCollection(
+                segments,
+                color='k',
+                zorder=0,
+                linewidths=1.0,
+            )
+            plt.gca().add_collection(lc)
+
+        plt.scatter(
+            X[:, 0], X[:, 1], c=indices, cmap='Spectral',
+            zorder=10,
+            s=10.0,
+            alpha=0.5,
+        )
+
+        plt.colorbar()
+        plt.show()
+
+        raise 'heck'
 
         refit = False
     else:

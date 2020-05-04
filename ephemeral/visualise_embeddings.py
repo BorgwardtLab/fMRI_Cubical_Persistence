@@ -6,6 +6,7 @@
 import argparse
 import json
 import os
+import sys
 
 import matplotlib.collections
 import matplotlib.pyplot as plt
@@ -240,7 +241,6 @@ if __name__ == '__main__':
     subjects = [subject for subject in subjects if len(subject) == 3]
 
     if args.global_embedding:
-
         if args.dimension == 3:
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
@@ -317,6 +317,10 @@ if __name__ == '__main__':
         refit = False
     else:
         refit = True
+
+    # M-PHATE only supports global embeddings
+    if args.encoder == 'm-phate':
+        sys.exit(0)
 
     for subject in tqdm(subjects, desc='Subject'):
         embed(

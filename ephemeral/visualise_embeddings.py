@@ -9,6 +9,9 @@ import os
 
 import matplotlib.collections
 import matplotlib.pyplot as plt
+
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
 import numpy as np
 
 from sklearn.decomposition import PCA
@@ -165,6 +168,12 @@ if __name__ == '__main__':
         help='If set, calculates *global* embeddings'
     )
 
+    parser.add_argument(
+        '-t', '--trajectories',
+        action='store_true',
+        help='If set, shows trajectory visualisations'
+    )
+
     args = parser.parse_args()
 
     with open(args.INPUT) as f:
@@ -210,6 +219,12 @@ if __name__ == '__main__':
     subjects = data.keys()
     subjects = [subject for subject in subjects if len(subject) == 3]
 
+    if args.dimension == 3:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    else:
+        fig, ax = plt.subplots()
+
     if args.global_embedding:
         # Fit the estimator on *all* subjects first, then attempt to
         # embed them individually.
@@ -230,27 +245,47 @@ if __name__ == '__main__':
         for subject in subjects:
             indices_per_subject = np.argwhere(indices == int(subject))
             X_per_subject = X[indices_per_subject[:, 0]]
-            X_per_subject = X_per_subject.reshape(-1, 1, 2)
+
+            if args.dimension == 2:
+                X_per_subject = X_per_subject.reshape(-1, 1, 2)
+            elif args.dimension == 3:
+                X_per_subject = X_per_subject.reshape(-1, 1, 3)
 
             segments = np.concatenate(
                 [X_per_subject[:-1], X_per_subject[1:]], axis=1
             )
 
-            lc = matplotlib.collections.LineCollection(
+            if args.dimension == 2:
+                instance = matplotlib.collections.LineCollection
+            elif args.dimension == 3:
+                instance = Line3DCollection
+
+            lc = instance(
                 segments,
                 color='k',
                 zorder=0,
                 linewidths=1.0,
             )
-            plt.gca().add_collection(lc)
 
-        plt.scatter(
-            X[:, 0], X[:, 1], c=indices, cmap='Spectral',
-            zorder=10,
-            s=10.0,
-        )
+            if args.dimension == 2:
+                ax.add_collection(lc)
+            else:
+                ax.add_collection3d(lc)
 
-        #plt.colorbar()
+        if args.dimension == 2:
+            scatter = ax.scatter(
+                X[:, 0], X[:, 1], c=indices, cmap='Spectral',
+                zorder=10,
+                s=10.0,
+            )
+        elif args.dimension == 3:
+            scatter = ax.scatter(
+                X[:, 0], X[:, 1], X[:, 2], c=indices, cmap='Spectral',
+                zorder=10,
+                s=10.0,
+            )
+
+        plt.colorbar(scatter)
         plt.show()
 
         raise 'heck'

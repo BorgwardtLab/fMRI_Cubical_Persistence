@@ -336,9 +336,29 @@ if __name__ == '__main__':
         path = f'../figures/persistence_images_embeddings/{basename}'
 
         plt.tight_layout()
-        plt.savefig(os.path.join(path, f'{args.encoder}_global.png'))
+        plt.savefig(
+            os.path.join(path, f'{args.encoder}_global.png'),
+            bbox_inches='tight'
+        )
 
         plt.close(fig)
+
+        if args.dimension == 2:
+
+            fig, ax = plt.subplots()
+            _, _, _, hist = ax.hist2d(
+                                X[:, 0], X[:, 1],
+                                bins=30,
+                                cmap='viridis',
+            )
+
+            fig.colorbar(hist)
+
+            plt.tight_layout()
+            plt.savefig(
+                os.path.join(path, f'{args.encoder}_density.png'),
+                bbox_inches='tight'
+            )
 
         refit = False
     else:

@@ -13,6 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from topology import load_persistence_diagram_dipha
+from topology import load_persistence_diagram_json
 from topology import PersistenceDiagram
 
 from tqdm import tqdm
@@ -34,9 +35,15 @@ if __name__ == '__main__':
     persistence_diagrams = []
 
     for filename in tqdm(args.FILE, desc='File'):
-        dimensions, creation, destruction = load_persistence_diagram_dipha(
-            filename
-        )
+
+        if filename.endswith('.bin'):
+            dimensions, creation, destruction = load_persistence_diagram_dipha(
+                filename
+            )
+        elif filename.endswith('.json'):
+            dimensions, creation, destruction = load_persistence_diagram_json(
+                filename
+            )
 
         # TODO: make configurable
         selected_dimension = 2

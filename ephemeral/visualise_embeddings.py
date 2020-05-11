@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 
 import numpy as np
+import pandas as pd
 
 from sklearn.decomposition import PCA
 
@@ -38,6 +39,7 @@ def embed(
     suffix,
     prefix=None,
     metric=None,
+    rolling=None,
     refit=True
 ):
     """Embed data of a given subject.
@@ -70,11 +72,20 @@ def embed(
         process. Needs to be a metric recognised by `scikit-learn`, or
         a callable function.
 
+    rolling : int or `None`
+        If set, performs smoothing of the data set prior to calculating
+        distances.
+
     refit : bool
         If set, refits the encoder to the current data set. Else, the
         encoder is used as-is.
     """
     X = np.array([row for row in data])
+
+    if rolling is not None:
+        df = pd.DataFrame(X)
+        df = df.rolling(rolling, axis=1, min_periods=1).mean()
+        X = df.to_numpy()
 
     # scaler = StandardScaler()
     # X = scaler.fit_transform(X)
@@ -218,6 +229,13 @@ if __name__ == '__main__':
         '-t', '--trajectories',
         action='store_true',
         help='If set, shows trajectory visualisations'
+    )
+
+    parser.add_argument(
+        '-r', '--rolling',
+        type=int,
+        default=None,
+        help='If set, performs rolling average calculation'
     )
 
     args = parser.parse_args()
@@ -400,5 +418,6 @@ if __name__ == '__main__':
             basename,
             prefix=args.encoder,
             metric=args.metric,
+            rolling=args.rolling,
             refit=refit,
         )

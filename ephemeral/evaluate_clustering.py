@@ -38,9 +38,42 @@ if __name__ == '__main__':
     # also has a column for the participant label itself.
     y_true = pd.read_csv('../data/participant_groups.csv')
 
-    distances = np.loadtxt(args.MATRIX)
+    n_groups = len(y_true['cluster'].unique())
+    unique_groups = sorted(y_true['cluster'].unique())
 
-    clf = AgglomerativeClustering(affinity='precomputed', linkage='average')
-    y_pred = clf.fit_predict(distances)
+    distances = np.loadtxt(args.DISTANCES)
 
-    print(y_pred)
+    # Required to perform recursive splits of clusters; this is done in
+    # order to measure the agreement between actual labels and predicted
+    # labels, while maintaining clusters of roughly equal size.
+    D = distances.copy()
+
+    clf = AgglomerativeClustering(
+        affinity='precomputed',
+        linkage='average',
+        n_clusters=2,
+    )
+
+    for i in range(2, n_groups + 1):
+
+        best_score = None
+        best_k = None
+
+        # Perform a binary split
+        for k in unique_groups:
+            y = y_true['cluster'].to_numpy(copy=True)
+            y[y != k] = -1
+            y[y == k] = 1
+
+            y_pred = clf.fit_predict(D)
+            score = adjusted_rand_score(y, y_pred)
+
+            if best_score is None:
+                best_score = score
+                best_k = k
+            elif score > best_score:
+                best_score = score
+                best_k = k
+
+        print('best score =', best_score)
+        print('best k =', best_k)

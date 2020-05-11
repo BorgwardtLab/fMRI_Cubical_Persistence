@@ -355,7 +355,7 @@ if __name__ == '__main__':
 
         plt.colorbar(scatter)
 
-        path = f'../figures/persistence_images_embeddings/{basename}'
+        path = f'../../figures/persistence_images_embeddings/{basename}'
 
         plt.tight_layout()
         plt.savefig(

@@ -175,6 +175,21 @@ def embed(
         bbox_inches='tight'
     )
 
+    # Save the raw data as well
+    df = pd.DataFrame(X)
+    df.index.name = 'time'
+
+    if args.dimension == 3:
+        df.columns = ['x', 'y', 'z']
+    elif args.dimension == 2:
+        df.columns = ['x', 'y']
+
+    df.to_csv(
+        os.path.join(path, f'{name}.csv'),
+        float_format='%.02f',
+        index=True
+    )
+
     if args.dimension == 2:
         ax.clear()
         ax.set_title(subject)

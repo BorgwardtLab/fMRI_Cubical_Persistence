@@ -4,6 +4,7 @@
 # set of pre-defined labels.
 
 import argparse
+import os
 
 import numpy as np
 import pandas as pd
@@ -159,17 +160,22 @@ if __name__ == '__main__':
     n_groups = len(Y['cluster'].unique())
     unique_groups = sorted(Y['cluster'].unique())
 
-    distances = np.loadtxt(args.DISTANCES)
+    for filename in args.DISTANCES:
+        print('-' * 72)
+        print(os.path.splitext(os.path.basename(filename))[0])
+        print('-' * 72)
 
-    # This checks how well we can approximate the full clustering on
-    # a global level.
-    evaluate_global_clustering(
-        distances,
-        n_groups,
-        Y['cluster']
-    )
+        distances = np.loadtxt(filename)
 
-    evaluate_local_clustering(
-        distances,
-        Y
-    )
+        # This checks how well we can approximate the full clustering on
+        # a global level.
+        evaluate_global_clustering(
+            distances,
+            n_groups,
+            Y['cluster']
+        )
+
+        evaluate_local_clustering(
+            distances,
+            Y
+        )

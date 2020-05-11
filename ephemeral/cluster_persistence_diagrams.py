@@ -201,6 +201,14 @@ if __name__ == '__main__':
     np.savetxt(out_filename, M)
     np.savetxt('Labels.txt', y, fmt='%s')
 
+    # Also store the distance matrix. This makes it possible not only to
+    # completely reconstruct the clustering but also try out different
+    # settings for each algorithm later on.
+    out_filename = f'Distance_matrix_{args.experiment}_'\
+                   f'{args.method}_p{args.power}_d_{dimensions_str}.txt'
+
+    np.savetxt(out_filename, D)
+
     # Get cluster assignments for simple binary clustering; this is the
     # easiest clustering we can do here.
     clf = AgglomerativeClustering(affinity='precomputed', linkage='average')

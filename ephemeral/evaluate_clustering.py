@@ -54,15 +54,19 @@ if __name__ == '__main__':
         n_clusters=2,
     )
 
+    y_true = y_true['cluster'].to_numpy()
+
     for i in range(2, n_groups + 1):
 
         best_prediction = None
         best_score = None
         best_k = None
 
-        # Perform a binary split
+        # Perform a binary split of the 'remaining' labels; the pool of
+        # available labels gets smaller and smaller, as we are removing
+        # the items for which we already have a prediction.
         for k in unique_groups:
-            y = y_true['cluster'].to_numpy(copy=True)
+            y = np.array(y_true)
             y[y != k] = -1
             y[y == k] = 1
 
@@ -84,11 +88,12 @@ if __name__ == '__main__':
         counts = np.bincount(best_prediction)
         smaller_group = np.argmin(counts)
 
-        # Rewmove the predictions under the 'best' clustering identified
+        # Remove the predictions under the 'best' clustering identified
         # above.
         indices, = np.nonzero(best_prediction != smaller_group)
         D = D[indices, :]
         D = D[:, indices]
 
-        print(D.shape)
-        raise 'heck'
+        # Ditto for the 'true' labels (note that we could remove some
+        # incorrect labels here).
+        y_true = y_true[indices]

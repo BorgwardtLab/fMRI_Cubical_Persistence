@@ -13,6 +13,20 @@ from sklearn.metrics import adjusted_mutual_info_score
 from sklearn.metrics import adjusted_rand_score
 
 
+def evaluate_global_clustering(D, k, y_true):
+    """Evaluate global clustering of full distance matrix."""
+    clf = AgglomerativeClustering(
+        affinity='precomputed',
+        linkage='average',
+        n_clusters=k,
+    )
+
+    y_pred = clf.fit_predict(D)
+
+    print('AMI:',  adjusted_mutual_info_score(y_true, y_pred))
+    print('ARI:',  adjusted_rand_score(y_true, y_pred))
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('DISTANCES', help='Path to a distance matrix.')
@@ -42,6 +56,14 @@ if __name__ == '__main__':
     unique_groups = sorted(y_true['cluster'].unique())
 
     distances = np.loadtxt(args.DISTANCES)
+
+    # This checks how well we can approximate the full clustering on
+    # a global level.
+    evaluate_global_clustering(
+        distances,
+        n_groups,
+        y_true['cluster']
+    )
 
     # Required to perform recursive splits of clusters; this is done in
     # order to measure the agreement between actual labels and predicted

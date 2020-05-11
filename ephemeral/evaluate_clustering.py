@@ -129,12 +129,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('DISTANCES', help='Path to a distance matrix.')
 
-    parser.add_argument(
-        '-c', '-clusters',
-        type=int,
-        help='Specifies the number of clusters to use.'
-    )
-
     # TODO: does it make sense to make this configurable or can we
     # 'guess' it directly from the path to the linkage matrix?
     parser.add_argument(

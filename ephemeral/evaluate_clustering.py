@@ -83,6 +83,8 @@ if __name__ == '__main__':
     y_true = Y['cluster'].to_numpy()
     y_pred_synthetic = np.full(y_true.shape, -1)
 
+    original_indices = np.arange(len(y_true))
+
     for i in range(2, n_groups + 1):
 
         best_prediction = None
@@ -127,8 +129,10 @@ if __name__ == '__main__':
         y_true = y_true[indices]
 
         # Create synthetic predictions by re-using the original label
-        # from above.
-        y_pred_synthetic[~indices] = best_k
+        # from above. Make sure that this vector uses the *original*,
+        # i.e. the ones pertaining to `D`, indices.
+        original_indices = original_indices[indices]
+        y_pred_synthetic[~original_indices] = best_k
 
     # Reset the original labels
     y_true = Y['cluster'].to_numpy()

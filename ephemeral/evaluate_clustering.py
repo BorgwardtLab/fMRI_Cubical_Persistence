@@ -23,6 +23,8 @@ def evaluate_global_clustering(D, k, y_true):
 
     y_pred = clf.fit_predict(D)
 
+    print(y_pred)
+
     print('AMI:',  adjusted_mutual_info_score(y_true, y_pred))
     print('ARI:',  adjusted_rand_score(y_true, y_pred))
 
@@ -120,8 +122,17 @@ if __name__ == '__main__':
         D = D[indices, :]
         D = D[:, indices]
 
-        y_pred_synthetic[~indices] = best_k
-
         # Ditto for the 'true' labels (note that we could remove some
         # incorrect labels here).
         y_true = y_true[indices]
+
+        # Create synthetic predictions by re-using the original label
+        # from above.
+        y_pred_synthetic[~indices] = best_k
+
+    # Reset the original labels
+    y_true = Y['cluster'].to_numpy()
+
+    print(y_pred_synthetic)
+    print('AMI:',  adjusted_mutual_info_score(y_true, y_pred_synthetic))
+    print('ARI:',  adjusted_rand_score(y_true, y_pred_synthetic))

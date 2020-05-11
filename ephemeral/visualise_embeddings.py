@@ -84,7 +84,8 @@ def embed(
 
     if rolling is not None:
         df = pd.DataFrame(X)
-        df = df.rolling(rolling, axis=1, min_periods=1).mean()
+        df = df.rolling(rolling, axis=0, min_periods=1).mean()
+
         X = df.to_numpy()
 
     # scaler = StandardScaler()

@@ -127,7 +127,13 @@ def evaluate_local_clustering(distances, Y):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('DISTANCES', help='Path to a distance matrix.')
+
+    parser.add_argument(
+        'DISTANCES',
+        type=str,
+        nargs='+',
+        help='Path to a distance matrix.'
+    )
 
     # TODO: does it make sense to make this configurable or can we
     # 'guess' it directly from the path to the linkage matrix?

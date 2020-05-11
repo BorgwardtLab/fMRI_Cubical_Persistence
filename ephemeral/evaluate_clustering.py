@@ -153,17 +153,21 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # Contains more than just the cluster assignments; this data frame
-    # also has a column for the participant label itself.
-    Y = pd.read_csv('../data/participant_groups.csv')
-
-    n_groups = len(Y['cluster'].unique())
-    unique_groups = sorted(Y['cluster'].unique())
-
     for filename in args.DISTANCES:
         print('-' * 72)
         print(os.path.splitext(os.path.basename(filename))[0])
         print('-' * 72)
+
+        # FIXME: copying everything should not be necessary, but I think
+        # there is a bug in the local analysis that overwrites something
+        # in the global scope.
+
+        # Contains more than just the cluster assignments; this data frame
+        # also has a column for the participant label itself.
+        Y = pd.read_csv('../data/participant_groups.csv')
+
+        n_groups = len(Y['cluster'].unique())
+        unique_groups = sorted(Y['cluster'].unique())
 
         distances = np.loadtxt(filename)
 

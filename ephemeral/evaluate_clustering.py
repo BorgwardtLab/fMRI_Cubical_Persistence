@@ -56,6 +56,7 @@ if __name__ == '__main__':
 
     for i in range(2, n_groups + 1):
 
+        best_prediction = None
         best_score = None
         best_k = None
 
@@ -72,8 +73,22 @@ if __name__ == '__main__':
                 best_score = score
                 best_k = k
             elif score > best_score:
+                best_prediction = y_pred
                 best_score = score
                 best_k = k
 
+        print('best prediction =', best_prediction)
         print('best score =', best_score)
         print('best k =', best_k)
+
+        counts = np.bincount(best_prediction)
+        smaller_group = np.argmin(counts)
+
+        # Rewmove the predictions under the 'best' clustering identified
+        # above.
+        indices, = np.nonzero(best_prediction != smaller_group)
+        D = D[indices, :]
+        D = D[:, indices]
+
+        print(D.shape)
+        raise 'heck'

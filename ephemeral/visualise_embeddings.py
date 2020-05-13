@@ -156,6 +156,8 @@ def embed(
 
     if rolling is not None:
         name += f'_r{rolling}'
+    else:
+        name += f'_r0'
 
     # TODO: this cannot handle callable arguments yet, but at least some
     # simple defaults.
@@ -183,7 +185,7 @@ def embed(
 
     df.to_csv(
         os.path.join(path, f'{name}.csv'),
-        float_format='%.02f',
+        float_format='%.04f',
         index=True
     )
 

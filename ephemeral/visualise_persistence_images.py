@@ -18,6 +18,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('INPUT', type=str, help='Input file')
 
+    # TODO: make into keyword
+    show_title = False
+
     args = parser.parse_args()
 
     basename = os.path.basename(args.INPUT)
@@ -43,7 +46,20 @@ if __name__ == '__main__':
         output = f'../results/average_persistence_images/{basename}'
         os.makedirs(output, exist_ok=True)
 
+        for index, image in enumerate(images):
+            plt.imshow(image.reshape(r, r))
+            plt.axis('off')
+            plt.tight_layout()
+            plt.savefig(
+                f'{output}/{subject}_{index:03d}.png',
+                bbox_inches=0,
+            )
+
         plt.imshow(X)
-        plt.title(subject)
+
+        if show_title:
+            plt.title(subject)
+
+        plt.axis('off')
         plt.tight_layout()
         plt.savefig(f'{output}/{subject}.png', bbox_inches='tight')

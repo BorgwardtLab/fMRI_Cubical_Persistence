@@ -110,16 +110,6 @@ def embed(
         return
 
     colours = np.linspace(0, 1, len(X))
-    points = X.reshape(-1, 1, args.dimension)
-    segments = np.concatenate([points[:-1], points[1:]], axis=1)
-
-    if args.dimension == 2:
-        instance = matplotlib.collections.LineCollection
-    elif args.dimension == 3:
-        instance = Line3DCollection
-
-    lc = instance(segments, cmap='Spectral')
-    lc.set_array(colours)
 
     if args.dimension == 3:
         fig = plt.figure()
@@ -136,7 +126,7 @@ def embed(
     max_y = X[:, 1].max()
 
     if args.dimension == 3:
-        ax.add_collection3d(lc)
+        ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=colours)
 
         min_z = X[:, 2].min()
         max_z = X[:, 2].max()
@@ -144,7 +134,7 @@ def embed(
         ax.set_zlim(min_z, max_z)
 
     elif args.dimension == 2:
-        ax.add_collection(lc)
+        ax.scatter(X[:, 0], X[:, 1], c=colours, cmap='Spectral')
 
     ax.set_xlim(min_x, max_x)
     ax.set_ylim(min_y, max_y)
@@ -197,7 +187,8 @@ def embed(
         index=True
     )
 
-    if args.dimension == 2:
+    # FIXME: make density calculation configurable
+    if args.dimension == 2 and False:
         ax.clear()
         ax.set_title(subject)
 

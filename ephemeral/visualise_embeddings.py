@@ -100,10 +100,14 @@ def embed(
         # TODO: check whether the classifier supports this
         encoder.set_params(dissimilarity='precomputed')
 
-    if refit:
-        X = encoder.fit_transform(X)
-    else:
-        X = encoder.transform(X)
+    try:
+        if refit:
+            X = encoder.fit_transform(X)
+        else:
+            X = encoder.transform(X)
+    except ValueError:
+        # Nothing to do but to move on...
+        return
 
     colours = np.linspace(0, 1, len(X))
     points = X.reshape(-1, 1, args.dimension)
@@ -159,6 +163,9 @@ def embed(
         name += f'{prefix}'
 
     name += f'_{args.dimension}D'
+
+    if rolling is not None:
+        name += f'_r{rolling}'
 
     # TODO: this cannot handle callable arguments yet, but at least some
     # simple defaults.
@@ -285,6 +292,7 @@ if __name__ == '__main__':
     elif args.encoder == 'phate':
         encoder = PHATE(
             n_components=args.dimension,
+            mds_solver='smacof',
             random_state=42,
         )
     elif args.encoder == 'm-phate':

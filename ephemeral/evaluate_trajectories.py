@@ -24,7 +24,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.t is None:
-        args.t = args.k
+        args.t = 2 * args.k
 
     incoherency_values = []
 
@@ -51,5 +51,8 @@ if __name__ == '__main__':
 
         incoherency_values.append(n_incoherent_points / len(X) * 100)
 
-    sns.distplot(incoherency_values, bins=20)
+    df = pd.read_csv('../data/participant_groups.csv')
+    df['incoherency'] = incoherency_values
+
+    sns.catplot(x='cluster', y='incoherency', kind='box', data=df);
     plt.show()

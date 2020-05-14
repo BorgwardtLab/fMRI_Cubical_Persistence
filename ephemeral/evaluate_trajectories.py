@@ -9,6 +9,9 @@ import argparse
 import numpy as np
 import pandas as pd
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -47,3 +50,6 @@ if __name__ == '__main__':
             n_incoherent_points += is_incoherent
 
         incoherency_values.append(n_incoherent_points / len(X) * 100)
+
+    sns.distplot(incoherency_values, bins=20)
+    plt.show()

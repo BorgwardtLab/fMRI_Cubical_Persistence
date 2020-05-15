@@ -24,7 +24,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.t is None:
-        args.t = 2 * args.k
+        args.t = args.k
 
     incoherency_values = []
 
@@ -49,10 +49,14 @@ if __name__ == '__main__':
 
             n_incoherent_points += is_incoherent
 
-        incoherency_values.append(n_incoherent_points / len(X) * 100)
+        incoherency_values.append(100 - n_incoherent_points / len(X) * 100)
 
     df = pd.read_csv('../data/participant_groups.csv')
     df['incoherency'] = incoherency_values
 
-    sns.catplot(x='cluster', y='incoherency', kind='box', data=df);
+    print(df.groupby('cluster')['incoherency'].agg(['mean', 'std']))
+
+    print(df[df['cluster'] != 5].agg(['mean', 'std']))
+
+    sns.catplot(x='cluster', y='incoherency', kind='swarm', data=df);
     plt.show()

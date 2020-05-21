@@ -66,14 +66,14 @@ if __name__ == '__main__':
     # Report distance to the mean for each subject
     for index, row in enumerate(X):
         if not args.statistic:
-            pass
+            distances = np.sqrt(np.sum(np.abs(row - mu)**2, axis=-1))
         else:
             distances = np.abs(row - mu)
 
         D.append(distances)
 
     D = np.array(D)
-    D = D / np.max(D, axis=0)
+    D = (D - np.min(D, axis=0)) / (np.max(D, axis=0) - np.min(D, axis=0))
 
     df = pd.DataFrame(D)
     df.std().plot()

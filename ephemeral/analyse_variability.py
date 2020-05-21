@@ -9,6 +9,8 @@ import glob
 import json
 import os
 
+import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
 
@@ -55,7 +57,25 @@ if __name__ == '__main__':
 
     X = np.array(X)
 
-    # First dimension of `X` represents the time steps. Need to
-    # calculate the mean over the remaining dimensions.
+    # First dimension of `X` represents the subject, which is the axis
+    # we to calculate the mean over in all cases.
+    mu = np.mean(X, axis=0)
 
-    print(X.shape)
+    D = []
+
+    # Report distance to the mean for each subject
+    for index, row in enumerate(X):
+        if not args.statistic:
+            pass
+        else:
+            distances = np.abs(row - mu)
+
+        D.append(distances)
+
+    D = np.array(D)
+    D = D / np.max(D, axis=0)
+
+    df = pd.DataFrame(D)
+    df.std().plot()
+
+    plt.show()

@@ -55,7 +55,13 @@ if __name__ == '__main__':
         # Deal with a persistence image structure, direct extraction is
         # possible.
         if not args.statistic:
-            X.append(data[subject])
+            if args.rolling == 0:
+                X.append(data[subject])
+            else:
+                df = pd.DataFrame(data[subject])
+                df = df.rolling(args.rolling, axis=0, min_periods=1).mean()
+
+                X.append(df.to_numpy())
 
         # Deals with a summary statistic, requires a proper selection
         # first.

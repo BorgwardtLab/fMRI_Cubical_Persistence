@@ -26,7 +26,7 @@ if __name__ == '__main__':
     if args.t is None:
         args.t = args.k
 
-    incoherency_values = []
+    coherence_values = []
 
     for filename in args.INPUT:
         df = pd.read_csv(filename, index_col='time')
@@ -49,14 +49,21 @@ if __name__ == '__main__':
 
             n_incoherent_points += is_incoherent
 
-        incoherency_values.append(100 - n_incoherent_points / len(X) * 100)
+        coherence_values.append(100 - n_incoherent_points / len(X) * 100)
 
     df = pd.read_csv('../data/participant_groups.csv')
-    df['coherency'] = incoherency_values
+    df['coherence'] = coherence_values
 
-    print(df.groupby('cluster')['coherency'].agg(['mean', 'std']))
+    print(df.groupby('cluster')['coherence'].agg(['mean', 'std']))
 
     print(df[df['cluster'] != 5].agg(['mean', 'std']))
 
-    sns.catplot(x='cluster', y='coherency', kind='swarm', data=df);
+    ax = sns.boxplot(x='cluster', y='coherence', data=df)
+    ax = sns.swarmplot(
+            x='cluster', y='coherence',
+            data=df,
+            ax=ax,
+            color='.25'
+        )
+
     plt.show()

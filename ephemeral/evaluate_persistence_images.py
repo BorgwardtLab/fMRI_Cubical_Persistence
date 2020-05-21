@@ -44,7 +44,6 @@ if __name__ == '__main__':
             continue
 
         X = np.array(data[subject])
-        print(X.shape)
 
         nn = NearestNeighbors(n_neighbors=args.k)
         nn.fit(X)
@@ -72,5 +71,12 @@ if __name__ == '__main__':
 
     print(df[df['cluster'] != 5].agg(['mean', 'std']))
 
-    sns.catplot(x='cluster', y='coherence', kind='swarm', data=df);
+    ax = sns.catplot(x='cluster', y='coherence', kind='box', data=df)
+    ax = sns.catplot(
+            x='cluster', y='coherence',
+            kind='swarm',
+            data=df,
+            ax=ax
+        )
+
     plt.show()

@@ -71,12 +71,12 @@ if __name__ == '__main__':
 
     print(df[df['cluster'] != 5].agg(['mean', 'std']))
 
-    ax = sns.catplot(x='cluster', y='coherence', kind='box', data=df)
-    ax = sns.catplot(
+    ax = sns.boxplot(x='cluster', y='coherence', data=df)
+    ax = sns.swarmplot(
             x='cluster', y='coherence',
-            kind='swarm',
             data=df,
-            ax=ax
+            ax=ax,
+            color='.25'
         )
 
     plt.show()

@@ -60,7 +60,7 @@ if __name__ == '__main__':
         # Deals with a summary statistic, requires a proper selection
         # first.
         else:
-            if args.rolling == 0: 
+            if args.rolling == 0:
                 X.append(data[subject][args.statistic])
             else:
                 df = pd.Series(data[subject][args.statistic])

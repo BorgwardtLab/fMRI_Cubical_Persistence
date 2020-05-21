@@ -7,6 +7,7 @@ import argparse
 import json
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import numpy as np
 import pandas as pd
@@ -31,6 +32,12 @@ if __name__ == '__main__':
         help='If set, uses a rolling window to smooth data.',
         type=int,
         default=0
+    )
+
+    parser.add_argument(
+        '-g', '--group',
+        help='If set, groups according to cohort.',
+        action='store_true'
     )
 
     args = parser.parse_args()
@@ -89,12 +96,35 @@ if __name__ == '__main__':
         D.append(distances)
 
     D = np.array(D)
-    D = (D - np.min(D, axis=0)) / (np.max(D, axis=0) - np.min(D, axis=0))
+
+    # TODO: check whether this makes sense
+    if not args.group:
+        D = (D - np.min(D, axis=0)) / (np.max(D, axis=0) - np.min(D, axis=0))
 
     df = pd.DataFrame(D)
 
     df_groups = pd.read_csv('../data/participant_groups.csv')
 
-    df.std().plot()
+    if args.group:
+        df['cohort'] = df_groups['cluster']
+        df['cohort'] = df['cohort'].transform(lambda x: 'g' + str(x)) 
+
+        df = df.groupby('cohort').agg(np.std).reset_index().melt(
+                'cohort',
+                var_name='time',
+                value_name='std'
+            )
+
+        print(df.dtypes)
+
+        sns.lineplot(
+            x='time',
+            y='std',
+            hue='cohort',
+            data=df
+        )
+
+    else:
+        df.std().plot()
 
     plt.show()

@@ -52,11 +52,11 @@ if __name__ == '__main__':
         incoherency_values.append(100 - n_incoherent_points / len(X) * 100)
 
     df = pd.read_csv('../data/participant_groups.csv')
-    df['incoherency'] = incoherency_values
+    df['coherency'] = incoherency_values
 
-    print(df.groupby('cluster')['incoherency'].agg(['mean', 'std']))
+    print(df.groupby('cluster')['coherency'].agg(['mean', 'std']))
 
     print(df[df['cluster'] != 5].agg(['mean', 'std']))
 
-    sns.catplot(x='cluster', y='incoherency', kind='swarm', data=df);
+    sns.catplot(x='cluster', y='coherency', kind='swarm', data=df);
     plt.show()

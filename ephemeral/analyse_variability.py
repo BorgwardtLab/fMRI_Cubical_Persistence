@@ -29,6 +29,13 @@ if __name__ == '__main__':
         default='',
     )
 
+    parser.add_argument(
+        '-r', '--rolling',
+        help='If set, uses a rolling window to smooth data.',
+        type=int,
+        default=0
+    )
+
     args = parser.parse_args()
 
     with open(args.INPUT) as f:
@@ -53,7 +60,13 @@ if __name__ == '__main__':
         # Deals with a summary statistic, requires a proper selection
         # first.
         else:
-            X.append(data[subject][args.statistic])
+            if args.rolling == 0: 
+                X.append(data[subject][args.statistic])
+            else:
+                df = pd.Series(data[subject][args.statistic])
+                df = df.rolling(args.rolling, axis=0, min_periods=1).mean()
+
+                X.append(df.to_numpy())
 
     X = np.array(X)
 

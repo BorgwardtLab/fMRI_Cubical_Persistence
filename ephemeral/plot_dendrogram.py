@@ -43,4 +43,4 @@ if __name__ == '__main__':
 
         plt.title(basename)
         plt.tight_layout()
-        plt.savefig(basename + '.svg', bbox_inches='tight')
+        plt.savefig(basename + '.png', bbox_inches='tight')

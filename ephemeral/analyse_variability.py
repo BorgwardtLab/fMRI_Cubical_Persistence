@@ -4,10 +4,7 @@
 # curves or persistence images) for the data set.
 
 import argparse
-import collections
-import glob
 import json
-import os
 
 import matplotlib.pyplot as plt
 
@@ -95,6 +92,9 @@ if __name__ == '__main__':
     D = (D - np.min(D, axis=0)) / (np.max(D, axis=0) - np.min(D, axis=0))
 
     df = pd.DataFrame(D)
+
+    df_groups = pd.read_csv('../data/participant_groups.csv')
+
     df.std().plot()
 
     plt.show()

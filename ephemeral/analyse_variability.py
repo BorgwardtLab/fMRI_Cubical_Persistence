@@ -127,4 +127,9 @@ if __name__ == '__main__':
     else:
         df.std().plot()
 
+        print(df.std().to_csv(
+            index_label='time',
+            header=['variability'])
+        )
+
     plt.show()

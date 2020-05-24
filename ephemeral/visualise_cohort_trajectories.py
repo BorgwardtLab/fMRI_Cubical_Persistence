@@ -14,6 +14,10 @@ import sys
 import numpy as np
 import pandas as pd
 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import StandardScaler
 
@@ -176,6 +180,11 @@ def embed(Z, rolling=None, joint_embedding=False):
 
     df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
     df['time'] = np.array(list(np.arange(m)) * n).ravel()
+
+    g = sns.FacetGrid(df, col='cohort', hue='time', palette='Spectral')
+    g.map(sns.scatterplot, 'x', 'y')
+
+    plt.show()
 
 
 if __name__ == '__main__':

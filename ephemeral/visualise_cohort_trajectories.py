@@ -198,8 +198,18 @@ if __name__ == '__main__':
     )
 
     y = df_groups['cluster'].values
+    cohorts = sorted(set(y))
 
     assert X.shape[0] == len(y)
+
+    # Regardless of the operating mode, we need a mean representation of
+    # each cohort. This reduces the dimension of our tensor from the no.
+    # of participants to the number of cohorts.
+    Z = np.stack(
+        [np.mean(X[y == cohort], axis=0) for cohort in cohorts],
+    )
+
+    assert Z.shape[0] == len(cohorts)
 
     if args.global_embedding:
         if args.dimension == 3:

@@ -107,15 +107,24 @@ if __name__ == '__main__':
 
     if args.group:
         df['cohort'] = df_groups['cluster']
-        df['cohort'] = df['cohort'].transform(lambda x: 'g' + str(x)) 
+        df['cohort'] = df['cohort'].transform(lambda x: 'g' + str(x))
+
+        def _normalise_cohort(df):
+            df = df.select_dtypes(np.number)
+            df = (df - df.min()) / (df.max() - df.min())
+            return df
+
+        # Make the cohort curves configurable; since we are only showing
+        # relative variabilities, this is justified.
+        df.loc[:, df.columns.drop('cohort')] = df.groupby('cohort').apply(
+            _normalise_cohort
+        )
 
         df = df.groupby('cohort').agg(np.std).reset_index().melt(
                 'cohort',
                 var_name='time',
                 value_name='std'
             )
-
-        print(df.dtypes)
 
         sns.lineplot(
             x='time',

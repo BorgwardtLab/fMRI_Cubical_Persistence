@@ -120,8 +120,8 @@ if __name__ == '__main__':
             _normalise_cohort
         )
 
-        df = df.groupby('cohort').agg(np.std) \
-            .apply(lambda x: x - x.mean())    \
+        df = df.groupby('cohort').agg(np.std)      \
+            .apply(lambda x: x - x.mean(), axis=1) \
             .reset_index().melt(
                 'cohort',
                 var_name='time',

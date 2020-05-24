@@ -120,18 +120,16 @@ if __name__ == '__main__':
             _normalise_cohort
         )
 
-        df = df.groupby('cohort').agg(np.std).reset_index().melt(
+        df = df.groupby('cohort').agg(np.std) \
+            .apply(lambda x: x - x.mean())    \
+            .reset_index().melt(
                 'cohort',
                 var_name='time',
                 value_name='std'
-            )
-
-        sns.lineplot(
-            x='time',
-            y='std',
-            hue='cohort',
-            data=df
         )
+
+        g = sns.FacetGrid(df, col='cohort')
+        g.map(sns.lineplot, 'time', 'std')
 
     else:
         df.std().plot()

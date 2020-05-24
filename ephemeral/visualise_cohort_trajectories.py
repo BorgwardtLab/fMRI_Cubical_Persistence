@@ -181,8 +181,13 @@ def embed(Z, rolling=None, joint_embedding=False):
     df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
     df['time'] = np.array(list(np.arange(m)) * n).ravel()
 
-    g = sns.FacetGrid(df, col='cohort', hue='time', palette='Spectral')
-    g.map(sns.scatterplot, 'x', 'y')
+    g = sns.FacetGrid(
+            df,
+            col='cohort',
+            hue='time',
+            palette='Spectral')
+
+    g = g.map(plt.scatter, 'x', 'y')
 
     plt.show()
 

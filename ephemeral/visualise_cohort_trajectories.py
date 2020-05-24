@@ -154,11 +154,12 @@ def foo():
 
 
 def embed(Z, rolling=None, joint_embedding=False):
-    """Main embedding function."""
+    """Embedding function."""
     encoder = PHATE(
         n_components=2,
         mds_solver='smacof',
         random_state=42,
+        n_pca=80,
     )
 
     # Will be filled with the lower-dimensional representations of each

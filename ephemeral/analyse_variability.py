@@ -128,7 +128,7 @@ if __name__ == '__main__':
                 value_name='std'
         )
 
-        g = sns.FacetGrid(df, col='cohort')
+        g = sns.FacetGrid(df, col='cohort', height=2, aspect=3)
         g.map(sns.lineplot, 'time', 'std')
 
     else:
@@ -139,4 +139,5 @@ if __name__ == '__main__':
             header=['variability'])
         )
 
+    plt.tight_layout()
     plt.show()

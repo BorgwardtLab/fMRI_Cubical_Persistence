@@ -167,14 +167,15 @@ def embed(Z, rolling=None, joint_embedding=False):
     df = []
 
     if joint_embedding:
-        pass
+        X = encoder.fit_transform(np.vstack(Z))
+        df = pd.DataFrame(X, columns=['x', 'y'])
     else:
         for cohort in Z:
             X = encoder.fit_transform(cohort)
             df.append(X)
 
-    df = np.concatenate(df)
-    df = pd.DataFrame(df, columns=['x', 'y'])
+        df = np.concatenate(df)
+        df = pd.DataFrame(df, columns=['x', 'y'])
 
     n = Z.shape[0]  # number of cohorts
     m = Z.shape[1]  # number of time steps
@@ -186,7 +187,9 @@ def embed(Z, rolling=None, joint_embedding=False):
             df,
             col='cohort',
             hue='time',
-            palette='Spectral')
+            palette='Spectral',
+            sharex=False,
+            sharey=False)
 
     g = g.map(plt.scatter, 'x', 'y')
 

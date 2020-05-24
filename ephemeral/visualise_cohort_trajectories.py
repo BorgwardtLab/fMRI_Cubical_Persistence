@@ -149,6 +149,35 @@ def foo():
     plt.close(fig)
 
 
+def embed(Z, rolling=None, joint_embedding=False):
+    """Main embedding function."""
+    encoder = PHATE(
+        n_components=2,
+        mds_solver='smacof',
+        random_state=42,
+    )
+
+    # Will be filled with the lower-dimensional representations of each
+    # cohort. This makes visualising everything easier.
+    df = []
+
+    if joint_embedding:
+        pass
+    else:
+        for cohort in Z:
+            X = encoder.fit_transform(cohort)
+            df.append(X)
+
+    df = np.concatenate(df)
+    df = pd.DataFrame(df, columns=['x', 'y'])
+
+    n = Z.shape[0]  # number of cohorts
+    m = Z.shape[1]  # number of time steps
+
+    df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
+    df['time'] = np.array(list(np.arange(m)) * n).ravel()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -181,12 +210,6 @@ if __name__ == '__main__':
     with open(args.INPUT) as f:
         data = json.load(f)
 
-    encoder = PHATE(
-        n_components=2,
-        mds_solver='smacof',
-        random_state=42,
-    )
-
     # Filter subjects; this could be solved smarter...
     subjects = data.keys()
     subjects = [subject for subject in subjects if len(subject) == 3]
@@ -210,6 +233,8 @@ if __name__ == '__main__':
     )
 
     assert Z.shape[0] == len(cohorts)
+
+    embed(Z, args.rolling, args.joint_embedding)
 
     if args.global_embedding:
         if args.dimension == 3:

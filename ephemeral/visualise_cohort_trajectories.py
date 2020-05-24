@@ -171,6 +171,14 @@ def embed(Z, rolling=None, joint_embedding=False):
         df = pd.DataFrame(X, columns=['x', 'y'])
     else:
         for cohort in Z:
+
+            if rolling is not None:
+                cohort = pd.DataFrame(cohort).rolling(
+                            rolling,
+                            axis=0,
+                            min_periods=1
+                        ).mean()
+
             X = encoder.fit_transform(cohort)
             df.append(X)
 

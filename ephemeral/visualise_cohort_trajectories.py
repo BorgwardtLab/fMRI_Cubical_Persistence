@@ -77,6 +77,13 @@ if __name__ == '__main__':
         type=str
     )
 
+    # TODO: this should be made configurable
+    parser.add_argument(
+        '-d', '--drop',
+        action='store_true',
+        help='If set, drops measurements unrelated to the movie'
+    )
+
     parser.add_argument(
         '-j', '--joint-embedding',
         action='store_true',
@@ -104,6 +111,10 @@ if __name__ == '__main__':
     X = np.concatenate(
         [np.array([data[subject]]) for subject in subjects]
     )
+
+    # TODO: make extent of removal configurable
+    if args.drop:
+        X = X[:, 7:, :]
 
     y = df_groups['cluster'].values
     cohorts = sorted(set(y))

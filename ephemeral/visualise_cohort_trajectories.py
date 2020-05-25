@@ -78,12 +78,6 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-m', '--metric',
-        help='Specifies metric for calculating embedding',
-        type=str,
-    )
-
-    parser.add_argument(
         '-j', '--joint-embedding',
         action='store_true',
         help='If set, calculates *joint* embeddings instead of separate ones'

@@ -158,9 +158,14 @@ if __name__ == '__main__':
         g.map(sns.lineplot, 'time', 'std')
 
     else:
-        df.std().plot()
+        df = df.std()
 
-        print(df.std().to_csv(
+        if args.drop:
+            df.index += 7
+
+        df.plot()
+
+        print(df.to_csv(
             index_label='time',
             header=['variability'])
         )

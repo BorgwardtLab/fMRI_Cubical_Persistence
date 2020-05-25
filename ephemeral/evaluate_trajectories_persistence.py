@@ -12,6 +12,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from subprocess import check_output
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -19,11 +21,23 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.t is None:
-        args.t = args.k
-
     for filename in args.INPUT:
         df = pd.read_csv(filename, index_col='time')
         X = df[['x', 'y']].to_numpy()
 
-        print(X)
+        min_coordinate = np.min(np.min(X, axis=0))
+        max_coordinate = np.max(np.max(X, axis=0))
+
+        X = (X - min_coordinate) / (max_coordinate - min_coordinate)
+
+        np.savetxt('/tmp/foo.txt', X, fmt='%.8f')
+
+        output = check_output(
+                ['vietoris_rips', '/tmp/foo.txt', '0.2', '2'],
+                universal_newlines=True,
+        )
+
+        #print(X)
+        print(output)
+
+        raise 'heck'

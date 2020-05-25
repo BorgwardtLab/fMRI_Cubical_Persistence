@@ -5,12 +5,17 @@
 # tool `vietoris_rips` must be available in the path.
 
 import argparse
+import io
 
 import numpy as np
 import pandas as pd
 
+from topology import PersistenceDiagram
+
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+from sklearn.metrics import pairwise_distances
 
 from subprocess import check_output
 
@@ -21,7 +26,12 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    trajectory_information = []
+
     for filename in args.INPUT:
+
+        print(filename)
+
         df = pd.read_csv(filename, index_col='time')
         X = df[['x', 'y']].to_numpy()
 
@@ -33,11 +43,29 @@ if __name__ == '__main__':
         np.savetxt('/tmp/foo.txt', X, fmt='%.8f')
 
         output = check_output(
-                ['vietoris_rips', '/tmp/foo.txt', '0.2', '2'],
+                ['vietoris_rips', '-t', '/tmp/foo.txt', '0.1', '2'],
                 universal_newlines=True,
         )
 
-        #print(X)
-        print(output)
+        output = io.StringIO(output)
+        Y = np.genfromtxt(output)
 
-        raise 'heck'
+        # This makes it easier to quantify the topological information
+        # in the trajectory.
+        D = PersistenceDiagram(
+            dimension=2,
+            creation_values=Y[:, 0],
+            destruction_values=Y[:, 1]
+        )
+
+        trajectory_information.append(
+            {
+                'infinity_norm_p1': D.infinity_norm(1.0),
+                'infinity_norm_p2': D.infinity_norm(2.0),
+                'total_persistence_p1': D.total_persistence(1.0),
+                'total_persistence_p2': D.total_persistence(2.0),
+            }
+        )
+
+    df = pd.DataFrame.from_dict(trajectory_information)
+    print(df)

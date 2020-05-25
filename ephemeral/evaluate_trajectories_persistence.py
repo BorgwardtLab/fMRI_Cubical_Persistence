@@ -7,14 +7,14 @@
 import argparse
 import io
 import subprocess
+import warnings
 
 import numpy as np
 import pandas as pd
 
 from topology import PersistenceDiagram
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+from tqdm import tqdm
 
 
 if __name__ == '__main__':
@@ -25,9 +25,8 @@ if __name__ == '__main__':
 
     trajectory_information = []
 
-    for filename in args.INPUT:
-
-        print(filename)
+    for filename in tqdm(args.INPUT, desc='File'):
+        tqdm.write(filename)
 
         df = pd.read_csv(filename, index_col='time')
         X = df[['x', 'y']].to_numpy()
@@ -40,7 +39,7 @@ if __name__ == '__main__':
         np.savetxt('/tmp/foo.txt', X, fmt='%.8f')
 
         output = subprocess.check_output(
-                ['vietoris_rips', '-t', '/tmp/foo.txt', '0.05', '2'],
+                ['vietoris_rips', '-t', '/tmp/foo.txt', '0.3', '2'],
                 universal_newlines=True,
                 stderr=subprocess.DEVNULL
         )
@@ -76,4 +75,5 @@ if __name__ == '__main__':
         )
 
     df = pd.DataFrame.from_dict(trajectory_information)
+    pd.options.display.max_rows = 999
     print(df)

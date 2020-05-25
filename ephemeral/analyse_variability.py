@@ -66,10 +66,21 @@ if __name__ == '__main__':
         # Deal with a persistence image structure, direct extraction is
         # possible.
         if not args.statistic:
-            if args.rolling == 0:
-                X.append(data[subject])
+
+            # Remove data from the relevant statistic if so desired by
+            # the client. This makes sense if not all time steps are
+            # relevant for the experiment.
+            #
+            # TODO: make extent of drop configurable
+            if args.drop:
+                x = data[subject][7:]
             else:
-                df = pd.DataFrame(data[subject])
+                x = data[subject]
+
+            if args.rolling == 0:
+                X.append(x)
+            else:
+                df = pd.DataFrame(x)
                 df = df.rolling(args.rolling, axis=0, min_periods=1).mean()
 
                 X.append(df.to_numpy())

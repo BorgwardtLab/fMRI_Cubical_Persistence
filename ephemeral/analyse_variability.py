@@ -146,6 +146,9 @@ if __name__ == '__main__':
                 value_name='std'
         )
 
+        if args.drop:
+            df['time'] += 7
+
         g = sns.FacetGrid(df, col='cohort', height=2, aspect=3)
         g.map(sns.lineplot, 'time', 'std')
 

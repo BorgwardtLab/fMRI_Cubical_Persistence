@@ -6,6 +6,7 @@
 
 import argparse
 import io
+import subprocess
 
 import numpy as np
 import pandas as pd
@@ -14,10 +15,6 @@ from topology import PersistenceDiagram
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-from sklearn.metrics import pairwise_distances
-
-from subprocess import check_output
 
 
 if __name__ == '__main__':
@@ -42,13 +39,19 @@ if __name__ == '__main__':
 
         np.savetxt('/tmp/foo.txt', X, fmt='%.8f')
 
-        output = check_output(
+        output = subprocess.check_output(
                 ['vietoris_rips', '-t', '/tmp/foo.txt', '0.05', '2'],
                 universal_newlines=True,
+                stderr=subprocess.DEVNULL
         )
 
         output = io.StringIO(output)
         Y = np.genfromtxt(output)
+
+        # Add a single cycle of zero persistence, making it possible to
+        # still deal with the trajectory.
+        if Y.size == 0:
+            Y = np.array([.0, .0])
 
         # Ensures that we always obtain a 2D array even if only a single
         # cycle is present.

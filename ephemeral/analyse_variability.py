@@ -115,7 +115,12 @@ if __name__ == '__main__':
 
     D = np.array(D)
 
-    # TODO: check whether this makes sense
+    # To make the overall summary comparable, every time step needs to
+    # be normalised such that the values are distributed in [0, 1], as
+    # this will make it possible to compare *different* time steps. In
+    # the 'raw' case, an increase in topological scale would also show
+    # up as an increase in variability, even though this is *not* part
+    # of the data.
     if not args.group:
         D = (D - np.min(D, axis=0)) / (np.max(D, axis=0) - np.min(D, axis=0))
 

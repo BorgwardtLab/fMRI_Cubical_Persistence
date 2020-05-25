@@ -52,15 +52,16 @@ if __name__ == '__main__':
         coherence_values.append(100 - n_incoherent_points / len(X) * 100)
 
     df = pd.read_csv('../data/participant_groups.csv')
+    df = df.rename(columns={'cluster': 'cohort'})
     df['coherence'] = coherence_values
 
-    print(df.groupby('cluster')['coherence'].agg(['mean', 'std']))
+    print(df.groupby('cohort')['coherence'].agg(['mean', 'std']))
 
-    print(df[df['cluster'] != 5].agg(['mean', 'std']))
+    print(df[df['cohort'] != 5].agg(['mean', 'std']))
 
-    ax = sns.boxplot(x='cluster', y='coherence', data=df)
+    ax = sns.boxplot(x='cohort', y='coherence', data=df)
     ax = sns.swarmplot(
-            x='cluster', y='coherence',
+            x='cohort', y='coherence',
             data=df,
             ax=ax,
             color='.25'

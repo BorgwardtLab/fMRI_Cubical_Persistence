@@ -43,12 +43,17 @@ if __name__ == '__main__':
         np.savetxt('/tmp/foo.txt', X, fmt='%.8f')
 
         output = check_output(
-                ['vietoris_rips', '-t', '/tmp/foo.txt', '0.1', '2'],
+                ['vietoris_rips', '-t', '/tmp/foo.txt', '0.05', '2'],
                 universal_newlines=True,
         )
 
         output = io.StringIO(output)
         Y = np.genfromtxt(output)
+
+        # Ensures that we always obtain a 2D array even if only a single
+        # cycle is present.
+        if len(Y.shape) == 1:
+            Y = Y.reshape(1, -1)
 
         # This makes it easier to quantify the topological information
         # in the trajectory.

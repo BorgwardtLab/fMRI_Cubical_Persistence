@@ -8,8 +8,6 @@
 
 import argparse
 import json
-import os
-import sys
 
 import numpy as np
 import pandas as pd
@@ -17,140 +15,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
-from sklearn.metrics import pairwise_distances
-from sklearn.preprocessing import StandardScaler
-
 from phate import PHATE
-from m_phate import M_PHATE
-
-from tqdm import tqdm
-
-
-def foo():
-    X = np.array([row for row in data])
-
-    if rolling is not None:
-        df = pd.DataFrame(X)
-        df = df.rolling(rolling, axis=0, min_periods=1).mean()
-
-        X = df.to_numpy()
-
-    # scaler = StandardScaler()
-    # X = scaler.fit_transform(X)
-
-    # TODO: decide whether this will be useful or not
-    # X -= np.mean(X, axis=0)
-
-    if metric is not None:
-        X = pairwise_distances(X, metric=metric)
-
-        # TODO: check whether the classifier supports this
-        encoder.set_params(dissimilarity='precomputed')
-
-    try:
-        if refit:
-            X = encoder.fit_transform(X)
-        else:
-            X = encoder.transform(X)
-    except ValueError:
-        # Nothing to do but to move on...
-        return
-
-    colours = np.linspace(0, 1, len(X))
-
-    if args.dimension == 3:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-    else:
-        fig, ax = plt.subplots()
-
-    fig.set_size_inches(5, 5)
-    ax.set_title(subject)
-
-    min_x = X[:, 0].min()
-    max_x = X[:, 0].max()
-    min_y = X[:, 1].min()
-    max_y = X[:, 1].max()
-
-    if args.dimension == 3:
-        ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=colours)
-
-        min_z = X[:, 2].min()
-        max_z = X[:, 2].max()
-
-        ax.set_zlim(min_z, max_z)
-
-    elif args.dimension == 2:
-        ax.scatter(X[:, 0], X[:, 1], c=colours, cmap='Spectral')
-
-    ax.set_xlim(min_x, max_x)
-    ax.set_ylim(min_y, max_y)
-
-    # Create output directories for storing *all* subjects in. This
-    # depends on the input file.
-    os.makedirs(path, exist_ok=True)
-    plt.tight_layout()
-
-    name = ''
-
-    if prefix is not None:
-        name += f'{prefix}'
-
-    name += f'_{args.dimension}D'
-
-    if rolling is not None:
-        name += f'_r{rolling}'
-    else:
-        name += f'_r0'
-
-    # TODO: this cannot handle callable arguments yet, but at least some
-    # simple defaults.
-    if type(metric) is str:
-        name += f'_{metric}'
-
-    name += f'_{subject}'
-
-    if args.global_embedding:
-        name += '_global'
-
-    plt.savefig(
-        os.path.join(path, f'{name}.png'),
-        bbox_inches='tight'
-    )
-
-    # Save the raw data as well
-    df = pd.DataFrame(X)
-    df.index.name = 'time'
-
-    if args.dimension == 3:
-        df.columns = ['x', 'y', 'z']
-    elif args.dimension == 2:
-        df.columns = ['x', 'y']
-
-    df.to_csv(
-        os.path.join(path, f'{name}.csv'),
-        float_format='%.04f',
-        index=True
-    )
-
-    # FIXME: make density calculation configurable
-    if args.dimension == 2 and False:
-        ax.clear()
-        ax.set_title(subject)
-
-        ax.set_xlim(min_x, max_x)
-        ax.set_ylim(min_y, max_y)
-
-        ax.hist2d(X[:, 0], X[:, 1], bins=20, cmap='viridis')
-
-        plt.tight_layout()
-        plt.savefig(
-            os.path.join(path, f'{name}_density.png'),
-            bbox_inches='tight'
-        )
-
-    plt.close(fig)
 
 
 def embed(Z, rolling=None, joint_embedding=False):

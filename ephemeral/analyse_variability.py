@@ -34,6 +34,13 @@ if __name__ == '__main__':
         default=0
     )
 
+    # TODO: this should be made configurable
+    parser.add_argument(
+        '-d', '--drop',
+        action='store_true',
+        help='If set, drops measurements unrelated to the movie'
+    )
+
     parser.add_argument(
         '-g', '--group',
         help='If set, groups according to cohort.',
@@ -70,10 +77,21 @@ if __name__ == '__main__':
         # Deals with a summary statistic, requires a proper selection
         # first.
         else:
-            if args.rolling == 0:
-                X.append(data[subject][args.statistic])
+
+            # Remove data from the relevant statistic if so desired by
+            # the client. This makes sense if not all time steps are
+            # relevant for the experiment.
+            #
+            # TODO: make extent of drop configurable
+            if args.drop:
+                x = data[subject][args.statistic][7:]
             else:
-                df = pd.Series(data[subject][args.statistic])
+                x = data[subject][args.statistic]
+
+            if args.rolling == 0:
+                X.append(x)
+            else:
+                df = pd.Series(x)
                 df = df.rolling(args.rolling, axis=0, min_periods=1).mean()
 
                 X.append(df.to_numpy())

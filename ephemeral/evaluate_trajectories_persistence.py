@@ -39,7 +39,7 @@ if __name__ == '__main__':
         np.savetxt('/tmp/foo.txt', X, fmt='%.8f')
 
         output = subprocess.check_output(
-                ['vietoris_rips', '-t', '/tmp/foo.txt', '0.3', '2'],
+                ['vietoris_rips', '-t', '/tmp/foo.txt', '0.5', '2'],
                 universal_newlines=True,
                 stderr=subprocess.DEVNULL
         )
@@ -76,4 +76,4 @@ if __name__ == '__main__':
 
     df = pd.DataFrame.from_dict(trajectory_information)
     pd.options.display.max_rows = 999
-    print(df)
+    print(df.to_csv(index=False))

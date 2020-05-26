@@ -122,6 +122,11 @@ if __name__ == '__main__':
     for cohort in sorted(set(cohorts)):
         cohort_mean = np.mean(X[cohorts == cohort], axis=0)
 
+        # Have another axis to summarise, so let's do this in order to
+        # obtain a scalar representation.
+        if len(cohort_mean.shape) == 2:
+            cohort_mean = np.mean(cohort_mean, axis=-1)
+
         # Make sure that the cohort mean representation *over time* is
         # normalised between [0, 1] as we do not want to penalise if a
         # certain cohort has higher activation values on average.

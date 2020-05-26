@@ -10,6 +10,7 @@
 import argparse
 import os
 import warnings
+import sys
 
 import nilearn as nl
 import numpy as np
@@ -105,12 +106,20 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    image = mask_image(args.image, args.mask)
-    X = np.corrcoef(image)
-
     # Build a nice filename such that all output files are stored
     # correctly.
     filename = f'{basename(args.image)}.npz'
     filename = os.path.join(args.output, filename)
+
+    # Nothing should be overwritten. Else, the script might be used
+    # incorrectly, so we refuse to do anything.
+    if os.path.exists(filename):
+        warnings.warn(f'File {filename} already exists. Refusing to overwrite '
+                      f'it and moving on.')
+
+        sys.exit(-1)
+
+    image = mask_image(args.image, args.mask)
+    X = np.corrcoef(image)
 
     np.savez(filename, X=X)

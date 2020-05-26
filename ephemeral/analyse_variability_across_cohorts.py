@@ -144,7 +144,8 @@ if __name__ == '__main__':
             )
 
     df = pd.DataFrame(df)
-    print(df)
+    df.groupby('time')['variability'].agg(np.std).plot()
+    plt.show()
 
     raise 'heck'
 

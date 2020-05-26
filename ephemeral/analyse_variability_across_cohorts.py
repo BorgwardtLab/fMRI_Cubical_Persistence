@@ -19,6 +19,12 @@ if __name__ == '__main__':
     parser.add_argument('INPUT', type=str, help='Input file')
 
     parser.add_argument(
+        '-a', '--annotate',
+        action='store_true',
+        help='If set, overlays the plot with annotations.',
+    )
+
+    parser.add_argument(
         '-s', '--statistic',
         help='Summary statistic to use. If not set, defaults to assuming a '
              'persistence image data structure.',
@@ -146,23 +152,24 @@ if __name__ == '__main__':
                 }
             )
 
-    df_annotations = pd.read_excel('../data/annotations.xlsx')
-
-    # Get the salience values; it is perfectly justified to replace NaN
-    # values by zero because those salience values will not be counted.
-    salience = df_annotations['Boundary salience (# subs out of 22)'].values
-    salience = np.nan_to_num(salience)
-
     df = pd.DataFrame(df)
     df.groupby('time')['variability'].agg(np.std).plot()
 
-    # These are the detected event boundaries, according to Tristan's
-    # analysis. Note that since the index has been shifted above, the
-    # dropping operation does *not* have to be considered here!
-    salience_indices, = np.nonzero(salience >= 7)
+    if args.annotate:
+        df_annot = pd.read_excel('../data/annotations.xlsx')
 
-    for index in salience_indices:
-        plt.axvline(index, ls='dashed', c='r')
+        # Get the salience values; it is perfectly justified to replace NaN
+        # values by zero because those salience values will not be counted.
+        salience = df_annot['Boundary salience (# subs out of 22)'].values
+        salience = np.nan_to_num(salience)
+
+        # These are the detected event boundaries, according to Tristan's
+        # analysis. Note that since the index has been shifted above, the
+        # dropping operation does *not* have to be considered here!
+        salience_indices, = np.nonzero(salience >= 7)
+
+        for index in salience_indices:
+            plt.axvline(index, ls='dashed', c='r')
 
     plt.tight_layout()
     plt.show()

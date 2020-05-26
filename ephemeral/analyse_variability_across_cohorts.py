@@ -155,6 +155,13 @@ if __name__ == '__main__':
     df = pd.DataFrame(df)
     df.groupby('time')['variability'].agg(np.std).plot()
 
+    print(
+        df.groupby('time')['variability']
+          .agg(np.std)
+          .reset_index()
+          .to_csv(index=False, index_label='time')
+    )
+
     if args.annotate:
         df_annot = pd.read_excel('../data/annotations.xlsx')
 

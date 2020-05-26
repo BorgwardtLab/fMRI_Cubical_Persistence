@@ -122,41 +122,32 @@ if __name__ == '__main__':
     for cohort in sorted(set(cohorts)):
         cohort_mean = np.mean(X[cohorts == cohort], axis=0)
 
-        # Calculate distance for each individual and each time step,
-        # using the Euclidean distance between feature descriptors.
-        distances = np.sqrt(np.sum(
-            np.abs(X[cohorts == cohort] - cohort_mean)**2, axis=-1
-        ))
+        # Make sure that the cohort mean representation *over time* is
+        # normalised between [0, 1] as we do not want to penalise if a
+        # certain cohort has higher activation values on average.
+        cohort_mean = (cohort_mean - cohort_mean.min())
+        cohort_mean /= (cohort_mean.max() - cohort_mean.min())
 
-        # `distances` now has the shape of $(n, m)$, according to the
-        # definitions above. We make them comparable *across* cohorts
-        # by normalising them between (0, 1).
-        #
-        # This can be done for every time step because each time step
-        # can be considered independently.
-        #
-        # This amounts to a *sorting* of subjects.
-        distances = ((distances - distances.min(axis=0))
-                     / (distances.max(axis=0) - distances.min(axis=0)))
-
-        for t, variability in enumerate(np.std(distances, axis=0)):
+        for t, value in enumerate(cohort_mean):
             # TODO: make the time shift configurable
             if args.drop:
                 t += 7
 
             df.append(
                 {
-                    'variability': variability,
+                    'mean': value,
                     'cohort': cohort,
                     'time': t
                 }
             )
 
+    plt.figure(figsize=(6, 3))
+
     df = pd.DataFrame(df)
-    df.groupby('time')['variability'].agg(np.std).plot()
+    df.groupby('time')['mean'].agg(np.std).plot()
 
     print(
-        df.groupby('time')['variability']
+        df.groupby('time')['mean']
           .agg(np.std)
           .reset_index()
           .to_csv(index=False, index_label='time')

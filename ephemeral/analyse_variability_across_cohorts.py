@@ -101,7 +101,21 @@ if __name__ == '__main__':
 
                 X.append(df.to_numpy())
 
+    # This is a tensor of shape (n, m, f) or (n, m), where $n$ represents
+    # the number of subjects, $m$ the number of time steps, and $f$ the
+    # number of features. In case summary statistics are being used, this
+    # tensor will only be 2D because there is only a single feature.
     X = np.array(X)
+    df_groups = pd.read_csv('../data/participant_groups.csv')
+    cohorts = df_groups['cluster'].values
+
+    assert len(cohorts) == X.shape[0]
+
+    for cohort in sorted(set(cohorts)): 
+        cohort_mean = np.mean(X[cohorts == cohort], axis=0)
+        print(cohort_mean.shape)
+
+    raise 'heck'
 
     # First dimension of `X` represents the subject, which is the axis
     # we to calculate the mean over in all cases.
@@ -122,8 +136,7 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(D)
 
-    df_groups = pd.read_csv('../data/participant_groups.csv')
-
+    
     df['cohort'] = df_groups['cluster']
     df['cohort'] = df['cohort'].transform(lambda x: 'g' + str(x))
 

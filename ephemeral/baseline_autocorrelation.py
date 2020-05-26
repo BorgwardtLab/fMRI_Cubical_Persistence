@@ -125,35 +125,11 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '--mask-value',
-        type=str,
-        help='Value to write to the volume whenever the optional mask '
-             'would apply. Can be either a number or a string. If you '
-             'supply a string, it should be either `min` or `max`, to '
-             'denote the minimum or maximum image value, respectively.',
-        default='min'
-    )
-
-    parser.add_argument(
         '-o', '--output',
         type=str,
         help='Output directory. If not set, will default to the current '
              'directory.',
         default='.'
-    )
-
-    parser.add_argument(
-        '-S', '--superlevel',
-        action='store_true',
-        help='If set, calculates a superlevel set filtration. This will '
-             'involve scaling all values by `-1`.'
-    )
-
-    parser.add_argument(
-        '-n', '--normalise',
-        action='store_true',
-        help='If set, normalises the intensity for each voxel such that '
-             'its mean activation is zero.'
     )
 
     args = parser.parse_args()

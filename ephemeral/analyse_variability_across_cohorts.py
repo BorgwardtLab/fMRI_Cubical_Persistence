@@ -126,8 +126,10 @@ if __name__ == '__main__':
         #
         # This can be done for every time step because each time step
         # can be considered independently.
-        distances = \
-            (distances - distances.min()) / (distances.max() - distances.min())
+        #
+        # This amounts to a *sorting* of subjects.
+        distances = ((distances - distances.min(axis=0))
+                     / (distances.max(axis=0) - distances.min(axis=0)))
 
         for i in range(distances.shape[0]):
             plt.plot(distances[i])

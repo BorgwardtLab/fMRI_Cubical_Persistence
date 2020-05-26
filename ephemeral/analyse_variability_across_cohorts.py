@@ -7,7 +7,6 @@ import argparse
 import json
 
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 import numpy as np
 import pandas as pd
@@ -149,57 +148,6 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(df)
     df.groupby('time')['variability'].agg(np.std).plot()
-    plt.show()
-
-    raise 'heck'
-
-    # First dimension of `X` represents the subject, which is the axis
-    # we to calculate the mean over in all cases.
-    mu = np.mean(X, axis=0)
-
-    D = []
-
-    # Report distance to the mean for each subject
-    for index, row in enumerate(X):
-        if not args.statistic:
-            distances = np.sqrt(np.sum(np.abs(row - mu)**2, axis=-1))
-        else:
-            distances = np.abs(row - mu)
-
-        D.append(distances)
-
-    D = np.array(D)
-
-    df = pd.DataFrame(D)
-
-    
-    df['cohort'] = df_groups['cluster']
-    df['cohort'] = df['cohort'].transform(lambda x: 'g' + str(x))
-
-    def _normalise_cohort(df):
-        df = df.select_dtypes(np.number)
-        df = (df - df.min()) / (df.max() - df.min())
-        return df
-
-    # Make the cohort curves configurable; since we are only showing
-    # relative variabilities, this is justified.
-    df.loc[:, df.columns.drop('cohort')] = df.groupby('cohort').apply(
-        _normalise_cohort
-    )
-
-    df = df.groupby('cohort').agg(np.std)                  \
-        .apply(lambda x: (x - x.mean()) / x.std(), axis=1) \
-        .reset_index().melt(
-            'cohort',
-            var_name='time',
-            value_name='std'
-    )
-
-    if args.drop:
-        df['time'] += 7
-
-    g = sns.FacetGrid(df, col='cohort', height=2, aspect=3)
-    g.map(sns.lineplot, 'time', 'std')
 
     plt.tight_layout()
     plt.show()

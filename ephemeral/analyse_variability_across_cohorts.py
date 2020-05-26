@@ -111,9 +111,28 @@ if __name__ == '__main__':
 
     assert len(cohorts) == X.shape[0]
 
-    for cohort in sorted(set(cohorts)): 
+    for cohort in sorted(set(cohorts)):
         cohort_mean = np.mean(X[cohorts == cohort], axis=0)
-        print(cohort_mean.shape)
+
+        # Calculate distance for each individual and each time step,
+        # using the Euclidean distance between feature descriptors.
+        distances = np.sqrt(np.sum(
+            np.abs(X[cohorts == cohort] - cohort_mean)**2, axis=-1
+        ))
+
+        # `distances` now has the shape of $(n, m)$, according to the
+        # definitions above. We make them comparable *across* cohorts
+        # by normalising them between (0, 1).
+        #
+        # This can be done for every time step because each time step
+        # can be considered independently.
+        distances = \
+            (distances - distances.min()) / (distances.max() - distances.min())
+
+        for i in range(distances.shape[0]):
+            plt.plot(distances[i])
+
+        plt.show()
 
     raise 'heck'
 

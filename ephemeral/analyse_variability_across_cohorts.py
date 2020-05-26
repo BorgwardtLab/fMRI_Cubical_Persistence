@@ -111,6 +111,9 @@ if __name__ == '__main__':
 
     assert len(cohorts) == X.shape[0]
 
+    # Will become the cohort-based data frame
+    df = []
+
     for cohort in sorted(set(cohorts)):
         cohort_mean = np.mean(X[cohorts == cohort], axis=0)
 
@@ -131,10 +134,17 @@ if __name__ == '__main__':
         distances = ((distances - distances.min(axis=0))
                      / (distances.max(axis=0) - distances.min(axis=0)))
 
-        for i in range(distances.shape[0]):
-            plt.plot(distances[i])
+        for t, variability in enumerate(np.std(distances, axis=0)):
+            df.append(
+                {
+                    'variability': variability,
+                    'cohort': cohort,
+                    'time': t
+                }
+            )
 
-        plt.show()
+    df = pd.DataFrame(df)
+    print(df)
 
     raise 'heck'
 

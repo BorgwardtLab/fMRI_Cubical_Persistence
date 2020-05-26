@@ -146,8 +146,23 @@ if __name__ == '__main__':
                 }
             )
 
+    df_annotations = pd.read_excel('../data/annotations.xlsx')
+
+    # Get the salience values; it is perfectly justified to replace NaN
+    # values by zero because those salience values will not be counted.
+    salience = df_annotations['Boundary salience (# subs out of 22)'].values
+    salience = np.nan_to_num(salience)
+
     df = pd.DataFrame(df)
     df.groupby('time')['variability'].agg(np.std).plot()
+
+    # These are the detected event boundaries, according to Tristan's
+    # analysis. Note that since the index has been shifted above, the
+    # dropping operation does *not* have to be considered here!
+    salience_indices, = np.nonzero(salience >= 7)
+
+    for index in salience_indices:
+        plt.axvline(index, ls='dashed', c='r')
 
     plt.tight_layout()
     plt.show()

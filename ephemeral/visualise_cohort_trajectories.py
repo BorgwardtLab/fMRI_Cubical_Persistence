@@ -8,6 +8,7 @@
 
 import argparse
 import json
+import os
 
 import numpy as np
 import pandas as pd
@@ -18,7 +19,7 @@ import matplotlib.pyplot as plt
 from phate import PHATE
 
 
-def embed(Z, rolling=None, joint_embedding=False):
+def embed(Z, name, rolling=None, joint_embedding=False):
     """Embedding function."""
     encoder = PHATE(
         n_components=2,
@@ -55,6 +56,20 @@ def embed(Z, rolling=None, joint_embedding=False):
 
     df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
     df['time'] = np.array(list(np.arange(m)) * n).ravel()
+
+    # Store data; this tries to be smart and create a proper filename
+    # automatically.
+    if rolling is not None:
+        name += f'_r{rolling}'
+
+    name += '.csv'
+
+    os.makedirs('../results/cohort_trajectories', exist_ok=True)
+    df.to_csv(os.path.join(
+            '../results/cohort_trajectories', name
+        ),
+        index=False
+    )
 
     g = sns.FacetGrid(
             df,
@@ -132,6 +147,7 @@ if __name__ == '__main__':
 
     embed(
         Z,
+        os.path.splitext(os.path.basename(args.INPUT))[0],
         args.rolling,
         args.joint_embedding
     )

@@ -135,6 +135,10 @@ if __name__ == '__main__':
                      / (distances.max(axis=0) - distances.min(axis=0)))
 
         for t, variability in enumerate(np.std(distances, axis=0)):
+            # TODO: make the time shift configurable
+            if args.drop:
+                t += 7
+
             df.append(
                 {
                     'variability': variability,

@@ -49,6 +49,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('INPUT', type=str, help='Input file')
+    parser.add_argument(
+        '-w', '--window',
+        default=3,
+        type=int,
+        help='Specifies window width'
+    )
 
     args = parser.parse_args()
 
@@ -58,19 +64,22 @@ if __name__ == '__main__':
     # This is the maximum time stored in the data set; it does not
     # necessarily correspond to the length of the curve because it
     # is possible that indices have been dropped.
-    T = variability_curve['time'].max()
+    #
+    # We need to do the same thing for the minimum time.
+    max_t = variability_curve['time'].max()
+    min_t = variability_curve['time'].min()
 
     # Makes it easier to access a given time step; note that we are
     # using the indices from the event boundaries here.
     variability_curve.set_index('time', inplace=True)
 
     # Make the peri-event curve
-    w = 3
+    w = args.window
     peri_event = np.zeros((w*2 + 1, len(event_boundaries)))
 
     for idx, t in enumerate(range(-w, w+1)):
         for eb, bound in enumerate(event_boundaries):
-            if bound + t < 0 or bound + t > T:
+            if bound + t < min_t or bound + t > max_t:
                 peri_event[idx, eb] = np.nan
             else:
                 peri_event[idx, eb] = variability_curve.loc[bound + t]

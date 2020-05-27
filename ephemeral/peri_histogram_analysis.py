@@ -3,9 +3,28 @@
 # Performs peri-event histogram analysis for a variability curve. This
 # code was kindly contributed by Tristan Yates.
 
+import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
+
+
+def get_salience_indices():
+    """Return indices with salient events."""
+    df_annot = pd.read_excel('../data/annotations.xlsx')
+
+    # Get the salience values; it is perfectly justified to replace NaN
+    # values by zero because those salience values will not be counted.
+    salience = df_annot['Boundary salience (# subs out of 22)'].values
+    salience = np.nan_to_num(salience)
+
+    # These are the detected event boundaries, according to Tristan's
+    # analysis. Note that since the index has been shifted above, the
+    # dropping operation does *not* have to be considered here!
+    salience_indices, = np.nonzero(salience >= 7)
+
+    # Again, no shift here!
+    return salience_indices
 
 
 if __name__ == '__main__':

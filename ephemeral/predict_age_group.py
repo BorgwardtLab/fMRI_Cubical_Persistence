@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
 
@@ -23,6 +24,8 @@ print(y)
 print(X.shape)
 
 loo = LeaveOneOut()
+y_pred = []
+
 for train_index, test_index in loo.split(X):
     X_train, X_test = X[train_index], X[test_index]
     y_train, y_test = y[train_index], y[test_index]
@@ -30,10 +33,10 @@ for train_index, test_index in loo.split(X):
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
 
-    clf = LogisticRegression(max_iter=1000)
+    clf = LogisticRegression(max_iter=250)
     clf.fit(X_train, y_train)
 
     X_test = scaler.transform(X_test)
-    y_pred = clf.predict(X_test)
+    y_pred.append(*clf.predict(X_test))
 
-    print(y_test, y_pred)
+print(confusion_matrix(y, y_pred))

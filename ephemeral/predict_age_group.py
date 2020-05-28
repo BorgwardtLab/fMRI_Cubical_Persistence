@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import os
 
 import pandas as pd
 import numpy as np
@@ -76,7 +75,7 @@ if __name__ == '__main__':
     # Arbitrary threshold, need that so that we do not have to wait too
     # long for the results.
     if X.shape[1] > 1000:
-        X = PCA(n_components=100).fit_transform(X)
+        X = PCA(n_components=10).fit_transform(X)
 
     y = pd.read_csv('../data/participant_groups.csv')['cluster'].values
 

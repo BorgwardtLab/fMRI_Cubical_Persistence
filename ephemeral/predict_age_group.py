@@ -1,4 +1,8 @@
+#!/usr/bin/env python3
+
+import argparse
 import json
+import os
 
 import pandas as pd
 import numpy as np
@@ -8,37 +12,86 @@ from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
-y = pd.read_csv('../data/participant_groups.csv')['cluster'].values
 
-with open('../results/summary_statistics/brainmask.json') as f:
-    data = json.load(f)
+def summary_to_feature_matrix(filename, summary):
+    """Convert summary statistics to feature matrix."""
+    with open(filename) as f:
+        data = json.load(f)
 
-X = []
+    X = []
 
-for subject in sorted(data.keys()):
-    curve = data[subject]['total_persistence_p2']
-    X.append(curve)
+    for subject in sorted(data.keys()):
+        # Skip everything that is not a subject
+        try:
+            _ = int(subject)
+        except ValueError:
+            continue
 
-X = np.asarray(X)
-print(y)
-print(X.shape)
+        curve = data[subject][summary]
+        X.append(curve)
 
-loo = LeaveOneOut()
-y_pred = []
+    return np.asarray(X)
 
-for train_index, test_index in loo.split(X):
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
 
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train)
+def descriptor_to_feature_matrix(filename):
+    """Convert topological feature descriptor to feature matrix."""
+    with open(filename) as f:
+        data = json.load(f)
 
-    clf = SVC()
-    clf.fit(X_train, y_train)
+    X = []
 
-    X_test = scaler.transform(X_test)
-    y_pred.append(*clf.predict(X_test))
+    for subject in sorted(data.keys()):
+        # Skip everything that is not a subject
+        try:
+            _ = int(subject)
+        except ValueError:
+            continue
 
-C = confusion_matrix(y, y_pred)
-print(C)
-print(np.trace(C))
+        # Unravel the descriptor and consider it to be a single row in
+        # the matrix.
+        curve = np.asarray(data[subject]).ravel()
+        X.append(curve)
+
+    return np.asarray(X)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('INPUT', type=str, nargs='+')
+    parser.add_argument('-s', '--summary', type=str)
+
+    args = parser.parse_args()
+
+    if len(args.INPUT) != 1:
+        if os.path.isdir(args.INPUT[0]):
+            pass
+    else:
+        if args.summary is not None:
+            X = summary_to_feature_matrix(args.INPUT[0], args.summary)
+        else:
+            X = descriptor_to_feature_matrix(args.INPUT[0])
+
+    y = pd.read_csv('../data/participant_groups.csv')['cluster'].values
+
+    print(y)
+    print(X.shape)
+
+    loo = LeaveOneOut()
+    y_pred = []
+
+    for train_index, test_index in loo.split(X):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(X_train)
+
+        clf = SVC()
+        clf.fit(X_train, y_train)
+
+        X_test = scaler.transform(X_test)
+        y_pred.append(*clf.predict(X_test))
+
+    C = confusion_matrix(y, y_pred)
+    print(C)
+    print(np.trace(C))

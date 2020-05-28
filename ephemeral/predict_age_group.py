@@ -3,10 +3,10 @@ import json
 import pandas as pd
 import numpy as np
 
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 y = pd.read_csv('../data/participant_groups.csv')['cluster'].values
 
@@ -16,7 +16,7 @@ with open('../results/summary_statistics/brainmask.json') as f:
 X = []
 
 for subject in sorted(data.keys()):
-    curve = data[subject]['infinity_norm_p1']
+    curve = data[subject]['total_persistence_p2']
     X.append(curve)
 
 X = np.asarray(X)
@@ -33,10 +33,12 @@ for train_index, test_index in loo.split(X):
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train)
 
-    clf = LogisticRegression(max_iter=250)
+    clf = SVC()
     clf.fit(X_train, y_train)
 
     X_test = scaler.transform(X_test)
     y_pred.append(*clf.predict(X_test))
 
-print(confusion_matrix(y, y_pred))
+C = confusion_matrix(y, y_pred)
+print(C)
+print(np.trace(C))

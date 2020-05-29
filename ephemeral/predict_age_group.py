@@ -6,6 +6,8 @@ import json
 import pandas as pd
 import numpy as np
 
+from scipy.stats import pearsonr
+
 from sklearn.decomposition import PCA
 from sklearn.linear_model import RidgeCV
 from sklearn.metrics import mean_squared_error
@@ -118,4 +120,5 @@ if __name__ == '__main__':
 
     print(y_pred)
     print(r2_score(y,  y_pred))
+    print(pearsonr(y, y_pred))
     print(mean_squared_error(y, y_pred))

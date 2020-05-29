@@ -63,6 +63,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('INPUT', type=str, nargs='+')
     parser.add_argument('-s', '--summary', type=str)
+    parser.add_argument(
+        '-c', '--children',
+        action='store_true',
+        help='If set, restricts prediction to children'
+    )
 
     args = parser.parse_args()
 
@@ -89,6 +94,11 @@ if __name__ == '__main__':
 
     print(y)
     print(X.shape)
+
+    if args.children:
+        child_indices = np.nonzero(y < 18)
+        y = y[child_indices]
+        X = X[child_indices]
 
     loo = LeaveOneOut()
     y_pred = []

@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 
 from sklearn.decomposition import PCA
+from sklearn.linear_model import RidgeCV
+from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
@@ -98,10 +100,12 @@ if __name__ == '__main__':
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
 
-        clf = SVR()
+        clf = RidgeCV()
         clf.fit(X_train, y_train)
 
         X_test = scaler.transform(X_test)
         y_pred.append(*clf.predict(X_test))
 
+    print(y_pred)
     print(r2_score(y,  y_pred))
+    print(mean_squared_error(y, y_pred))

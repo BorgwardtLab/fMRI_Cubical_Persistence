@@ -69,16 +69,16 @@ if __name__ == '__main__':
     if len(args.INPUT) != 1:
         X = np.vstack([np.load(f)['X'].ravel() for f in sorted(args.INPUT)])
     else:
-        if args.summary is not None:
+        if args.INPUT[0].endswith('.npy'):
+            X = np.load(args.INPUT[0])
+
+            # TODO: not sure whether this is the smartest way of
+            # reshaping the data.
+            X = X.reshape(X.shape[0], -1)
+        elif args.summary is not None:
             X = summary_to_feature_matrix(args.INPUT[0], args.summary)
         else:
             X = descriptor_to_feature_matrix(args.INPUT[0])
-
-    # HIC SVNT LEONES
-    #
-    #X = np.load('../results/srm/SRM_array_10_feat_first_half.npy')
-    #X = X.reshape(X.shape[0], -1)
-    #print(X.shape)
 
     # Arbitrary threshold, need that so that we do not have to wait too
     # long for the results.

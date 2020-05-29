@@ -7,10 +7,10 @@ import pandas as pd
 import numpy as np
 
 from sklearn.decomposition import PCA
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import r2_score
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
+from sklearn.svm import SVR
 
 from tqdm import tqdm
 
@@ -72,12 +72,18 @@ if __name__ == '__main__':
         else:
             X = descriptor_to_feature_matrix(args.INPUT[0])
 
+    # HIC SVNT LEONES
+    #
+    #X = np.load('../results/srm/SRM_array_10_feat_first_half.npy')
+    #X = X.reshape(X.shape[0], -1)
+    #print(X.shape)
+
     # Arbitrary threshold, need that so that we do not have to wait too
     # long for the results.
     if X.shape[1] > 1000:
         X = PCA(n_components=10).fit_transform(X)
 
-    y = pd.read_csv('../data/participant_groups.csv')['cluster'].values
+    y = pd.read_csv('../data/participant_ages.csv')['Age'].values
 
     print(y)
     print(X.shape)
@@ -92,12 +98,10 @@ if __name__ == '__main__':
         scaler = StandardScaler()
         X_train = scaler.fit_transform(X_train)
 
-        clf = SVC()
+        clf = SVR()
         clf.fit(X_train, y_train)
 
         X_test = scaler.transform(X_test)
         y_pred.append(*clf.predict(X_test))
 
-    C = confusion_matrix(y, y_pred)
-    print(C)
-    print(np.trace(C), f'({100 * np.trace(C) / np.sum(C):.2f}%)')
+    print(r2_score(y,  y_pred))

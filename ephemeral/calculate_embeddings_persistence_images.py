@@ -46,7 +46,7 @@ def create_feature_vectors(diagrams_per_subject, sigma, resolution):
     # while each value is a list of feature vectors.
     features_per_subject = collections.defaultdict(list)
 
-    for subject, diagrams in diagrams_per_subject.items():
+    for subject, diagrams in tqdm(diagrams_per_subject.items()):
 
         # While `persim` supports multiple diagrams at once, I need to
         # save them as a list here, because I do not want to serialise

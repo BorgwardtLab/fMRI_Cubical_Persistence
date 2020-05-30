@@ -34,3 +34,4 @@ function convert_data_set {
 
 convert_data_set "$ROOT" "brainmask"
 convert_data_set "$ROOT" "occipitalmask"
+convert_data_set "$ROOT" "xormask"

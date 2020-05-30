@@ -6,6 +6,7 @@
 import argparse
 import collections
 import glob
+import joblib
 import json
 import os
 import persim
@@ -18,7 +19,12 @@ from utilities import parse_filename
 from tqdm import tqdm
 
 
-def create_feature_vectors(diagrams_per_subject, sigma, resolution):
+def create_feature_vectors(
+    diagrams_per_subject,
+    sigma,
+    resolution,
+    per_subject=False,
+):
     """Create feature vectors of sequence of diagrams.
 
     This function uses the persistence image transformation to create
@@ -26,34 +32,62 @@ def create_feature_vectors(diagrams_per_subject, sigma, resolution):
 
     Parameters
     ----------
+    diagrams_per_subject
+        Collection of persistence diagrams for all participants. The key
+        refers to the subject ID.
+
     sigma : float
         Standard deviation for the persistence image calculation
 
     resolution : int
-
         Resolution in pixels for each persistence image
+
+    per_subject : bool
+        If set, calculates persistence images per subject, instead of
+        fitting a *shared* space.
 
     Returns
     -------
     Set of persistence images.
     """
-    vectoriser = persim.PersImage(
-        spread=sigma,
-        pixels=(resolution, resolution)
-    )
-
     # Follows the same indexing as the diagrams; each key is a subject,
     # while each value is a list of feature vectors.
     features_per_subject = collections.defaultdict(list)
 
-    for subject, diagrams in tqdm(diagrams_per_subject.items()):
+    if per_subject:
 
-        # While `persim` supports multiple diagrams at once, I need to
-        # save them as a list here, because I do not want to serialise
-        # arrays.
-        for diagram in diagrams:
-            X = vectoriser.transform(diagram)
-            features_per_subject[subject].append(X.ravel().tolist())
+        def worker(subject, diagrams):
+            vectoriser = persim.PersImage(
+                spread=sigma,
+                pixels=(resolution, resolution)
+            )
+
+            features = []
+
+            for diagram in diagrams:
+                X = vectoriser.transform(diagram)
+                features.append(X.ravel().tolist())
+
+            return subject, features
+
+        result = joblib.Parallel(n_jobs=8)(
+            joblib.delayed(worker)(subject, diagrams) for subject,
+            diagrams in diagrams_per_subject.items())
+
+        features_per_subject.update(result)
+
+    else:
+        vectoriser = persim.PersImage(
+            spread=sigma,
+            pixels=(resolution, resolution)
+        )
+        for subject, diagrams in tqdm(diagrams_per_subject.items()):
+            # While `persim` supports multiple diagrams at once, I need to
+            # save them as a list here, because I do not want to serialise
+            # arrays.
+            for diagram in diagrams:
+                X = vectoriser.transform(diagram)
+                features_per_subject[subject].append(X.ravel().tolist())
 
     return features_per_subject
 
@@ -98,6 +132,13 @@ if __name__ == '__main__':
         required=True,
     )
 
+    parser.add_argument(
+        '--per-subject',
+        action='store_true',
+        help='If set, calculates persistence images per subject instead of '
+             'embedding them into a shared space.'
+    )
+
     args = parser.parse_args()
 
     if os.path.exists(args.output):
@@ -127,7 +168,7 @@ if __name__ == '__main__':
 
         for diagram in persistence_diagrams:
             if diagram.dimension == args.dimension:
-                # TODO: the vectoriser could suport different
+                # TODO: the vectoriser could support different
                 # dimensions, but I pick a single one.
                 diagrams_per_subject[subject].append(
                     diagram.toarray()
@@ -136,7 +177,8 @@ if __name__ == '__main__':
     data = create_feature_vectors(
         diagrams_per_subject,
         args.sigma,
-        args.resolution
+        args.resolution,
+        per_subject=args.per_subject,
     )
 
     data['input'] = args.input

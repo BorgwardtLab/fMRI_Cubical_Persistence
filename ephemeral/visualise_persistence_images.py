@@ -47,7 +47,7 @@ if __name__ == '__main__':
         os.makedirs(output, exist_ok=True)
 
         for index, image in enumerate(images):
-            plt.imshow(image.reshape(r, r))
+            plt.imshow(image.reshape(r, r), cmap='Spectral')
             plt.axis('off')
             plt.tight_layout()
             plt.savefig(
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                 bbox_inches=0,
             )
 
-        plt.imshow(X)
+        plt.imshow(X, cmap='Spectral')
 
         if show_title:
             plt.title(subject)

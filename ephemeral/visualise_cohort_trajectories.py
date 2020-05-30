@@ -56,7 +56,15 @@ def embed(Z, name, rolling=None, joint_embedding=False):
 
     df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
     df['time'] = np.array(list(np.arange(m)) * n).ravel()
-    df['salience'] = df_events['Boundary salience (# subs out of 22)']
+
+    # FIXME: make configurable
+    if args.drop:
+        df['time'] += 7
+
+    df['salience'] = \
+        np.array(
+            list(df_events['Boundary salience (# subs out of 22)'].values) * n
+        )
 
     # Store data; this tries to be smart and create a proper filename
     # automatically.
@@ -124,7 +132,7 @@ if __name__ == '__main__':
     subjects = [subject for subject in subjects if len(subject) == 3]
 
     df_groups = pd.read_csv('../data/participant_groups.csv')
-    df_events = pd.read_csv('../data/annotations.csv')
+    df_events = pd.read_excel('../data/annotations.xlsx')
 
     X = np.concatenate(
         [np.array([data[subject]]) for subject in subjects]

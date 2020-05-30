@@ -14,8 +14,16 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 from tqdm import tqdm
+
+
+def pearson_correlation(y_true, y_pred):
+    """Evaluate Pearson's correlation between samples."""
+    # This is ignores the $p$-value, but said value is not reliable
+    # anyway given our small sample sizes.
+    return pearsonr(y_true, y_pred)[0]
 
 
 def summary_to_feature_matrix(filename, summary):
@@ -93,13 +101,17 @@ if __name__ == '__main__':
 
     y = pd.read_csv('../data/participant_ages.csv')['Age'].values
 
-    print(y)
-    print(X.shape)
-
     if args.children:
         child_indices = np.nonzero(y < 18)
         y = y[child_indices]
         X = X[child_indices]
+
+    pipeline = Pipeline(
+        steps=[
+            ('scaler', StandardScaler()),
+            ('clf', RidgeCV())
+        ]
+    )
 
     loo = LeaveOneOut()
     y_pred = []
@@ -108,16 +120,9 @@ if __name__ == '__main__':
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        scaler = StandardScaler()
-        X_train = scaler.fit_transform(X_train)
+        pipeline.fit(X_train, y_train)
+        y_pred.append(*pipeline.predict(X_test))
 
-        clf = RidgeCV()
-        clf.fit(X_train, y_train)
-
-        X_test = scaler.transform(X_test)
-        y_pred.append(*clf.predict(X_test))
-
-    print(y_pred)
-    print(r2_score(y,  y_pred))
-    print(pearsonr(y, y_pred))
-    print(mean_squared_error(y, y_pred))
+    print(f'R^2: {r2_score(y,  y_pred):.2f}')
+    print(f'Correlation coefficient: {pearson_correlation(y, y_pred):.2f}')
+    print(f'MSE: {mean_squared_error(y, y_pred):.2f}')

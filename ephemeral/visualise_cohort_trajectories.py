@@ -56,6 +56,7 @@ def embed(Z, name, rolling=None, joint_embedding=False):
 
     df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
     df['time'] = np.array(list(np.arange(m)) * n).ravel()
+    df['salience'] = df_events['Boundary salience (# subs out of 22)']
 
     # Store data; this tries to be smart and create a proper filename
     # automatically.
@@ -68,7 +69,8 @@ def embed(Z, name, rolling=None, joint_embedding=False):
     df.to_csv(os.path.join(
             '../results/cohort_trajectories', name
         ),
-        index=False
+        index=False,
+        na_rep='nan',
     )
 
     g = sns.FacetGrid(
@@ -122,6 +124,7 @@ if __name__ == '__main__':
     subjects = [subject for subject in subjects if len(subject) == 3]
 
     df_groups = pd.read_csv('../data/participant_groups.csv')
+    df_events = pd.read_csv('../data/annotations.csv')
 
     X = np.concatenate(
         [np.array([data[subject]]) for subject in subjects]
@@ -130,6 +133,7 @@ if __name__ == '__main__':
     # TODO: make extent of removal configurable
     if args.drop:
         X = X[:, 7:, :]
+        df_events = df_events[7:]
 
     y = df_groups['cluster'].values
     cohorts = sorted(set(y))

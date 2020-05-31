@@ -6,6 +6,10 @@
 #
 # The goal is to summarise each participant as a time-by-time matrix. It
 # can subsequently be used in additional processing and analysis tasks.
+#
+# Notice that the script also offers a different mode, namely the *dual*
+# or *transposed* mode, in which the correlation is calculated along the
+# voxels and not over time.
 
 import argparse
 import os
@@ -104,11 +108,22 @@ if __name__ == '__main__':
         default='.'
     )
 
+    parser.add_argument(
+        '-t', '--transpose',
+        action='store_true',
+        help='If set, transposes input data, resulting in a voxel-by-voxel '
+             'representation.'
+    )
+
     args = parser.parse_args()
 
     # Build a nice filename such that all output files are stored
     # correctly.
-    filename = f'{basename(args.image)}.npz'
+    if args.transpose:
+        filename = f'{basename(args.image)}_transpose.npz'
+    else:
+        filename = f'{basename(args.image)}.npz'
+
     filename = os.path.join(args.output, filename)
 
     # Nothing should be overwritten. Else, the script might be used
@@ -120,6 +135,10 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     image = mask_image(args.image, args.mask)
-    X = np.corrcoef(image)
+
+    if args.transpose:
+        X = np.corrcoef(image.T)
+    else:
+        X = np.corrcoef(image)
 
     np.savez(filename, X=X)

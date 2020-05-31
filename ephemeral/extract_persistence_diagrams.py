@@ -5,7 +5,7 @@
 # visualisation.
 
 import argparse
-import json
+import sys
 
 import numpy as np
 
@@ -20,6 +20,13 @@ if __name__ == '__main__':
         nargs='+',
         type=str,
         help='Input file(s)'
+    )
+
+    parser.add_argument(
+        '-s', '--sample',
+        type=int,
+        default=100,
+        help='Number of samples to draw per time step'
     )
 
     args = parser.parse_args()
@@ -37,3 +44,9 @@ if __name__ == '__main__':
         time = [t] * len(creation)
 
         pd = np.vstack((time, creation, destruction)).T
+
+        pd = pd[
+            np.random.choice(pd.shape[0], args.sample, replace=False)
+        ]
+
+        np.savetxt(sys.stdout, pd, fmt='%.2f')

@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.manifold import MDS
+from sklearn.metrics import pairwise_distances
 
 
 X = []
@@ -16,12 +17,17 @@ for filename in sorted(glob.glob('../results/baseline_autocorrelation/brainmask/
 
 X = np.array(X)
 
-encoder = MDS(random_state=5, metric=True)
-X = encoder.fit_transform(X)
+D = pairwise_distances(X, metric='l1')
+Y = MDS(
+    dissimilarity='precomputed',
+    max_iter=1000,
+    n_init=32,
+    random_state=42,
+).fit_transform(D)
 
 df_cohorts = pd.read_csv('../data/participant_groups.csv')
 groups = df_cohorts['cluster'].values
 
-plt.scatter(X[:, 0], X[:, 1], c=groups, cmap='Set1')
+plt.scatter(Y[:, 0], Y[:, 1], c=groups, cmap='Set1')
 plt.colorbar()
 plt.show()

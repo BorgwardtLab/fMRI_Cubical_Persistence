@@ -44,6 +44,12 @@ if __name__ == '__main__':
     parser.add_argument('INPUT', type=str, help='Input file')
 
     parser.add_argument(
+        '-c', '--children',
+        action='store_true',
+        help='If set, only visualises children'
+    )
+
+    parser.add_argument(
         '-s', '--statistic',
         type=str,
         help='Summary statistic to extract',
@@ -94,16 +100,16 @@ if __name__ == '__main__':
     df['age'] = df_ages['Age']
     df['cohort'] = df['cohort'].astype(int)
 
-    #X = X[df['age'] < 18]
-    #df = df[df['age'] < 18]
+    if args.children:
+        X = X[df['age'] < 18]
+        df = df[df['age'] < 18]
 
     D = pairwise_distances(X, metric='l2')
     Y = MDS(
         dissimilarity='precomputed',
-        metric=True,
-        max_iter=1000,
-        eps=1e-8,
-        verbose=1000,
+        max_iter=2000,
+        n_init=32,
+        random_state=42,
     ).fit_transform(D)
 
     plt.scatter(

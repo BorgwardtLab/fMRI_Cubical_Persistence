@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 #
-# Cluster summary statistics curves, storing the linkage and the
-# distance matrix the distance matrix, as well as depicting the
-# embedding.
+# Embeds summary statistics curves.
 
 import argparse
 import json
@@ -79,20 +77,11 @@ if __name__ == '__main__':
         df.append(curve)
 
     df = pd.DataFrame(df)
+    df = (df - df.min()) / (df.max() - df.min())
+
     df_cohorts = pd.read_csv('../data/participant_groups.csv')
     df['cohort'] = df_cohorts['cluster']
     df['cohort'] = df['cohort'].astype('str')
-
-    def _normalise_cohort(df):
-        df = df.select_dtypes(np.number)
-        df = (df - df.min()) / (df.max() - df.min())
-        return df
-
-    # Make the cohort curves configurable; since we are only showing
-    # relative variabilities, this is justified.
-    df.loc[:, df.columns.drop('cohort')] = df.groupby('cohort').apply(
-        _normalise_cohort
-    )
 
     X = df.select_dtypes(np.number).to_numpy()
 
@@ -104,10 +93,13 @@ if __name__ == '__main__':
         X = X[df['age'] < 18]
         df = df[df['age'] < 18]
 
+        # Just to adjust the colour map later on
+        df['cohort'] -= 1
+
     D = pairwise_distances(X, metric='l2')
     Y = MDS(
         dissimilarity='precomputed',
-        max_iter=2000,
+        max_iter=1000,
         n_init=32,
         random_state=42,
     ).fit_transform(D)
@@ -118,6 +110,11 @@ if __name__ == '__main__':
         c=df['cohort'].values,
         cmap='Set1',
     )
+
+    df['x'] = Y[:, 0]
+    df['y'] = Y[:, 1]
+
+    df = df[['x', 'y', 'age', 'cohort']]
 
     plt.colorbar()
     plt.show()

@@ -7,7 +7,7 @@
 # In this examples, volumes will be transposed.
 
 ROOT="/links/groups/borgwardt/Projects/Ephemeral/Partly Cloudy"
-OUTPUT="../../results/baseline_autocorrelation"
+OUTPUT="../../results/baseline_autocorrelation_transposed"
 
 # Main function for performing the conversion of a data set. Gets a root
 # directory (containing a `preproc` folder) and the name of mask to use.

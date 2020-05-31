@@ -92,17 +92,25 @@ if __name__ == '__main__':
 
     df_ages = pd.read_csv('../data/participant_ages.csv')
     df['age'] = df_ages['Age']
+    df['cohort'] = df['cohort'].astype(int)
 
     #X = X[df['age'] < 18]
     #df = df[df['age'] < 18]
 
-    D = pairwise_distances(X, metric='l1')
-    Y = MDS(dissimilarity='precomputed', metric=True).fit_transform(D)
+    D = pairwise_distances(X, metric='l2')
+    Y = MDS(
+        dissimilarity='precomputed',
+        metric=True,
+        max_iter=1000,
+        eps=1e-8,
+        verbose=1000,
+    ).fit_transform(D)
 
     plt.scatter(
         x=Y[:, 0],
         y=Y[:, 1],
-        c=df['age'].values,
+        c=df['cohort'].values,
+        cmap='Set1',
     )
 
     plt.colorbar()

@@ -5,8 +5,6 @@
 # embedding.
 
 import argparse
-import collections
-import glob
 import json
 import os
 
@@ -91,27 +89,24 @@ if __name__ == '__main__':
     )
 
     X = df.select_dtypes(np.number).to_numpy()
-    print(X.shape)
 
-    Y = MDS().fit_transform(X)
+    df_ages = pd.read_csv('../data/participant_ages.csv')
+    df['age'] = df_ages['Age']
+
+    #X = X[df['age'] < 18]
+    #df = df[df['age'] < 18]
+
+    D = pairwise_distances(X, metric='l1')
+    Y = MDS(dissimilarity='precomputed', metric=True).fit_transform(D)
 
     plt.scatter(
         x=Y[:, 0],
         y=Y[:, 1],
-        c=df['cohort'].values.astype('int'),
-        cmap='Set1'
+        c=df['age'].values,
     )
 
+    plt.colorbar()
     plt.show()
-
-    raise 'heck'
-
-    X = np.array(X)
-    D = pairwise_distances(X)
-
-    # Use subject labels as 'true' labels (even though we have no way of
-    # telling in a clustering setup)
-    y = list(sorted(data.keys()))
 
     clf = AgglomerativeClustering(
         distance_threshold=0,      # compute full dendrogram
@@ -121,6 +116,8 @@ if __name__ == '__main__':
     )
     model = clf.fit(D)
     M = get_linkage_matrix(model)
+
+    raise 'heck'
 
     experiment = os.path.basename(args.INPUT)
     experiment = os.path.splitext(experiment)[0]

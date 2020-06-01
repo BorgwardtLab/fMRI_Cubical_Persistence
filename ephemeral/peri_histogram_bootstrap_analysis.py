@@ -16,6 +16,8 @@ import matplotlib.pyplot as plt
 
 from sklearn.linear_model import LinearRegression
 
+from tqdm import tqdm
+
 
 def get_salience_indices(threshold=7):
     """Return indices with salient events (using an optional threshold).
@@ -122,21 +124,33 @@ if __name__ == '__main__':
     variability_curve = pd.read_csv(args.INPUT)
     event_boundaries = get_salience_indices()
 
-    get_variability_correlation(
+    # Original estimate of the variability for the *true* event
+    # boundaries.
+    theta_0 = get_variability_correlation(
         event_boundaries,
         variability_curve,
         args.window
     )
 
-    raise 'heck'
+    # All time points that are available and from which sampling is
+    # possible. We do not account for the temporal boundaries of the
+    # curve, though, so some events might not feature a proper window.
+    possible_events = variability_curve.index.values
 
-    name = os.path.splitext(os.path.basename(args.INPUT))[0]
-    plt.title(name)
+    # Bootstrap distribution of the coefficient of determination.
+    thetas = []
 
-    colors = cm.coolwarm(np.linspace(0, 1, peri_event.shape[0]))
-    plt.vlines(0,np.nanmin(peri_event),np.nanmax(peri_event),linestyle='dashed')
-    plt.bar(np.arange(-w,w+1),np.nanmean(peri_event,axis=1),yerr=sem(peri_event, axis=1, nan_policy='omit'),color=colors)
-    plt.ylim(np.nanmin(peri_event),np.nanmax(peri_event))
+    n_bootstraps = 1000
+    for i in tqdm(range(n_bootstraps), desc='Bootstrap'):
+        m = len(event_boundaries)
 
-    plt.savefig(f'peri_{name}.png', bbox_inches='tight')
-    plt.show()
+        event_boundaries_bootstrap = np.random.choice(possible_events, m)
+        event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
+
+        thetas.append(
+            get_variability_correlation(
+                event_boundaries_bootstrap,
+                variability_curve,
+                args.window
+            )
+        )

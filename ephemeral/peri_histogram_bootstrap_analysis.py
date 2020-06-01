@@ -76,7 +76,7 @@ def get_variability_correlation(events, curve, w):
 
     Returns
     -------
-    Correlation coefficient for the specified data.
+    Coefficient of determination for the specified data.
     """
     # This is the maximum time stored in the data set; it does not
     # necessarily correspond to the length of the curve because it
@@ -103,7 +103,7 @@ def get_variability_correlation(events, curve, w):
     X = np.asarray(np.arange(2*w + 1)).reshape(-1, 1)
     y = np.nanmean(peri_event, axis=1).reshape(-1, 1)
 
-    clf = LinearRegression()
+    clf = LinearRegression(normalize=True)
     clf.fit(X, y)
 
     return clf.score(X, y)
@@ -125,6 +125,11 @@ if __name__ == '__main__':
     variability_curve = pd.read_csv(args.INPUT)
     event_boundaries = get_salience_indices()
 
+    # All time points that are available and from which sampling is
+    # possible. We do not account for the temporal boundaries of the
+    # curve, though, so some events might not feature a proper window.
+    possible_events = variability_curve.index.values
+
     # Original estimate of the variability for the *true* event
     # boundaries.
     theta_0 = get_variability_correlation(
@@ -133,10 +138,7 @@ if __name__ == '__main__':
         args.window
     )
 
-    # All time points that are available and from which sampling is
-    # possible. We do not account for the temporal boundaries of the
-    # curve, though, so some events might not feature a proper window.
-    possible_events = variability_curve.index.values
+    non_events = sorted(set(possible_events) - set(event_boundaries))
 
     # Bootstrap distribution of the coefficient of determination.
     thetas = []
@@ -145,7 +147,12 @@ if __name__ == '__main__':
     for i in tqdm(range(n_bootstraps), desc='Bootstrap'):
         m = len(event_boundaries)
 
-        event_boundaries_bootstrap = np.random.choice(possible_events, m)
+        event_boundaries_bootstrap = np.random.choice(
+            possible_events,
+            m,
+            replace=False  # to ensure that we do not get repeated events
+        )
+
         event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
 
         thetas.append(
@@ -155,6 +162,8 @@ if __name__ == '__main__':
                 args.window
             )
         )
+
+    print(sum(thetas > theta_0) / n_bootstraps)
 
     sns.distplot(thetas, bins=20)
     plt.show()

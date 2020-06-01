@@ -11,8 +11,8 @@ import os
 import numpy as np
 import pandas as pd
 
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from sklearn.linear_model import LinearRegression
 
@@ -83,25 +83,26 @@ def get_variability_correlation(events, curve, w):
     # is possible that indices have been dropped.
     #
     # We need to do the same thing for the minimum time.
-    max_t = variability_curve['time'].max()
-    min_t = variability_curve['time'].min()
+    max_t = curve['time'].max()
+    min_t = curve['time'].min()
 
     # Makes it easier to access a given time step; note that we are
     # using the indices from the event boundaries here.
-    variability_curve.set_index('time', inplace=True)
+    curve = curve.set_index('time')
 
     # Collect peri-event statistics
-    peri_event = np.zeros((w*2 + 1, len(event_boundaries)))
+    peri_event = np.zeros((w*2 + 1, len(events)))
 
     for idx, t in enumerate(range(-w, w+1)):
-        for eb, bound in enumerate(event_boundaries):
+        for eb, bound in enumerate(events):
             if bound + t < min_t or bound + t > max_t:
                 peri_event[idx, eb] = np.nan
             else:
-                peri_event[idx, eb] = variability_curve.loc[bound + t]
+                peri_event[idx, eb] = curve.loc[bound + t]
 
     X = np.asarray(np.arange(2*w + 1)).reshape(-1, 1)
     y = np.nanmean(peri_event, axis=1).reshape(-1, 1)
+
     clf = LinearRegression()
     clf.fit(X, y)
 
@@ -154,3 +155,6 @@ if __name__ == '__main__':
                 args.window
             )
         )
+
+    sns.distplot(thetas, bins=20)
+    plt.show()

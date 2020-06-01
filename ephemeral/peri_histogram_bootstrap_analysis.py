@@ -109,6 +109,67 @@ def get_variability_correlation(events, curve, w):
     return clf.score(X, y)
 
 
+def get_variability_mean_difference(events, curve, w):
+    """Calculate mean difference in pre-event and post-event variability.
+
+    The basic idea behind this function is to take a set of events, or
+    rather event boundaries, and evaluate the variability of the curve
+    in terms of its mean across a window pre-event and post-event. The
+    difference of the resulting numbers, or rather their mean, will be
+    used as a test statistic and returned.
+
+    This function can easily be used in a bootstrap setting by using a
+    random selection of events.
+
+    Parameters
+    ----------
+    events : `numpy.array`
+        Sequence of indices for event boundaries
+
+    curve : `pandas.DataFrame`
+        Variability curve; must measure some scalar attribute so that
+        the mean can be calculated over all events.
+
+    w : int
+        Window width; setting this to `w` means that `2*w + 1` many
+        points in the curve will be evaluated.
+
+    Returns
+    -------
+    Difference between pre-event mean and post-event mean.
+    """
+    # This is the maximum time stored in the data set; it does not
+    # necessarily correspond to the length of the curve because it
+    # is possible that indices have been dropped.
+    #
+    # We need to do the same thing for the minimum time.
+    max_t = curve['time'].max()
+    min_t = curve['time'].min()
+
+    # Makes it easier to access a given time step; note that we are
+    # using the indices from the event boundaries here.
+    curve = curve.set_index('time')
+
+    # Collect peri-event statistics
+    peri_event = np.zeros((w*2 + 1, len(events)))
+
+    for idx, t in enumerate(range(-w, w+1)):
+        for eb, bound in enumerate(events):
+            if bound + t < min_t or bound + t > max_t:
+                peri_event[idx, eb] = np.nan
+            else:
+                peri_event[idx, eb] = curve.loc[bound + t]
+
+    means = np.nanmean(peri_event, axis=1)
+
+    # Calculate pre-event mean and post-event mean. Notice that we are
+    # not calculating the mean variability at the event point itself.
+    pre_event_mean = np.mean(means[:w])
+    post_event_mean = np.mean(means[w+1:])
+
+    return pre_event_mean - post_event_mean
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -132,7 +193,7 @@ if __name__ == '__main__':
 
     # Original estimate of the variability for the *true* event
     # boundaries.
-    theta_0 = get_variability_correlation(
+    theta_0 = get_variability_mean_difference(
         event_boundaries,
         variability_curve,
         args.window
@@ -156,14 +217,16 @@ if __name__ == '__main__':
         event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
 
         thetas.append(
-            get_variability_correlation(
+            get_variability_mean_difference(
                 event_boundaries_bootstrap,
                 variability_curve,
                 args.window
             )
         )
 
+    print(theta_0)
     print(sum(thetas > theta_0) / n_bootstraps)
+    print(sum(thetas < theta_0) / n_bootstraps)
 
     sns.distplot(thetas, bins=20)
     plt.show()

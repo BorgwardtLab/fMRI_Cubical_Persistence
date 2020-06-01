@@ -181,6 +181,13 @@ if __name__ == '__main__':
         help='Specifies window width'
     )
 
+    parser.add_argument(
+        '-c', '--correlation',
+        action='store_true',
+        help='If set, uses correlation coefficient analysis instead of '
+             'a difference-based analysis.'
+    )
+
     args = parser.parse_args()
 
     variability_curve = pd.read_csv(args.INPUT)
@@ -191,9 +198,13 @@ if __name__ == '__main__':
     # curve, though, so some events might not feature a proper window.
     possible_events = variability_curve.index.values
 
+    evaluation_fn = get_variability_mean_difference
+    if args.correlation:
+        evaluation_fn = get_variability_correlation
+
     # Original estimate of the variability for the *true* event
     # boundaries.
-    theta_0 = get_variability_mean_difference(
+    theta_0 = evaluation_fn(
         event_boundaries,
         variability_curve,
         args.window
@@ -217,7 +228,7 @@ if __name__ == '__main__':
         event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
 
         thetas.append(
-            get_variability_mean_difference(
+            evaluation_fn(
                 event_boundaries_bootstrap,
                 variability_curve,
                 args.window
@@ -225,8 +236,8 @@ if __name__ == '__main__':
         )
 
     print(theta_0)
-    print(sum(thetas > theta_0) / n_bootstraps)
-    print(sum(thetas < theta_0) / n_bootstraps)
+    print(sum(thetas >= theta_0) / n_bootstraps)
+    print(sum(thetas <= theta_0) / n_bootstraps)
 
     sns.distplot(thetas, bins=20)
     plt.show()

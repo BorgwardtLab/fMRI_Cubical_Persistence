@@ -14,7 +14,7 @@ import pandas as pd
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
-from scipy.stats import sem
+from sklearn.linear_model import LinearRegression
 
 
 def get_salience_indices(threshold=7):
@@ -42,8 +42,6 @@ def get_salience_indices(threshold=7):
     # analysis. Note that since the index has been shifted above, the
     # dropping operation does *not* have to be considered here!
     salience_indices, = np.nonzero(salience >= threshold)
-
-    print(salience_indices)
 
     # Again, no shift here!
     return salience_indices
@@ -100,9 +98,12 @@ def get_variability_correlation(events, curve, w):
             else:
                 peri_event[idx, eb] = variability_curve.loc[bound + t]
 
-    print(peri_event)
-    print(peri_event.shape)
-    return peri_event 
+    X = np.asarray(np.arange(2*w + 1)).reshape(-1, 1)
+    y = np.nanmean(peri_event, axis=1).reshape(-1, 1)
+    clf = LinearRegression()
+    clf.fit(X, y)
+
+    return clf.score(X, y)
 
 
 if __name__ == '__main__':

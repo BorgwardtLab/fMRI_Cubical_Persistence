@@ -32,6 +32,9 @@ def embed(Z, name, rolling=None, joint_embedding=False):
     # cohort. This makes visualising everything easier.
     df = []
 
+    # Will contain entropy numbers per cohort.
+    entropy = []
+
     if joint_embedding:
         X = encoder.fit_transform(np.vstack(Z))
         df = pd.DataFrame(X, columns=['x', 'y'])
@@ -48,6 +51,17 @@ def embed(Z, name, rolling=None, joint_embedding=False):
             X = encoder.fit_transform(cohort)
             df.append(X)
 
+            # Calculate von Neumann entropy for the selected value of
+            # $t$. We take the last value of the selected sequence as
+            # the value at $t$.
+            t = encoder.optimal_t
+            _, vne = encoder._von_neumann_entropy(t + 1)
+
+            # Only keep the last entropy value, i.e. the one
+            # corresponding to the *largest* $t$.
+            vne = vne[-1]
+            entropy.append(vne)
+
         df = np.concatenate(df)
         df = pd.DataFrame(df, columns=['x', 'y'])
 
@@ -56,6 +70,9 @@ def embed(Z, name, rolling=None, joint_embedding=False):
 
     df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
     df['time'] = np.array(list(np.arange(m)) * n).ravel()
+
+    # FIXME: better output?
+    print(entropy)
 
     # FIXME: make configurable
     if args.drop:

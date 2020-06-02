@@ -102,6 +102,11 @@ if __name__ == '__main__':
         y = y[child_indices]
         X = X[child_indices]
 
+    # This ensures that all methods are on more or less equal footing
+    # here. Else, using a full matrix would easily outperform all the
+    # other methods because of overfitting.
+    X = PCA(n_components=100).fit_transform(X)
+
     pipeline = Pipeline(
         steps=[
             ('scaler', StandardScaler()),
@@ -109,35 +114,16 @@ if __name__ == '__main__':
         ]
     )
 
-    n_iterations = 10
-    correlations = []
+    loo = LeaveOneOut()
+    y_pred = []
 
-    # Permits resetting the variable later on in each iteration of the
-    # repeated experiment.
-    X_original = X.copy()
+    for train_index, test_index in tqdm(loo.split(X)):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
 
-    for i in range(n_iterations):
-        loo = LeaveOneOut()
-        y_pred = []
+        pipeline.fit(X_train, y_train)
+        y_pred.append(*pipeline.predict(X_test))
 
-        # This ensures that all methods are on more or less equal footing
-        # here. Else, using a full matrix would easily outperform all the
-        # other methods because of overfitting.
-        X = PCA(n_components=100).fit_transform(X_original)
-
-        for train_index, test_index in tqdm(loo.split(X)):
-            X_train, X_test = X[train_index], X[test_index]
-            y_train, y_test = y[train_index], y[test_index]
-
-            pipeline.fit(X_train, y_train)
-            y_pred.append(*pipeline.predict(X_test))
-
-        print(f'R^2: {r2_score(y,  y_pred):.2f}')
-        print(f'Correlation coefficient: {pearson_correlation(y, y_pred):.2f}')
-        print(f'MSE: {mean_squared_error(y, y_pred):.2f}')
-
-        correlations.append(pearson_correlation(y, y_pred))
-
-    print(f'Correlation coefficient:',
-          f'{np.mean(correlations):.4f}',
-          f'{np.std(correlations):.2f}')
+    print(f'R^2: {r2_score(y,  y_pred):.2f}')
+    print(f'Correlation coefficient: {pearson_correlation(y, y_pred):.2f}')
+    print(f'MSE: {mean_squared_error(y, y_pred):.2f}')

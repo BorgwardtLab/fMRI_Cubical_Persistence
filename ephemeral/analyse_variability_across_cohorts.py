@@ -124,8 +124,11 @@ if __name__ == '__main__':
 
         # Have another axis to summarise, so let's do this in order to
         # obtain a scalar representation.
+        #
+        # Notice that we are calculating the *maximum* here; this is in
+        # line with the 'infinity norm' calculation.
         if len(cohort_mean.shape) == 2:
-            cohort_mean = np.mean(cohort_mean, axis=-1)
+            cohort_mean = np.max(cohort_mean, axis=-1)
 
         # Make sure that the cohort mean representation *over time* is
         # normalised between [0, 1] as we do not want to penalise if a

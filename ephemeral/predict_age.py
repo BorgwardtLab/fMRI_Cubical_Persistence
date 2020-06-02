@@ -73,9 +73,10 @@ if __name__ == '__main__':
     parser.add_argument('INPUT', type=str, nargs='+')
     parser.add_argument('-s', '--summary', type=str)
     parser.add_argument(
-        '-c', '--children',
+        '-a', '--all',
         action='store_true',
-        help='If set, restricts prediction to children'
+        help='If set, extends age prediction task to all participants. This '
+             'is usually not what you want to do.'
     )
 
     args = parser.parse_args()
@@ -94,14 +95,9 @@ if __name__ == '__main__':
         else:
             X = descriptor_to_feature_matrix(args.INPUT[0])
 
-    # Arbitrary threshold, need that so that we do not have to wait too
-    # long for the results.
-    if X.shape[1] > 1000:
-        X = PCA(n_components=10).fit_transform(X)
-
     y = pd.read_csv('../data/participant_ages.csv')['Age'].values
 
-    if args.children:
+    if not args.all:
         child_indices = np.nonzero(y < 18)
         y = y[child_indices]
         X = X[child_indices]
@@ -113,16 +109,35 @@ if __name__ == '__main__':
         ]
     )
 
-    loo = LeaveOneOut()
-    y_pred = []
+    n_iterations = 10
+    correlations = []
 
-    for train_index, test_index in tqdm(loo.split(X)):
-        X_train, X_test = X[train_index], X[test_index]
-        y_train, y_test = y[train_index], y[test_index]
+    # Permits resetting the variable later on in each iteration of the
+    # repeated experiment.
+    X_original = X.copy()
 
-        pipeline.fit(X_train, y_train)
-        y_pred.append(*pipeline.predict(X_test))
+    for i in range(n_iterations):
+        loo = LeaveOneOut()
+        y_pred = []
 
-    print(f'R^2: {r2_score(y,  y_pred):.2f}')
-    print(f'Correlation coefficient: {pearson_correlation(y, y_pred):.2f}')
-    print(f'MSE: {mean_squared_error(y, y_pred):.2f}')
+        # This ensures that all methods are on more or less equal footing
+        # here. Else, using a full matrix would easily outperform all the
+        # other methods because of overfitting.
+        X = PCA(n_components=100).fit_transform(X_original)
+
+        for train_index, test_index in tqdm(loo.split(X)):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+
+            pipeline.fit(X_train, y_train)
+            y_pred.append(*pipeline.predict(X_test))
+
+        print(f'R^2: {r2_score(y,  y_pred):.2f}')
+        print(f'Correlation coefficient: {pearson_correlation(y, y_pred):.2f}')
+        print(f'MSE: {mean_squared_error(y, y_pred):.2f}')
+
+        correlations.append(pearson_correlation(y, y_pred))
+
+    print(f'Correlation coefficient:',
+          f'{np.mean(correlations):.4f}',
+          f'{np.std(correlations):.2f}')

@@ -171,6 +171,17 @@ def get_variability_mean_difference(events, curve, w):
     return pre_event_mean - post_event_mean
 
 
+def get_all_shifts(event_boundaries, variability_curve):
+    T = np.max(variability_curve.index.values)
+
+    all_boundaries_shifted = []
+
+    for shift in range(T):
+        all_boundaries_shifted.append(np.mod(event_boundaries + shift, T))
+
+    return all_boundaries_shifted
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -189,6 +200,13 @@ if __name__ == '__main__':
              'a difference-based analysis.'
     )
 
+    parser.add_argument(
+        '-s', '--shift',
+        action='store_true',
+        help='If set, evaluates all potential event shifts instead of '
+             'performing a bootstrap-based analysis.'
+    )
+
     args = parser.parse_args()
 
     variability_curve = pd.read_csv(args.INPUT)
@@ -199,18 +217,9 @@ if __name__ == '__main__':
     # curve, though, so some events might not feature a proper window.
     possible_events = variability_curve.index.values
 
-    T = np.max(variability_curve.index.values)
-
-    all_boundaries_shifted = []
-
-    for shift in range(T):
-        all_boundaries_shifted.append(np.mod(event_boundaries + shift, T))
-
     evaluation_fn = get_variability_mean_difference
     if args.correlation:
         evaluation_fn = get_variability_correlation
-
-    evaluation_fn = is_extremum
 
     # Original estimate of the variability for the *true* event
     # boundaries.
@@ -222,56 +231,76 @@ if __name__ == '__main__':
 
     non_events = sorted(set(possible_events) - set(event_boundaries))
 
-    # Bootstrap distribution of the coefficient of determination.
-    thetas = []
-
-    n_bootstraps = len(all_boundaries_shifted)
-
-    #for i in tqdm(range(n_bootstraps), desc='Bootstrap'):
-    #    m = len(event_boundaries)
-
-    #    event_boundaries_bootstrap = np.random.choice(
-    #        possible_events,
-    #        m,
-    #        replace=False  # to ensure that we do not get repeated events
-    #    )
-
-    #    event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
-
-    #    thetas.append(
-    #        evaluation_fn(
-    #            event_boundaries_bootstrap,
-    #            variability_curve,
-    #            args.window
-    #        )
-    #    )
-
-    thetas = np.zeros((len(all_boundaries_shifted) + 1, 1))
-    thetas[0] = theta_0
-
-    n_events = [len(event_boundaries)]
-
-    for index, boundaries in enumerate(all_boundaries_shifted):
-        boundaries = sorted(boundaries)
-
-        print(index + 1, (event_boundaries - boundaries).sum())
-
-        n_events.append(np.sum(np.isin(boundaries, event_boundaries)))
-
-        thetas[index + 1] = evaluation_fn(
-            boundaries,
-            variability_curve,
-            args.window
+    # Shift-based analysis
+    if args.shift:
+        all_boundaries_shifted = get_all_shifts(
+            event_boundaries,
+            variability_curve
         )
 
-    print(theta_0)
-    print(sum(thetas > theta_0) / n_bootstraps)
-    print(sum(thetas < theta_0) / n_bootstraps)
+        # Stores the relevant values for each shift; this makes it
+        # easier to assess the effects in a visualisation later on
+        thetas = np.zeros((len(all_boundaries_shifted) + 1, 1))
+        thetas[0] = theta_0
 
-    sns.lineplot(np.arange(thetas.shape[0]), thetas.ravel())
-    #plt.stem(
-    #    np.arange(thetas.shape[0]),
-    #    n_events,
-    #    use_line_collection=True
-    #)
+        # Counts how many events there are in total for each of the time
+        # points.
+        n_events = [len(event_boundaries)]
+
+        for index, boundaries in enumerate(all_boundaries_shifted):
+            boundaries = sorted(boundaries)
+
+            print(index + 1, (event_boundaries - boundaries).sum())
+
+            n_events.append(np.sum(np.isin(boundaries, event_boundaries)))
+
+            thetas[index + 1] = evaluation_fn(
+                boundaries,
+                variability_curve,
+                args.window
+            )
+
+        print(theta_0)
+        print(sum(thetas > theta_0) / thetas.shape[0])
+        print(sum(thetas < theta_0) / thetas.shape[0])
+
+        sns.lineplot(np.arange(thetas.shape[0]), thetas.ravel())
+        #plt.stem(
+        #    np.arange(thetas.shape[0]),
+        #    n_events,
+        #    use_line_collection=True
+        #)
+
+    # Bootstrap analysis
+    else:
+        n_bootstraps = 100
+
+        # Will contain the bootstrap distribution in this case, making
+        # it possible to assess to what extent extreme values are likely
+        # to appear.
+        thetas = []
+
+        for i in tqdm(range(n_bootstraps), desc='Bootstrap'):
+            m = len(event_boundaries)
+
+            event_boundaries_bootstrap = np.random.choice(
+                possible_events,
+                m,
+                replace=False  # to ensure that we do not get repeated events
+            )
+
+            event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
+
+            thetas.append(
+                evaluation_fn(
+                    event_boundaries_bootstrap,
+                    variability_curve,
+                    args.window
+                )
+            )
+
+        print(theta_0)
+        print(sum(thetas > theta_0) / n_bootstraps)
+        print(sum(thetas < theta_0) / n_bootstraps)
+
     plt.show()

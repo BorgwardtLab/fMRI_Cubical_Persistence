@@ -168,14 +168,72 @@ def get_variability_mean_difference(events, curve, w):
     pre_event_mean = np.mean(means[:w])
     post_event_mean = np.mean(means[w+1:])
 
-    var_1 = np.max(means[:w]) - np.min(means[:w])
-    var_2 = np.max(means[w+1:]) - np.min(means[w+1:])
+    return pre_event_mean - post_event_mean
 
-    return var_1 - var_2
-    #return pre_event_mean - post_event_mean
+
+def get_variability_max_difference(events, curve, w):
+    """Calculate max difference in pre-event and post-event variability.
+
+    The basic idea behind this function is to take a set of events, or
+    rather event boundaries, and evaluate the variability of the curve
+    in terms of its variability over a window pre-event and post-event.
+
+    Variability is assessed by calculating the differences between the
+    minimum and the maximum on both sides of the boundary. Again, this
+    function can easily be used in for bootstrapping by using a random
+    selection of events.
+
+    Parameters
+    ----------
+    events : `numpy.array`
+        Sequence of indices for event boundaries
+
+    curve : `pandas.DataFrame`
+        Variability curve; must measure some scalar attribute so that
+        the mean can be calculated over all events.
+
+    w : int
+        Window width; setting this to `w` means that `2*w + 1` many
+        points in the curve will be evaluated.
+
+    Returns
+    -------
+    Difference in variabilities pre-event and post-event.
+    """
+    # This is the maximum time stored in the data set; it does not
+    # necessarily correspond to the length of the curve because it
+    # is possible that indices have been dropped.
+    #
+    # We need to do the same thing for the minimum time.
+    max_t = curve['time'].max()
+    min_t = curve['time'].min()
+
+    # Makes it easier to access a given time step; note that we are
+    # using the indices from the event boundaries here.
+    curve = curve.set_index('time')
+
+    # Collect peri-event statistics
+    peri_event = np.zeros((w*2 + 1, len(events)))
+
+    for idx, t in enumerate(range(-w, w+1)):
+        for eb, bound in enumerate(events):
+            if bound + t < min_t or bound + t > max_t:
+                peri_event[idx, eb] = np.nan
+            else:
+                peri_event[idx, eb] = curve.loc[bound + t]
+
+    means = np.nanmean(peri_event, axis=1)
+
+    # Calculate pre-event variability and post-event variability. Notice
+    # that we are not including the event point itself.
+    pre_event_variability = np.max(means[:w]) - np.min(means[:w])
+    post_event_variability = np.max(means[w+1:]) - np.min(means[w+1:])
+
+    return pre_event_variability - post_event_variability
 
 
 def get_all_shifts(event_boundaries, variability_curve):
+    """Return all potential shifts of event boundaries."""
     T = np.max(variability_curve.index.values)
 
     all_boundaries_shifted = []

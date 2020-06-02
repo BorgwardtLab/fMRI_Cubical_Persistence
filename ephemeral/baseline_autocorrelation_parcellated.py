@@ -6,7 +6,7 @@
 #
 # The goal is to summarise each participant as a voxel-by-voxel matrix.
 #
-# This script is specifically built for handling parcellated data. Other 
+# This script is specifically built for handling parcellated data. Other
 # data sources are not possible right now, as they would probably exceed
 # computational resources quickly.
 
@@ -14,9 +14,10 @@ import argparse
 import math
 import os
 import warnings
-import sys
 
 import numpy as np
+
+from tqdm import tqdm
 
 
 def basename(filename):
@@ -63,12 +64,15 @@ if __name__ == '__main__':
     # convention in the remainder of the paper.
     n_digits = int(math.log10(n_participants) + 1)
 
-    for index, X in enumerate(data):
+    for index, X in tqdm(enumerate(data), desc='Subject'):
 
         filename = f'{index+1:0{n_digits}d}.npz'
         filename = os.path.join(args.output, filename)
 
         X = np.corrcoef(X.T)
+        X = np.nan_to_num(X)
+
+        assert np.isnan(X).sum() == 0
 
         # Nothing should be overwritten. Else, the script might be used
         # incorrectly, so we refuse to do anything.

@@ -345,14 +345,22 @@ if __name__ == '__main__':
         # to appear.
         thetas = []
 
+        # To ensure reproducibility. This was added only *after*
+        # we decided to use the analysis. The values obtained
+        # using these seeds are the values reported in the
+        # paper.
+        np.random.seed(42)
+
         for i in tqdm(range(n_bootstraps), desc='Bootstrap'):
             m = len(event_boundaries)
 
             event_boundaries_bootstrap = np.random.choice(
                 possible_events,
                 m,
-                replace=False  # to ensure that we do not get repeated events
-            )
+                # To ensure that we do not get repeated events. This is
+                # the more stringent setting.
+                replace=False,
+             )
 
             event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
 

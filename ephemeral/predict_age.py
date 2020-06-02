@@ -102,10 +102,13 @@ if __name__ == '__main__':
         y = y[child_indices]
         X = X[child_indices]
 
-    # This ensures that all methods are on more or less equal footing
-    # here. Else, using a full matrix would easily outperform all the
-    # other methods because of overfitting.
-    X = PCA(n_components=100).fit_transform(X)
+    if args.summary is not None:
+        X = X[:, X.shape[1] // 2:]
+    else:
+        # This ensures that all methods are on more or less equal footing
+        # here. Else, using a full matrix would easily outperform all the
+        # other methods because of overfitting.
+        X = PCA(n_components=100).fit_transform(X)
 
     pipeline = Pipeline(
         steps=[

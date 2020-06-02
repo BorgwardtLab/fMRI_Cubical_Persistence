@@ -171,39 +171,6 @@ def get_variability_mean_difference(events, curve, w):
     return pre_event_mean - post_event_mean
 
 
-def is_extremum(events, curve, w):
-    # This is the maximum time stored in the data set; it does not
-    # necessarily correspond to the length of the curve because it
-    # is possible that indices have been dropped.
-    #
-    # We need to do the same thing for the minimum time.
-    max_t = curve['time'].max()
-    min_t = curve['time'].min()
-
-    # Makes it easier to access a given time step; note that we are
-    # using the indices from the event boundaries here.
-    curve = curve.set_index('time')
-
-    # Collect peri-event statistics
-    peri_event = np.zeros((w*2 + 1, len(events)))
-
-    for idx, t in enumerate(range(-w, w+1)):
-        for eb, bound in enumerate(events):
-            if bound + t < min_t or bound + t > max_t:
-                peri_event[idx, eb] = np.nan
-            else:
-                peri_event[idx, eb] = curve.loc[bound + t]
-
-    means = np.nanmean(peri_event, axis=1)
-
-    centre = means[w]
-
-    extremum = means[w - 1] <= centre and means[w + 1] <= centre
-    extremum = extremum or (means[w - 1] >= centre and means[w + 1] >= centre)
-
-    return extremum
-
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()

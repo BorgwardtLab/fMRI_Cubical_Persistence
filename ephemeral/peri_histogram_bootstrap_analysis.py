@@ -287,7 +287,7 @@ if __name__ == '__main__':
     # curve, though, so some events might not feature a proper window.
     possible_events = variability_curve.index.values
 
-    evaluation_fn = get_variability_mean_difference
+    evaluation_fn = get_variability_max_difference
     if args.correlation:
         evaluation_fn = get_variability_correlation
 
@@ -335,11 +335,6 @@ if __name__ == '__main__':
         print(sum(thetas < theta_0) / thetas.shape[0])
 
         sns.lineplot(np.arange(thetas.shape[0]), thetas.ravel())
-        #plt.stem(
-        #    np.arange(thetas.shape[0]),
-        #    n_events,
-        #    use_line_collection=True
-        #)
 
     # Bootstrap analysis
     else:

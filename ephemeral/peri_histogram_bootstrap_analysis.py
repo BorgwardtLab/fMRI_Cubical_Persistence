@@ -194,10 +194,6 @@ if __name__ == '__main__':
     variability_curve = pd.read_csv(args.INPUT)
     event_boundaries = get_salience_indices()
 
-    #event_boundaries = event_boundaries[7:]
-    print(event_boundaries)
-    event_boundaries = np.array([17, 24, 32, 48, 55, 68, 78, 112, 126, 140, 161])
-
     # All time points that are available and from which sampling is
     # possible. We do not account for the temporal boundaries of the
     # curve, though, so some events might not feature a proper window.

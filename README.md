@@ -32,3 +32,12 @@ the appropriate fitting method based on the input data:
     python peri_histogram_bootstrap_analysis.py ../results/across_cohort_variability/brainmask_sigma1.0_r20.csv
     python peri_histogram_bootstrap_analysis.py ../results/across_cohort_variability/occipitalmask_sigma1.0_r20.csv
     python peri_histogram_bootstrap_analysis.py ../results/across_cohort_variability/xormask_sigma1.0_20.csv
+
+## Embeddings
+
+It is possible to recreate the embeddings that are stored in the
+`results` folder by calling:
+
+    python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation_parcellated/*.npz
+
+Alternative `baseline_autocorrelation` matrices are also permissible.

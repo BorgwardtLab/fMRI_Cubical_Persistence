@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn.linear_model import LinearRegression
+from scipy.stats import pearsonr
 
 from tqdm import tqdm
 
@@ -103,10 +104,10 @@ def get_variability_correlation(events, curve, w):
     X = np.asarray(np.arange(2*w + 1)).reshape(-1, 1)
     y = np.nanmean(peri_event, axis=1).reshape(-1, 1)
 
-    clf = LinearRegression(normalize=True)
+    clf = LinearRegression()
     clf.fit(X, y)
 
-    return clf.score(X, y)
+    return pearsonr(y.ravel(), clf.predict(X).ravel())[0]
 
 
 def get_variability_mean_difference(events, curve, w):
@@ -170,6 +171,39 @@ def get_variability_mean_difference(events, curve, w):
     return pre_event_mean - post_event_mean
 
 
+def is_extremum(events, curve, w):
+    # This is the maximum time stored in the data set; it does not
+    # necessarily correspond to the length of the curve because it
+    # is possible that indices have been dropped.
+    #
+    # We need to do the same thing for the minimum time.
+    max_t = curve['time'].max()
+    min_t = curve['time'].min()
+
+    # Makes it easier to access a given time step; note that we are
+    # using the indices from the event boundaries here.
+    curve = curve.set_index('time')
+
+    # Collect peri-event statistics
+    peri_event = np.zeros((w*2 + 1, len(events)))
+
+    for idx, t in enumerate(range(-w, w+1)):
+        for eb, bound in enumerate(events):
+            if bound + t < min_t or bound + t > max_t:
+                peri_event[idx, eb] = np.nan
+            else:
+                peri_event[idx, eb] = curve.loc[bound + t]
+
+    means = np.nanmean(peri_event, axis=1)
+
+    centre = means[w]
+
+    extremum = means[w - 1] <= centre and means[w + 1] <= centre
+    extremum = extremum or (means[w - 1] >= centre and means[w + 1] >= centre)
+
+    return extremum
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -193,14 +227,27 @@ if __name__ == '__main__':
     variability_curve = pd.read_csv(args.INPUT)
     event_boundaries = get_salience_indices()
 
+    #event_boundaries = event_boundaries[7:]
+    print(event_boundaries)
+    event_boundaries = np.array([17, 24, 32, 48, 55, 68, 78, 112, 126, 140, 161])
+
     # All time points that are available and from which sampling is
     # possible. We do not account for the temporal boundaries of the
     # curve, though, so some events might not feature a proper window.
     possible_events = variability_curve.index.values
 
+    T = np.max(variability_curve.index.values)
+
+    all_boundaries_shifted = []
+
+    for shift in range(T):
+        all_boundaries_shifted.append(np.mod(event_boundaries + shift, T))
+
     evaluation_fn = get_variability_mean_difference
     if args.correlation:
         evaluation_fn = get_variability_correlation
+
+    evaluation_fn = is_extremum
 
     # Original estimate of the variability for the *true* event
     # boundaries.
@@ -215,29 +262,53 @@ if __name__ == '__main__':
     # Bootstrap distribution of the coefficient of determination.
     thetas = []
 
-    n_bootstraps = 1000
-    for i in tqdm(range(n_bootstraps), desc='Bootstrap'):
-        m = len(event_boundaries)
+    n_bootstraps = len(all_boundaries_shifted)
 
-        event_boundaries_bootstrap = np.random.choice(
-            possible_events,
-            m,
-            replace=False  # to ensure that we do not get repeated events
-        )
+    #for i in tqdm(range(n_bootstraps), desc='Bootstrap'):
+    #    m = len(event_boundaries)
 
-        event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
+    #    event_boundaries_bootstrap = np.random.choice(
+    #        possible_events,
+    #        m,
+    #        replace=False  # to ensure that we do not get repeated events
+    #    )
 
-        thetas.append(
-            evaluation_fn(
-                event_boundaries_bootstrap,
-                variability_curve,
-                args.window
-            )
+    #    event_boundaries_bootstrap = sorted(event_boundaries_bootstrap)
+
+    #    thetas.append(
+    #        evaluation_fn(
+    #            event_boundaries_bootstrap,
+    #            variability_curve,
+    #            args.window
+    #        )
+    #    )
+
+    thetas = np.zeros((len(all_boundaries_shifted) + 1, 1))
+    thetas[0] = theta_0
+
+    n_events = [len(event_boundaries)]
+
+    for index, boundaries in enumerate(all_boundaries_shifted):
+        boundaries = sorted(boundaries)
+
+        print(index + 1, (event_boundaries - boundaries).sum())
+
+        n_events.append(np.sum(np.isin(boundaries, event_boundaries)))
+
+        thetas[index + 1] = evaluation_fn(
+            boundaries,
+            variability_curve,
+            args.window
         )
 
     print(theta_0)
-    print(sum(thetas >= theta_0) / n_bootstraps)
-    print(sum(thetas <= theta_0) / n_bootstraps)
+    print(sum(thetas > theta_0) / n_bootstraps)
+    print(sum(thetas < theta_0) / n_bootstraps)
 
-    sns.distplot(thetas, bins=20)
+    sns.lineplot(np.arange(thetas.shape[0]), thetas.ravel())
+    #plt.stem(
+    #    np.arange(thetas.shape[0]),
+    #    n_events,
+    #    use_line_collection=True
+    #)
     plt.show()

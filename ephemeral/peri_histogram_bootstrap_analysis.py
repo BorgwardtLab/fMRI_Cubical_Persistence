@@ -168,7 +168,11 @@ def get_variability_mean_difference(events, curve, w):
     pre_event_mean = np.mean(means[:w])
     post_event_mean = np.mean(means[w+1:])
 
-    return pre_event_mean - post_event_mean
+    var_1 = np.max(means[:w]) - np.min(means[:w])
+    var_2 = np.max(means[w+1:]) - np.min(means[w+1:])
+
+    return var_1 - var_2
+    #return pre_event_mean - post_event_mean
 
 
 def get_all_shifts(event_boundaries, variability_curve):
@@ -186,11 +190,19 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('INPUT', type=str, help='Input file')
+
     parser.add_argument(
         '-w', '--window',
         default=3,
         type=int,
         help='Specifies window width'
+    )
+
+    parser.add_argument(
+        '-b', '--bootstrap',
+        default=1000,
+        type=int,
+        help='Specifies number of bootstrap samples'
     )
 
     parser.add_argument(
@@ -273,7 +285,7 @@ if __name__ == '__main__':
 
     # Bootstrap analysis
     else:
-        n_bootstraps = 100
+        n_bootstraps = args.bootstrap
 
         # Will contain the bootstrap distribution in this case, making
         # it possible to assess to what extent extreme values are likely
@@ -302,5 +314,7 @@ if __name__ == '__main__':
         print(theta_0)
         print(sum(thetas > theta_0) / n_bootstraps)
         print(sum(thetas < theta_0) / n_bootstraps)
+
+        sns.distplot(thetas, rug=True)
 
     plt.show()

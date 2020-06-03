@@ -7,7 +7,8 @@ occipital_ids = [
     36.0, 37.0, 39.0, 41.0, 42.0, 43.0, 48.0, 49.0, 50.0, 51.0, 52.0,
     53.0, 54.0, 55.0, 56.0, 60.0, 61.0, 62.0, 65.0, 66.0, 67.0, 69.0,
     71.0, 72.0, 73.0, 78.0, 79.0, 83.0, 87.0, 88.0, 89.0, 91.0, 96.0,
-    97.0, 98.0, 99.0, 100.0
+    97.0, 98.0, 99.0,
+    # TODO: 100.0?
 ]
 
 
@@ -20,7 +21,10 @@ occipital_ids = np.asarray(occipital_ids, dtype=int)
 occipital_mask = data.copy()
 xor_mask = data.copy()
 
-occipital_mask[:, :, ~occipital_ids] = np.nan
+occipital_ids_inv = set(np.arange(data.shape[2])) - set(occipital_ids)
+occipital_ids_inv = np.array(list(occipital_ids_inv))
+
+occipital_mask[:, :, occipital_ids_inv] = np.nan
 xor_mask[:, :, occipital_ids] = np.nan
 
 basename = '../results/parcellated_data/shaefer_masked_subject_data_shifted'

@@ -6,12 +6,14 @@ To run the calculations, call the `predict_age.py` script on different
 input data sets. The script is sufficiently smart to automatically use
 the appropriate fitting method based on the input data:
 
-    # For the baseline-tt and baseline-vv experiments, respectively. For
-    # the baseline-tt experiment, other brain masks are also available.
+    # For the baseline-tt and baseline-pp experiments, respectively. For
+    # both experiments, other brain masks are also available.
     python predict_age.py ../results/baseline_autocorrelation/brainmask/*.npz
     python predict_age.py ../results/baseline_autocorrelation/occipitalmask/*.npz
     python predict_age.py ../results/baseline_autocorrelation/xormask/*.npz
-    python predict_age.py ../results/baseline_autocorrelation_parcellated/*.npz
+    python predict_age.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
+    python predict_age.py ../results/baseline_autocorrelation_parcellated/occipitalmask/*.npz
+    python predict_age.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
 
     # For the topological summary statistics. Again, they also work for
     # different brain masks (not showing all of them here). Please note

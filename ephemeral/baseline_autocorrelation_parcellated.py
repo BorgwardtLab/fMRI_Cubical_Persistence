@@ -16,6 +16,7 @@ import os
 import warnings
 
 import numpy as np
+import numpy.ma as ma
 
 from tqdm import tqdm
 
@@ -44,6 +45,16 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
+    default_file = \
+        '../results/parcellated_data/shaefer_masked_subject_data_shifted.npy'
+
+    parser.add_argument(
+        '-i', '--input',
+        type=str,
+        help='Input file',
+        default=default_file,
+    )
+
     parser.add_argument(
         '-o', '--output',
         type=str,
@@ -54,9 +65,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    data = np.load(
-        '../results/parcellated_data/shaefer_masked_subject_data_shifted.npy'
-    )
+    data = np.load(args.input)
 
     n_participants = data.shape[0] + 1
 
@@ -69,7 +78,10 @@ if __name__ == '__main__':
         filename = f'{index+1:0{n_digits}d}.npz'
         filename = os.path.join(args.output, filename)
 
-        X = np.corrcoef(X.T)
+        # Make sure that we only calculate correlations with valid
+        # voxels. This is only be relevant for the data sets which
+        # actually include a certain brain mask.
+        X = ma.corrcoef(ma.masked_invalid(X.T))
         X = np.nan_to_num(X)
 
         assert np.isnan(X).sum() == 0

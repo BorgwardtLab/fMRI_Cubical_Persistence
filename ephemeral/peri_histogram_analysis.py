@@ -41,6 +41,8 @@ def get_salience_indices(threshold=7):
     # dropping operation does *not* have to be considered here!
     salience_indices, = np.nonzero(salience >= threshold)
 
+    print(salience_indices)
+
     # Again, no shift here!
     return salience_indices
 
@@ -87,9 +89,20 @@ if __name__ == '__main__':
     name = os.path.splitext(os.path.basename(args.INPUT))[0]
     plt.title(name)
 
+    df = pd.DataFrame({
+        'mean': np.nanmean(peri_event, axis=1),
+        'sem': sem(peri_event, axis=1),
+        'std': np.std(peri_event, axis=1),
+    })
+
+    df.index.name = 'delta'
+    df.index -= w
+    print(df.to_csv())
+
     colors = cm.coolwarm(np.linspace(0, 1, peri_event.shape[0]))
     plt.vlines(0,np.nanmin(peri_event),np.nanmax(peri_event),linestyle='dashed')
     plt.bar(np.arange(-w,w+1),np.nanmean(peri_event,axis=1),yerr=sem(peri_event, axis=1, nan_policy='omit'),color=colors)
     plt.ylim(np.nanmin(peri_event),np.nanmax(peri_event))
 
+    plt.savefig(f'peri_{name}.png', bbox_inches='tight')
     plt.show()

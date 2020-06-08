@@ -37,6 +37,28 @@ possible currently because it requires the raw data. However, the file
 `ephemeral/scripts/calculate_summary_statistics.sh` shows how to perform
 this calculation provided the raw data are available.
 
+## Embedding experiment
+
+To reproduce Figure 3a, 3b, 3c, and 3d, please run the following
+commands:
+
+    # For `baseline-tt`:
+    python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation/brainmask/*.npz
+
+    # For `baseline-pp`:
+    python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
+
+    # For the topological summary statistics; notice that
+    # 'total_persistence_p1' is the same as the 1-norm we
+    # we used in the paper.
+    python embed_summary_statistics.py  -s 'total_persistence_p1' ../results/summary_statistics/brainmask.json
+    python embed_summary_statistics.py  -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
+
+You can also calculate these embeddings for *other* masks, such as
+`occipitalmask` or `xormask`. We have provided the necessary files
+for this, but did *not* discuss them in the paper so far for space
+reasons.
+
 ## Age prediction experiment
 
 To run the calculations, call the `predict_age.py` script on different

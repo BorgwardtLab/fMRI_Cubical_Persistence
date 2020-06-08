@@ -57,7 +57,7 @@ commands:
 Here is an example output file&nbsp;(showing the infinity norm summary
 statistic embedding based on the whole-brain mask):
 
-![Embedding based on infinity norm summary statistics](./examples/embedding_infinity_norm.png | width = 100)
+![Embedding based on infinity norm summary statistics](./examples/embedding_infinity_norm.png)
 
 You can also calculate these embeddings for *other* masks, such as
 `occipitalmask` or `xormask`. We have provided the necessary files

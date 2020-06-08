@@ -59,6 +59,10 @@ You can also calculate these embeddings for *other* masks, such as
 for this, but did *not* discuss them in the paper so far for space
 reasons.
 
+Please note that some of the plots might appear 'flipped' (with respect
+to the y-axis); this only affects the visualisation, but not the
+interpretation.
+
 ## Age prediction experiment
 
 To run the calculations, call the `predict_age.py` script on different

@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from sklearn.manifold import MDS
 from sklearn.metrics import pairwise_distances
@@ -60,18 +61,13 @@ if __name__ == '__main__':
         random_state=42,
     ).fit_transform(D)
 
-    plt.scatter(
-        x=Y[:, 0],
-        y=Y[:, 1],
-        c=df['cohort'].values,
-        cmap='Set1',
-    )
-
     df['x'] = Y[:, 0]
     df['y'] = Y[:, 1]
 
     df = df[['x', 'y', 'age', 'cohort']]
     df.to_csv(sys.stdout, index=False, float_format='%.2f')
 
-    plt.colorbar()
+    pal = list(reversed(sns.color_palette('Set1', n_colors=6)))
+    sns.scatterplot('x', 'y', data=df, hue='cohort', palette=pal)
+
     plt.show()

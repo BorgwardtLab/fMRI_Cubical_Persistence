@@ -1,4 +1,41 @@
-# Ephemeral: fMRI data analysis
+# Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence
+
+This is the code for our paper *Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence*.
+You will find numerous generated files such as a summary statistics and
+embeddings in this repository. The raw data, however, are too large to
+be easily re-distributed here. Please access them to under https://openneuro.org/datasets/ds000228/versions/1.0.0.
+
+The following instructions demonstrate how to use the package and how to
+reproduce the experiments.
+
+## Installing and using the package
+
+The code requires [`poetry`](https://python-poetry.org) to be installed.
+Please install this package using the suggested installation procedure
+for your operating system. Afterwards, you can install the package as
+follows:
+
+```
+poetry install
+```
+
+Please use `poetry shell` to start a shell in which the
+package and its dependencies are installed. We will assume that all
+commands are executed in the `ephemeral` code directory.
+
+Subsequently, we will discuss how to reproduce the individual
+experiments and plots.
+
+## Summary statistics
+
+The folder `results/summary_statistics` contains the results of the
+summary statistics calculation as JSON files. The key is the participant
+id, the value is a nested dictionary with the respective time series,
+calculated based on one of the summary statistics mentioned in the
+paper. Calculating these summary statistics by yourself is *not*
+possible currently because it requires the raw data. However, the file
+`ephemeral/scripts/calculate_summary_statistics.sh` shows how to perform
+this calculation provided the raw data are available.
 
 ## Age prediction experiment
 

@@ -54,6 +54,11 @@ commands:
     python embed_summary_statistics.py  -s 'total_persistence_p1' ../results/summary_statistics/brainmask.json
     python embed_summary_statistics.py  -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
 
+Here is an example output file&nbsp;(showing the infinity norm summary
+statistic embedding based on the whole-brain mask):
+
+![Embedding based on infinity norm summary statistics](./examples/embedding_infinity_norm.png)
+
 You can also calculate these embeddings for *other* masks, such as
 `occipitalmask` or `xormask`. We have provided the necessary files
 for this, but did *not* discuss them in the paper so far for space
@@ -65,9 +70,11 @@ interpretation.
 
 ## Age prediction experiment
 
-To run the calculations, call the `predict_age.py` script on different
-input data sets. The script is sufficiently smart to automatically use
-the appropriate fitting method based on the input data:
+This reproduces Figure 1e in the paper.
+To run the corresponding calculations, call the `predict_age.py` script
+on different input data sets. The script is sufficiently smart to
+automatically use the appropriate fitting method based on the input
+data:
 
     # For the baseline-tt and baseline-pp experiments, respectively. For
     # both experiments, other brain masks are also available.

@@ -7,6 +7,7 @@ import json
 import os
 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import numpy as np
 import pandas as pd
@@ -84,17 +85,13 @@ if __name__ == '__main__':
         random_state=42,
     ).fit_transform(D)
 
-    plt.scatter(
-        x=Y[:, 0],
-        y=Y[:, 1],
-        c=df['cohort'].values,
-        cmap='Set1',
-    )
-
     df['x'] = Y[:, 0]
     df['y'] = Y[:, 1]
 
     df = df[['x', 'y', 'age', 'cohort']]
+
+    pal = list(reversed(sns.color_palette('Set1', n_colors=6)))
+    sns.scatterplot('x', 'y', data=df, hue='cohort', palette=pal)
 
     output = os.path.splitext(os.path.basename(args.INPUT))[0]
     output += f'_{args.statistic}'
@@ -104,5 +101,4 @@ if __name__ == '__main__':
     if not os.path.exists(output):
         df.to_csv(output, index=False, float_format='%.2f')
 
-    plt.colorbar()
     plt.show()

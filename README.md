@@ -90,8 +90,24 @@ data:
     # that `total_persistence_p1` is equivalent to the `p1_norm`, as we
     # describe it in the paper (the terminology in the paper was chosen
     # because it is more consistent).
-    python predict_age.py -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
     python predict_age.py -s 'total_persistence_p1' ../results/summary_statistics/brainmask.json
+    python predict_age.py -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
+
+Here is an example output of what you get for the infinity norm
+calculation:
+
+    python predict_age.py -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
+
+    122it [00:00, 257.88it/s]
+    R^2: 0.37
+    Correlation coefficient: 0.61
+    MSE: 3.38
+
+You can see the R-squared coefficient&nbsp;(used for fitting the model),
+the correlation coefficient&nbsp;(reported in the paper in the main
+text), and the mean-squared-error&nbsp;(reported in the supplemental
+materials in an extended version of the table that is shown in the main
+paper).
 
 ## Variability analysis: Showing the event histograms
 

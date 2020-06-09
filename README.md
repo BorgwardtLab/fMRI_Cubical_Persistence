@@ -180,6 +180,29 @@ This will result in a histogram like this one&nbsp;(here, the whole-brain mask i
 
 ## Variability analysis: Running the bootstrap experiments
 
+Finally, to show the details of the bootstrap experiments concerning the
+variability analysis, you can use the following code:
+
     python peri_histogram_bootstrap_analysis.py ../results/across_cohort_variability/brainmask_sigma1.0_r20.csv
     python peri_histogram_bootstrap_analysis.py ../results/across_cohort_variability/occipitalmask_sigma1.0_r20.csv
     python peri_histogram_bootstrap_analysis.py ../results/across_cohort_variability/xormask_sigma1.0_20.csv
+
+By default, this will draw 1000 bootstrap samples and visualise the
+corresponding histogram. Here is such a histogram&nbsp;(calculated based
+on the occipital-temporal mask), with the *original* value of the
+parameter being highlighted as a dotted vertical line:
+
+![Across-cohort variability bootstrap histogram based on occipital-temporal mask](./examples/across_cohort_variability_bootstrap_histogram_xm.png)
+
+The command-line output will show the numbers that we report in the
+paper. For example, the analysis based on the occipital-temporal mask
+will yield the following output:
+
+    python peri_histogram_bootstrap_analysis.py -b 1000 ../results/across_cohort_variability/occipitalmask_sigma1.0_r20.csv
+    Bootstrap: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1000/1000 [00:15<00:00, 63.93it/s]
+    Theta_0: -0.0226
+    ASL (left) : 0.95
+    ASL (right): 0.04
+
+Hence, the parameter has an achieved significance level that is
+significant at the 0.05 level.

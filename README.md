@@ -206,3 +206,10 @@ will yield the following output:
 
 Hence, the parameter has an achieved significance level that is
 significant at the 0.05 level.
+
+## Additional code
+
+The repository contains more code that we are unable to fully discuss or
+acknowledge in the paper because of space reasons. Please feel free to
+browse around; we documented most of the relevant scripts, making it possible
+to get a glimpse into the full pipeline.

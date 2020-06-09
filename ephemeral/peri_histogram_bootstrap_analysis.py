@@ -372,10 +372,11 @@ if __name__ == '__main__':
                 )
             )
 
-        print(theta_0)
-        print(sum(thetas > theta_0) / n_bootstraps)
-        print(sum(thetas < theta_0) / n_bootstraps)
+        print(f'Theta_0: {theta_0:.4f}')
+        print(f'ASL (left) : {sum(thetas >= theta_0) / n_bootstraps:.2f}')
+        print(f'ASL (right): {sum(thetas <= theta_0) / n_bootstraps:.2f}')
 
-        sns.distplot(thetas, rug=True)
+        ax = sns.distplot(thetas, rug=True)
+        ax.axvline(theta_0, ls='dotted', c='k')
 
     plt.show()

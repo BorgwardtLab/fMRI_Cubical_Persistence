@@ -144,9 +144,39 @@ be overwritten when calling the script.
 
 ## Variability analysis: Showing the event histograms
 
+To create the across-cohort-variability data&nbsp;(that we subsequently
+depict in Figure A.4 in the appendix and whose histograms are shown in
+Figure 4 in the main text), you can use the following code:
+
+    python analyse_variability_across_cohorts.py -d ../results/persistence_images/brainmask_sigma1.0_r20.json
+
+This example would calculate the across-cohort variability curve of the
+whole-brain mask and depict it. The figure in the paper&nbsp;(Figure A.4
+in the supplemental materials) is improved in terms of the visualisation
+and colour-coded according to the time, whereas the generated figure is
+more 'plain-looking':
+
+![Across-cohort variability curve based on whole-brain mask](./examples/across_cohort_variability_curve_bm.png)
+
+Please note that the `-d` parameter in the script above is crucial as it
+removes the first time steps&nbsp;(during which a blank screen is shown).
+In the other scripts, this removal happens automatically, but here, we
+have an option for it&nbsp;(it has no influence on the calculation at
+other time steps, but the curve itself looks slightly different from the
+ones that we report in the paper in Figure A.4). As usual, you can also
+run this script for the persistences images of the other brain masks.
+The corresponding curves are stored in `results/across_cohort_variability`.
+
+Finally, to convert these curves into the variability histograms that we
+depict in Figure 4, please use the following code:
+
     python peri_histogram_analysis.py ../results/across_cohort_variability/brainmask_sigma1.0_r20.csv
     python peri_histogram_analysis.py ../results/across_cohort_variability/occipitalmask_sigma1.0_r20.csv
     python peri_histogram_analysis.py ../results/across_cohort_variability/xormask_sigma1.0_20.csv
+
+This will result in a histogram like this one&nbsp;(here, the whole-brain mask is used):
+
+![Across-cohort variability histogram based on whole-brain mask](./examples/across_cohort_variability_histogram_bm.png)
 
 ## Variability analysis: Running the bootstrap experiments
 

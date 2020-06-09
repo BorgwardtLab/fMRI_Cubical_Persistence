@@ -39,13 +39,20 @@ this calculation provided the raw data are available.
 
 ## Embedding experiment
 
-To reproduce Figure 3a, 3b, 3c, and 3d, please run the following
-commands:
+Due to the size restrictions, we cannot include the raw data required
+for the `baseline-tt` and `baseline-pp` data sets. If you want to
+reproduce these results, please take a look at our [OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
+and download the code from there. Note that this does **not** apply to
+the topological summary statistics; these summaries are sufficiently small
+such that we can 'ship' them with the code.
 
-    # For `baseline-tt`:
+That being said, to reproduce Figure 3a, 3b, 3c, and 3d, please run the
+following commands:
+
+    # For `baseline-tt` (see comments above concerning the data):
     python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation/brainmask/*.npz
 
-    # For `baseline-pp`:
+    # For `baseline-pp` (see comments above converning the data):
     python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
 
     # For the topological summary statistics; notice that
@@ -70,7 +77,16 @@ interpretation.
 
 ## Age prediction experiment
 
-This reproduces Figure 1e in the paper.
+This reproduces Figure 3e in the paper.
+
+Please note that due to the size restrictions, we cannot include the raw
+data required for the `baseline-tt` and `baseline-pp` data sets. If you
+want to reproduce these results, please take a look at our [OSF
+Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
+and download the code and data from there. Note that this does **not** apply to
+the topological summary statistics; these summaries are sufficiently
+small such that we can 'ship' them with the code.
+
 To run the corresponding calculations, call the `predict_age.py` script
 on different input data sets. The script is sufficiently smart to
 automatically use the appropriate fitting method based on the input
@@ -111,6 +127,11 @@ paper).
 
 ## Variability analysis: Calculating cohort brain state trajectories
 
+Please note that due to the size restrictions, we cannot include the
+persistence images.  If you want to reproduce these results, please take a look at our
+[OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
+and download the code and data from there.
+
 To calculate the cohort brain state trajectories shown in Figure 4, you
 need to use the corresponding persistence images&nbsp;(these files are
 also pre-computed because they involve the raw data). To visualise the
@@ -143,6 +164,11 @@ stored in the folder `results/cohort_trajectories`. Note that they might
 be overwritten when calling the script.
 
 ## Variability analysis: Showing the event histograms
+
+Please note that due to the size restrictions, we cannot include the
+persistence images.  If you want to reproduce these results, please take a look at our
+[OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
+and download the code and data from there.
 
 To create the across-cohort-variability data&nbsp;(that we subsequently
 depict in Figure A.4 in the appendix and whose histograms are shown in

@@ -71,8 +71,10 @@ def embed(Z, name, rolling=None, joint_embedding=False):
     df['cohort'] = np.array([[i] * m for i in range(n)]).ravel()
     df['time'] = np.array(list(np.arange(m)) * n).ravel()
 
-    # FIXME: better output?
-    print(entropy)
+    print(
+        'Entropies for the individual cohorts:',
+        ['{0:0.2f}'.format(e) for e in entropy]
+    )
 
     # FIXME: make configurable
     if args.drop:

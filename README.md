@@ -109,6 +109,39 @@ text), and the mean-squared-error&nbsp;(reported in the supplemental
 materials in an extended version of the table that is shown in the main
 paper).
 
+## Variability analysis: Calculating cohort brain state trajectories
+
+To calculate the cohort brain state trajectories shown in Figure 4, you
+need to use the corresponding persistence images&nbsp;(these files are
+also pre-computed because they involve the raw data). To visualise the
+brain state trajectories for the whole-brain mask, for example, please
+use the following call: 
+
+    python visualise_cohort_trajectories.py -d ../results/persistence_images/brainmask_sigma1.0_r20.json
+
+This will create a figure similar to this one:
+
+![Brain state trajectory based on whole-brain mask](./examples/cohort_brain_state_trajectories_bm.png)
+
+Note that the *ordering* of cohorts has been swapped in the paper. As
+we describe in the main text, we were 'blinded' to the actual ages of
+the participants until the every end; hence, all visualisations are
+shown using the original cohort labels.
+
+The visualisation script offers additional options, which we did *not*
+describe in the paper so far, such as a 'smoothing' process based on
+rolling windows. Feel free to experiment by calling 
+
+    python visualise_cohort_trajectories.py --help
+
+to see the available options! This command-line argument is understood
+by most of the tools that we provide, making it possible to explore the
+code with ease.
+
+The corresponding cohort trajectories that we  describe in the paper are
+stored in the folder `results/cohort_trajectories`. Note that they might
+be overwritten when calling the script.
+
 ## Variability analysis: Showing the event histograms
 
     python peri_histogram_analysis.py ../results/across_cohort_variability/brainmask_sigma1.0_r20.csv

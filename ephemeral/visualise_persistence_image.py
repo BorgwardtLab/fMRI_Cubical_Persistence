@@ -4,6 +4,7 @@
 # auxiliary script for creating additional figures.
 
 import argparse
+import numpy as np
 
 from persim import PersImage
 from topology import load_persistence_diagram_txt
@@ -18,8 +19,10 @@ if __name__ == '__main__':
 
     pd = load_persistence_diagram_txt(args.INPUT)
 
-    clf = PersImage()
+    clf = PersImage(pixels=(args.RESOLUTION, args.RESOLUTION))
     X = clf.transform([pd])[0]
+
+    X = (X - np.min(X)) / (np.max(X) - np.min(X))
 
     with open(f'PI_{args.RESOLUTION}.txt', 'w') as f:
         for j in range(args.RESOLUTION):

@@ -4,14 +4,6 @@
 # auxiliary script for creating additional figures.
 
 import argparse
-import json
-import os
-
-import numpy as np
-
-import matplotlib.pyplot as plt
-
-from tqdm import tqdm
 
 from persim import PersImage
 from topology import load_persistence_diagram_txt
@@ -29,8 +21,8 @@ if __name__ == '__main__':
     clf = PersImage()
     X = clf.transform([pd])[0]
 
-    with open(f'PI_{args.resolution}.txt', 'w') as f:
-        for j in range(args.resolution):
-            for i in range(args.resolution):
+    with open(f'PI_{args.RESOLUTION}.txt', 'w') as f:
+        for j in range(args.RESOLUTION):
+            for i in range(args.RESOLUTION):
                 print(f'{i} {j} {X[j, i]}', file=f)
             print('', file=f)

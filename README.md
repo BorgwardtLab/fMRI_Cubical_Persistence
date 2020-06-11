@@ -48,27 +48,28 @@ this calculation provided the raw data are available.
 
 ## Embedding experiment
 
-Due to the size restrictions, we cannot include the raw data required
-for the `baseline-tt` and `baseline-pp` data sets. If you want to
-reproduce these results, please take a look at our [OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
+**Note to NeurIPS 2020 reviewers**: Due to the size restrictions, we
+cannot include the raw data required for the `baseline-tt` and
+`baseline-pp` data sets. If you want to reproduce these results, please
+take a look at our [OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
 and download the code from there. Note that this does **not** apply to
-the topological summary statistics; these summaries are sufficiently small
-such that we can 'ship' them with the code.
+the topological summary statistics; these summaries are sufficiently
+small such that we can 'ship' them with the code.
 
 That being said, to reproduce Figure 3a, 3b, 3c, and 3d, please run the
 following commands:
-
-    # For `baseline-tt` (see comments above concerning the data):
-    python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation/brainmask/*.npz
-
-    # For `baseline-pp` (see comments above converning the data):
-    python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
 
     # For the topological summary statistics; notice that
     # 'total_persistence_p1' is the same as the 1-norm we
     # we used in the paper.
     python embed_summary_statistics.py  -s 'total_persistence_p1' ../results/summary_statistics/brainmask.json
     python embed_summary_statistics.py  -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
+
+    # For `baseline-tt` (see comments above concerning the data):
+    python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation/brainmask/*.npz
+
+    # For `baseline-pp` (see comments above converning the data):
+    python embed_baseline_autocorrelation.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
 
 Here is an example output file&nbsp;(showing the infinity norm summary
 statistic embedding based on the whole-brain mask):
@@ -88,18 +89,27 @@ interpretation.
 
 This reproduces Figure 3e in the paper.
 
-Please note that due to the size restrictions, we cannot include the raw
-data required for the `baseline-tt` and `baseline-pp` data sets. If you
-want to reproduce these results, please take a look at our [OSF
+**Note to NeurIPS 2020 reviewers**: Please note that due to the size
+restrictions, we cannot include the raw data required for the
+`baseline-tt` and `baseline-pp` data sets. If you want to reproduce
+these results, please take a look at our [OSF
 Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
-and download the code and data from there. Note that this does **not** apply to
-the topological summary statistics; these summaries are sufficiently
-small such that we can 'ship' them with the code.
+and download the code and data from there. Note that this does **not**
+apply to the topological summary statistics; these summaries are
+sufficiently small such that we can 'ship' them with the code.
 
 To run the corresponding calculations, call the `predict_age.py` script
 on different input data sets. The script is sufficiently smart to
 automatically use the appropriate fitting method based on the input
 data:
+
+    # For the topological summary statistics. Again, they also work for
+    # different brain masks (not showing all of them here). Please note
+    # that `total_persistence_p1` is equivalent to the `p1_norm`, as we
+    # describe it in the paper (the terminology in the paper was chosen
+    # because it is more consistent).
+    python predict_age.py -s 'total_persistence_p1' ../results/summary_statistics/brainmask.json
+    python predict_age.py -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
 
     # For the baseline-tt and baseline-pp experiments, respectively. For
     # both experiments, other brain masks are also available.
@@ -109,14 +119,6 @@ data:
     python predict_age.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
     python predict_age.py ../results/baseline_autocorrelation_parcellated/occipitalmask/*.npz
     python predict_age.py ../results/baseline_autocorrelation_parcellated/brainmask/*.npz
-
-    # For the topological summary statistics. Again, they also work for
-    # different brain masks (not showing all of them here). Please note
-    # that `total_persistence_p1` is equivalent to the `p1_norm`, as we
-    # describe it in the paper (the terminology in the paper was chosen
-    # because it is more consistent).
-    python predict_age.py -s 'total_persistence_p1' ../results/summary_statistics/brainmask.json
-    python predict_age.py -s 'infinity_norm_p1' ../results/summary_statistics/brainmask.json
 
 Here is an example output of what you get for the infinity norm
 calculation:

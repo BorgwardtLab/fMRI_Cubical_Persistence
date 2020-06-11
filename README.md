@@ -138,9 +138,10 @@ paper).
 
 ## Variability analysis: Calculating cohort brain state trajectories
 
-Please note that due to the size restrictions, we cannot include the
-persistence images.  If you want to reproduce these results, please take a look at our
-[OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
+**Note to NeurIPS 2020 reviewers**: Please note that due to the size
+restrictions, we cannot include the persistence images.  If you want to
+reproduce these results, please take a look at our [OSF
+Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
 and download the code and data from there.
 
 To calculate the cohort brain state trajectories shown in Figure 4, you
@@ -176,9 +177,10 @@ be overwritten when calling the script.
 
 ## Variability analysis: Showing the event histograms
 
-Please note that due to the size restrictions, we cannot include the
-persistence images.  If you want to reproduce these results, please take a look at our
-[OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
+**Note to NeurIPS 2020 reviewers**: Please note that due to the size
+restrictions, we cannot include the persistence images.  If you want to
+reproduce these results, please take a look at our [OSF
+Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
 and download the code and data from there.
 
 To create the across-cohort-variability data&nbsp;(that we subsequently

@@ -25,6 +25,13 @@ if __name__ == '__main__':
     parser.add_argument('FILE', nargs='+', type=str)
     parser.add_argument('--title', type=str)
 
+    parser.add_argument(
+        '-d', '--dimension',
+        default=2,
+        type=int,
+        help='Dimension to use for visualisation'
+    )
+
     args = parser.parse_args()
 
     # Required to prepare figures of the same dimensions; this prevents
@@ -45,8 +52,7 @@ if __name__ == '__main__':
                 filename
             )
 
-        # TODO: make configurable
-        selected_dimension = 2
+        selected_dimension = args.dimension
 
         creation = creation[dimensions == selected_dimension]
         destruction = destruction[dimensions == selected_dimension]

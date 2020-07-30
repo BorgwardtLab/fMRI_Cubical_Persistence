@@ -5,26 +5,34 @@
 # our case, doing it directly on a graph is also possible.
 
 import argparse
+import json
+import os
 
 import igraph as ig
 import numpy as np
 
 from pyper import persistent_homology
-from utilities import parse_filename
+
+from tqdm import tqdm
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('INPUT', nargs='+', type=str, help='Input file(s)')
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        help='Output directory',
+        required=True
+    )
 
     args = parser.parse_args()
 
-    for filename in args.INPUT:
+    os.makedirs(args.output, exist_ok=True)
+
+    for filename in tqdm(args.INPUT, desc='File'):
         X = np.load(filename, allow_pickle=True)
         X = X['X']
-
-        # Required for book-keeping and storing a persistence diagram
-        # later on.
-        subject, _, _ = parse_filename(filename)
 
         # Create a graph from the vertex representation; technically,
         # this should be the full graph, but we reserve the right to
@@ -36,9 +44,31 @@ if __name__ == '__main__':
         G.es['weight'] = X[X.nonzero()]
         G.vs['weight'] = np.min(X)
 
-        pd_0, pd_1 = persistent_homology.calculate_persistence_diagrams(
+        pd_0, _ = persistent_homology.calculate_persistence_diagrams(
                 graph=G,
                 vertex_attribute='weight',
                 edge_attribute='weight',
                 order='sublevel'
         )
+
+        pairs = np.asarray(pd_0._pairs)
+
+        dimensions = [0] * len(pairs)
+        creation_values = pairs[:, 0].tolist()
+        destruction_values = pairs[:, 1].tolist()
+
+        assert len(dimensions) == len(creation_values)
+
+        basename = os.path.basename(filename)
+        basename = os.path.splitext(basename)[0]
+        basename = basename + '.json'
+
+        with open(os.path.join(args.output, basename), 'w') as f:
+            json.dump(
+                {
+                    'dimensions': dimensions,
+                    'creation_values': creation_values,
+                    'destruction_values': destruction_values
+                },
+                f, indent=4
+            )

@@ -31,3 +31,17 @@ for SIGMA in "1.0" "0.1"; do
     wait
   done
 done
+
+ROOT="../../results/baseline_autocorrelation_parcellated"
+
+for SIGMA in "1.0" "0.1"; do
+  for RESOLUTION in "10" "20"; do
+    for EXPERIMENT in "brainmask" "occipitalmask" "brainmask_normalised" "occipitalmask_normalised"; do
+      echo "Running conversion for $EXPERIMENT..."
+      INPUT="$ROOT/$EXPERIMENT/persistence_diagrams" 
+      OUTPUT="../../results/persistence_images_from_parcellated_matrices/${EXPERIMENT}_sigma${SIGMA}_r${RESOLUTION}.json"
+      calculate_persistence_images $INPUT $OUTPUT $SIGMA $RESOLUTION
+    done
+    wait
+  done
+done

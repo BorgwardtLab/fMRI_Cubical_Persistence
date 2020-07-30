@@ -39,10 +39,10 @@ if __name__ == '__main__':
         # remove some edges if they are deemed to be non-existent.
         G = ig.Graph.Adjacency((X != 0).tolist())
 
-        # Use the correlations as edge weights and assign the minimum
-        # value to all vertices.
-        G.es['weight'] = X[X.nonzero()]
-        G.vs['weight'] = np.min(X)
+        # Use the transformed correlations as edge weights and assign
+        # the minimum distance value to all vertices.
+        G.es['weight'] = 1 - X[X.nonzero()]
+        G.vs['weight'] = 0.0
 
         pd_0, _ = persistent_homology.calculate_persistence_diagrams(
                 graph=G,

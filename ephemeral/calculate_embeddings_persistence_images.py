@@ -153,8 +153,14 @@ if __name__ == '__main__':
     filenames = sorted(glob.glob(os.path.join(args.input, '*.json')))
     for filename in tqdm(filenames, desc='File'):
 
-        subject, _, time = parse_filename(filename)
+        subject, _, _ = parse_filename(filename)
         extension = os.path.splitext(filename)[1]
+
+        # Default to using the whole filename, sans extension, as
+        # a subject ID if the subject cannot be parsed.
+        if subject is None:
+            subject = os.path.basename(filename)
+            subject = os.path.splitext(subject)[0]
 
         if extension == '.bin':
             load_persistence_diagram_fn = load_persistence_diagram_dipha

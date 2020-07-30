@@ -6,8 +6,10 @@
 
 import argparse
 
+import igraph as ig
 import numpy as np
 
+from pyper import persistent_homology
 from utilities import parse_filename
 
 if __name__ == '__main__':
@@ -20,9 +22,23 @@ if __name__ == '__main__':
         X = np.load(filename, allow_pickle=True)
         X = X['X']
 
+        # Required for book-keeping and storing a persistence diagram
+        # later on.
         subject, _, _ = parse_filename(filename)
 
-        # Next steps:
-        # - create graph from matrix (direct conversion)
-        # - calculate persistent homology (persistence diagrams)
-        # - store persistence diagrams
+        # Create a graph from the vertex representation; technically,
+        # this should be the full graph, but we reserve the right to
+        # remove some edges if they are deemed to be non-existent.
+        G = ig.Graph.Adjacency((X != 0).tolist())
+
+        # Use the correlations as edge weights and assign the minimum
+        # value to all vertices.
+        G.es['weight'] = X[X.nonzero()]
+        G.vs['weight'] = np.min(X)
+
+        pd_0, pd_1 = persistent_homology.calculate_persistence_diagrams(
+                graph=G,
+                vertex_attribute='weight',
+                edge_attribute='weight',
+                order='sublevel'
+        )

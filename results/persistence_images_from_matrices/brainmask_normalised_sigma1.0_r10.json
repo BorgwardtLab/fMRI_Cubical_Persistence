@@ -1,0 +1,6 @@
+{
+    "input": "../../results/baseline_autocorrelation/brainmask_normalised/persistence_diagrams",
+    "dimension": 0,
+    "sigma": 1.0,
+    "resolution": 10
+}

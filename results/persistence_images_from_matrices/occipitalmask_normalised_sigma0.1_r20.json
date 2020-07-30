@@ -1,0 +1,6 @@
+{
+    "input": "../../results/baseline_autocorrelation/occipitalmask_normalised/persistence_diagrams",
+    "dimension": 0,
+    "sigma": 0.1,
+    "resolution": 20
+}

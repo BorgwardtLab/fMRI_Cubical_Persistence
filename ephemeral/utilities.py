@@ -64,6 +64,11 @@ def parse_filename(filename):
     filename = os.path.splitext(filename)[0]
     tokens = filename.split('_')
 
+    # Ensures that we are always able to return a subject id and a task
+    # specifier, both of which may be potentially empty.
+    subject = None
+    task = None
+
     for token in tokens:
         if 'sub' in token:
             subject = re.match('\D*(\d+)\D*', token).group(1)

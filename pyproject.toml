@@ -12,7 +12,7 @@ matplotlib = "^3.1.3"
 tqdm = "^4.42.1"
 pandas = "^1.0.1"
 seaborn = "^0.10.0"
-scikit-learn = "^0.22.2"
+scikit-learn = ">=0.22.2"
 persim = {git = "ssh://git@github.com/BorgwardtLab/persim.git"}
 pyper = {git = "ssh://git@github.com/Pseudomanifold/pyper.git"}
 m-phate = "^0.1.6"

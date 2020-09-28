@@ -60,6 +60,11 @@ def to_dipha_format(matrix, directory):
             # take any proper connections into account.
             volume = matrix[n, t, :].reshape(r, r)
 
+            # Ensures that no NaNs exist; this is of course restricted
+            # to sublevel sets.
+            min_value = np.nanmin(volume)
+            volume = np.nan_to_num(volume, min_value)
+
             # FIXME: this filename is restricted to the 'Partly Cloudy'
             # task; since this script is only meant as an *additional*
             # baseline, we can always make it more flexible later on.

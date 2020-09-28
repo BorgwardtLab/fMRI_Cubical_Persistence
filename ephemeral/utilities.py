@@ -42,7 +42,8 @@ def dict_to_str(d):
 
 
 def parse_filename(filename):
-    '''
+    """Parese filename and decompose it into different components.
+
     Parses a filename and composes it into different components.
     Depending on the filename, the following information can be
     extracted:
@@ -53,7 +54,7 @@ def parse_filename(filename):
 
     These items will be returned as tuples. If time information
     is not available, `None` will be returned.
-    '''
+    """
     # Ensure that we are *not* dealing with another path component here,
     # such as the directory in which data have been stored.
     filename = os.path.basename(filename)
@@ -67,18 +68,19 @@ def parse_filename(filename):
 
     for token in tokens:
         if 'sub' in token:
-            subject = re.match('\D*(\d+)\D*', token).group(1)
+            subject = re.match(r'\D*(\d+)\D*', token).group(1)
         elif 'task' in token:
             task = token.split('-')[1]
 
     potential_time = tokens[-1]
 
-    if re.match('\d+', potential_time):
+    if re.match(r'\d+', potential_time):
         time = potential_time
     else:
         time = None
 
     return subject, task, time
+
 
 def get_patient_ids_and_times(path_to_data: str, task: str='pixar'):
     '''

@@ -59,43 +59,50 @@ def to_dipha_format(matrix, directory):
             volume = matrix[n, t, :].reshape(r, r)
 
             # FIXME: this filename is restricted to the 'Partly Cloudy'
-            # task; since this script is only meant as a 
+            # task; since this script is only meant as an *additional*
+            # baseline, we can always make it more flexible later on.
             filename = f'sub-pixar{n:03d}_task-parcellated_{t:03d}.bin'
 
-    # Nothing should be overwritten. Else, the script might be used
-    # incorrectly, so we refuse to do anything.
-    if os.path.exists(filename):
-        warnings.warn(f'File {filename} already exists. Refusing to overwrite '
-                      f'it and moving on.')
+            filename = os.path.join(
+                directory,
+                filename
+            )
 
-        return
+            # Nothing should be overwritten. Else, the script might be used
+            # incorrectly, so we refuse to do anything.
+            if os.path.exists(filename):
+                warnings.warn(f'File {filename} already exists. Refusing to '
+                              f'overwrite it and moving on.')
 
-    with open(filename, 'wb') as f:
-        magic_number = np.int64(8067171840)
-        file_id = np.int64(1)
-        n_values = np.int64(len(data.ravel()))
-        dimension = np.int64(len(data.shape))
+                return
 
-        header = [magic_number, file_id, n_values, dimension]
+            with open(filename, 'wb') as f:
+                magic_number = np.int64(8067171840)
+                file_id = np.int64(1)
+                n_values = np.int64(len(volume.ravel()))
+                dimension = np.int64(len(volume.shape))
 
-        for h in header:
-            f.write(h)
+                header = [magic_number, file_id, n_values, dimension]
 
-        for resolution in data.shape:
-            f.write(np.int64(resolution))
+                for h in header:
+                    f.write(h)
 
-        # The output stream of values has to written out as
-        # double-precision floating point values. These are
-        # following the pre-defined scan-line order.
-        for x in data.ravel():
-            f.write(np.double(x))
+                for resolution in volume.shape:
+                    f.write(np.int64(resolution))
+
+                # The output stream of values has to written out as
+                # double-precision floating point values. These are
+                # following the pre-defined scan-line order.
+                for x in volume.ravel():
+                    f.write(np.double(x))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('FILE', type=str, help='Input file')
+    parser.add_argument('OUTDIR', type=str, help='Output directory')
 
     args = parser.parse_args()
 
     matrix = np.load(args.FILE)
-    to_dipha_format(matrix, '/tmp')
+    to_dipha_format(matrix, args.OUTDIR)

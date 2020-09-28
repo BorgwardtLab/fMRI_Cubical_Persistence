@@ -9,6 +9,8 @@ import warnings
 
 import numpy as np
 
+from tqdm import tqdm
+
 
 def to_dipha_format(matrix, directory):
     """Convert matrix to DIPHA file format.
@@ -51,7 +53,7 @@ def to_dipha_format(matrix, directory):
     r = int(r)
 
     # Participants
-    for n in range(N):
+    for n in tqdm(range(N), desc='Particpant'):
         # Time steps
         for t in range(T):
             # TODO: this is somewhat controversial because it does *not*

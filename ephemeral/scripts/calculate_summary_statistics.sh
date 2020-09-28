@@ -20,7 +20,9 @@ for EXPERIMENT in "brainmask" "occipitalmask" "brainmask_normalised" "occipitalm
   calculate_summary_statistics $DIRECTORY $EXPERIMENT 2
 done
 
+# Need to use dimension zero here because it is the only dimension
+# guaranteed to exist.
 for EXPERIMENT in "brainmask_parcellated" "occipitalmask_parcellated"; do
   DIRECTORY="$ROOT/$EXPERIMENT/persistence_diagrams"
-  calculate_summary_statistics $DIRECTORY $EXPERIMENT 1
+  calculate_summary_statistics $DIRECTORY $EXPERIMENT 0
 done

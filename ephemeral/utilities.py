@@ -82,13 +82,14 @@ def parse_filename(filename):
     return subject, task, time
 
 
-def get_patient_ids_and_times(path_to_data: str, task: str='pixar'):
-    '''
+def get_patient_ids_and_times(path_to_data: str, task: str = 'pixar'):
+    """Collect patient IDs and time steps.
+
     Returns a list of patient ids and available time steps
     based on the data available.
-    '''
-    
+    """
     all_patients = defaultdict(list)
+
     for f in glob(os.path.join(path_to_data, f'sub-{task}*_task-{task}_bold_space-MNI152NLin2009cAsym_preproc_*.json')):
         subject, task, time = parse_filename(f)
         all_patients[subject].append(time)
@@ -99,4 +100,3 @@ def get_patient_ids_and_times(path_to_data: str, task: str='pixar'):
         sorted_patients[k] = all_patients[k]
 
     return sorted_patients
-

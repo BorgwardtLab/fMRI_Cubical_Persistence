@@ -1,6 +1,4 @@
-'''
-Module containing utility functions.
-'''
+"""Module containing utility functions."""
 
 import os
 import re
@@ -9,7 +7,8 @@ from glob import glob
 
 
 def dict_to_str(d):
-    '''
+    """Represent dictionary as string.
+
     Represents a dictionary as a string. This is useful when
     a representation for a filename is desired. The function
     will unroll all keys and join their parameters with '_',
@@ -17,13 +16,11 @@ def dict_to_str(d):
 
     Parameters
     ----------
-
-        d:
-            Input dictionary
+    d:
+        Input dictionary
 
     Returns
     -------
-
     String-based representation. As an example, suppose the input
     consists of:
 
@@ -35,8 +32,7 @@ def dict_to_str(d):
     ```
 
     The function will then return the string `p2_d3`.
-    '''
-
+    """
     tokens = []
 
     for key in sorted(d.keys()):

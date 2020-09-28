@@ -43,7 +43,7 @@ ROOT="/links/groups/borgwardt/Projects/Ephemeral/Partly Cloudy/tda"
 
 calculate_persistent_homology "$ROOT/brainmask"
 calculate_persistent_homology "$ROOT/occipitalmask"
+calculate_persistent_homology "$ROOT/xormask"
 
 calculate_persistent_homology "$ROOT/brainmask_normalised"
 calculate_persistent_homology "$ROOT/occipitalmask_normalised"
-

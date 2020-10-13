@@ -18,7 +18,7 @@ from tqdm import tqdm
 from utilities import parse_filename
 
 
-def to_dipha_format(index, image, filename, parcel_map, parcel_data):
+def to_dipha_format(index, t, image, filename, parcel_map, parcel_data):
     """Convert NifTI image to DIPHA file format.
 
     Converts a NIfTI image to the DIPHA file format. The file is useful
@@ -37,6 +37,11 @@ def to_dipha_format(index, image, filename, parcel_map, parcel_data):
     index : int
         Index of participant. This is required to access the voxels
         correctly.
+
+    t : int
+        Time index. Also required to access the voxels correctly. The
+        first 7 time steps are ignored (and filled with zeroes) because
+        we do not have data for them.
 
     image : `Nifti1Image`
         NIfTI image of arbitrary dimensions.
@@ -60,6 +65,18 @@ def to_dipha_format(index, image, filename, parcel_map, parcel_data):
                       f'it and moving on.')
 
         return
+
+    # Converts the file into a time by parcels matrix, making it easy to
+    # access the relevant time step and distribute data.
+    subject_data = parcel_data[index, :, :]
+
+    # Fill matrix with zeroes; we do not have any data for this, and it
+    # is much easier to just write out the same number of files
+    # everytime.
+    if t <= 6:
+        data[:, :, :] = 0
+
+    raise 'heck'
 
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)
@@ -178,6 +195,13 @@ if __name__ == '__main__':
     # Required in order to obtain the proper index for accessing
     # features in the parcellated volume.
     subject, _, _ = parse_filename(args.image) 
+    subject = int(subject)
+
+    parcel_map = np.load(args.map)
+    parcellated_data = np.load(args.parcellated)
+
+    print('Parcel map shape      :', parcel_map.shape)
+    print('Parcellated data shape:', parcellated_data.shape)
 
     for index, i in enumerate(tqdm(nl.image.iter_img(image),
                                    desc='Converting', total=n_time_steps)):
@@ -189,9 +213,10 @@ if __name__ == '__main__':
         filename = os.path.join(args.output, filename)
 
         to_dipha_format(
-            subject,
+            subject - 1,    # subject index
+            index,          # time step index
             i,
             f'{filename}',
-            args.map,
-            args.parcellated
+            parcel_map,
+            parcellated_data
         )

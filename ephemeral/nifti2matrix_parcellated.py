@@ -66,17 +66,33 @@ def to_dipha_format(index, t, image, filename, parcel_map, parcel_data):
 
         return
 
-    # Converts the file into a time by parcels matrix, making it easy to
-    # access the relevant time step and distribute data.
-    subject_data = parcel_data[index, :, :]
+    # Clear the volume; we are only allowed to fill it using the
+    # parcellated data.
+    data[:, :, :] = 0
 
-    # Fill matrix with zeroes; we do not have any data for this, and it
-    # is much easier to just write out the same number of files
-    # everytime.
-    if t <= 6:
-        data[:, :, :] = 0
+    # This only pertains to the time steps for which we do have data.
+    # The previous ones are just filled with zeroes and ignored later
+    # on. This could be solved much more elegantly, but there is no need
+    # for a general solution.
+    if t >= 7:
+        # Converts the file into a time by parcels matrix, making it
+        # easy to access the relevant time step and distribute data.
+        subject_data = parcel_data[index, :, :]
 
-    raise 'heck'
+        # Reduce to the provided time step, making it possible to assign
+        # regions directly. This turns data into an array of length `n`,
+        # where `n` denotes the number of regions.
+        #
+        # This has to account for the time steps that we are ignoring.
+        subject_data = subject_data[t - 7, :]
+
+        # This amounts to flood-filling the region with the pre-defined
+        # voxel.
+        for region, value in enumerate(subject_data):
+            # Get the voxels from the map that have the proper region ID;
+            # accounting for `0` not being used.
+            mask = parcel_map == region + 1
+            data[mask] = value
 
     with open(filename, 'wb') as f:
         magic_number = np.int64(8067171840)

@@ -136,6 +136,21 @@ text), and the mean-squared-error&nbsp;(reported in the supplemental
 materials in an extended version of the table that is shown in the main
 paper).
 
+### Additional baselines
+
+During the review period, we implemented additional baselines. To
+reproduce the cells entitled `tt-corr-tda` and `pp-corr-tda` from the
+table in Figure 3e, please use data from two new folders:
+
+- `results/persistence_images_matrices`: this folder
+  contains persistence images generated from *time-by-time volumes*.
+
+- `results/persistence_images_from_parcellated_matrices`: this folder
+  contains persistence images generated from *parcellated volumes*.
+
+The folders contain the name `matrices` because the persistence images
+are generated from correlation matrices. 
+
 ## Variability analysis: Calculating cohort brain state trajectories
 
 **Note to NeurIPS 2020 reviewers**: Please note that due to the size

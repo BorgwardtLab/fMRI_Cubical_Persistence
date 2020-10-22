@@ -20,7 +20,7 @@ following temporary BibTeX when citing our paper:
 
 You will find numerous generated files such as a summary statistics and
 embeddings in this repository. The raw fMRI data, however, are too large
-to be easily re-distributed here. Please access them to under
+to be easily re-distributed here. Please access them under
 https://openneuro.org/datasets/ds000228/versions/1.0.0.
 
 The following instructions demonstrate how to use the package and how to
@@ -57,14 +57,6 @@ this calculation provided the raw data are available.
 
 ## Embedding experiment
 
-**Note to NeurIPS 2020 reviewers**: Due to the size restrictions, we
-cannot include the raw data required for the `baseline-tt` and
-`baseline-pp` data sets. If you want to reproduce these results, please
-take a look at our [OSF Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
-and download the code from there. Note that this does **not** apply to
-the topological summary statistics; these summaries are sufficiently
-small such that we can 'ship' them with the code.
-
 That being said, to reproduce Figure 3a, 3b, 3c, and 3d, please run the
 following commands:
 
@@ -97,15 +89,6 @@ interpretation.
 ## Age prediction experiment
 
 This reproduces Figure 3e in the paper.
-
-**Note to NeurIPS 2020 reviewers**: Please note that due to the size
-restrictions, we cannot include the raw data required for the
-`baseline-tt` and `baseline-pp` data sets. If you want to reproduce
-these results, please take a look at our [OSF
-Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
-and download the code and data from there. Note that this does **not**
-apply to the topological summary statistics; these summaries are
-sufficiently small such that we can 'ship' them with the code.
 
 To run the corresponding calculations, call the `predict_age.py` script
 on different input data sets. The script is sufficiently smart to
@@ -162,12 +145,6 @@ are generated from correlation matrices.
 
 ## Variability analysis: Calculating cohort brain state trajectories
 
-**Note to NeurIPS 2020 reviewers**: Please note that due to the size
-restrictions, we cannot include the persistence images.  If you want to
-reproduce these results, please take a look at our [OSF
-Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
-and download the code and data from there.
-
 To calculate the cohort brain state trajectories shown in Figure 4, you
 need to use the corresponding persistence images&nbsp;(these files are
 also pre-computed because they involve the raw data). To visualise the
@@ -200,12 +177,6 @@ stored in the folder `results/cohort_trajectories`. Note that they might
 be overwritten when calling the script.
 
 ## Variability analysis: Showing the event histograms
-
-**Note to NeurIPS 2020 reviewers**: Please note that due to the size
-restrictions, we cannot include the persistence images.  If you want to
-reproduce these results, please take a look at our [OSF
-Project](https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203)
-and download the code and data from there.
 
 To create the across-cohort-variability data&nbsp;(that we subsequently
 depict in Figure A.4 in the appendix and whose histograms are shown in

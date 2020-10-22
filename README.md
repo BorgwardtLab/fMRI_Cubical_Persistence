@@ -1,6 +1,23 @@
 # Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence
 
-This is the code for our paper *Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence*.
+This is the code for our paper *Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence*,
+which as accepted as a spotlight for NeurIPS 2020. Please use the
+following temporary BibTeX when citing our paper:
+
+```bibtex
+@InCollection{Rieck20,
+  author        = {Rieck, Bastian and Yates, Tristan and Bock, Christian and Borgwardt, Karsten and Wolf, Guy and Turk-Browne, Nick and Krishnaswamy, Smita},
+  title         = {Uncovering the Topology of Time-Varying {fMRI} Data using Cubical Persistence},
+  year          = {2020},
+  eprint        = {2006.07882},
+  archiveprefix = {arXiv},
+  primaryclass  = {q-bio.NC},
+  pubstate      = {forthcoming},
+  booktitle     = {Advances in Neural Information Processing Systems~33~(NeurIPS)},
+  publisher     = {Curran Associates, Inc.},
+}
+```
+
 You will find numerous generated files such as a summary statistics and
 embeddings in this repository. The raw fMRI data, however, are too large
 to be easily re-distributed here. Please access them to under
@@ -8,14 +25,6 @@ https://openneuro.org/datasets/ds000228/versions/1.0.0.
 
 The following instructions demonstrate how to use the package and how to
 reproduce the experiments.
-
-**Note to NeurIPS 2020 reviewers**: If you are reviewing this code, please be aware
-that the size restrictions did *not* allow us to distribute the
-'baseline' matrices and persistence images. Hence, you will *not* be
-able to run all experiments out of the box. We do, however, provide all
-generated files whenever possible, in particular the topological summary
-statistics. If you want to take a look at these files, please download
-the supplements from our OSF.io repository under https://osf.io/e86js/?view_only=7300c960263944f2b0115dd8cfac1203.
 
 ## Installing and using the package
 

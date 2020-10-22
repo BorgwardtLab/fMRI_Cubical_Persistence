@@ -1,7 +1,7 @@
 # Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence
 
-This is the code for our paper *Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence*,
-which as accepted as a spotlight for NeurIPS 2020. Please use the
+This is the code for our paper [*Uncovering the Topology of Time-Varying fMRI Data using Cubical Persistence*](https://arxiv.org/abs/2006.07882),
+which as accepted as a spotlight for [NeurIPS 2020](http://neurips.cc/Conferences/2020). Please use the
 following temporary BibTeX when citing our paper:
 
 ```bibtex

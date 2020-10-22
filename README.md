@@ -247,3 +247,9 @@ The repository contains more code that we are unable to fully discuss or
 acknowledge in the paper because of space reasons. Please feel free to
 browse around; we documented most of the relevant scripts, making it possible
 to get a glimpse into the full pipeline.
+
+## License
+
+The code pertaining to this project is released under a [BSD-3-Clause License](LICENSE).
+This license does *not* apply to the data itself, which is released
+under the [PDDL](https://opendatacommons.org/licenses/pddl).
